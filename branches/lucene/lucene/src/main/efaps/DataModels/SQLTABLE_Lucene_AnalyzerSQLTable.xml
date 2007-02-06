@@ -17,9 +17,9 @@
  limitations under the License.
 
  Author:         	jmo
- Revision:       	$Rev$
- Last Changed:   	$Date$
- Last Changed By:	$Author$
+ Revision:       	$Rev:658 $
+ Last Changed:   	$Date:2007-02-06 20:53:47 +0000 (Tue, 06 Feb 2007) $
+ Last Changed By:	$Author:jmo $
 
 -->
 
@@ -30,7 +30,7 @@
     <version>
       <application>lucene</application>
       <global>1</global>
-      <local>$Rev$</local>
+      <local>$Rev:658 $</local>
       <mode>(version==1)</mode>
     </version>
 

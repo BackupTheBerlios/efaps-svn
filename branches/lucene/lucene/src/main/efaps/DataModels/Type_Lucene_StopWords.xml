@@ -30,7 +30,7 @@
     <version>
       <application>lucene</application>
       <global>1</global>
-      <local>$Rev:$</local>
+      <local>$Rev$</local>
       <mode>(version==1)</mode>
     </version>
 
@@ -78,7 +78,7 @@
     <version>
       <application>lucene</application>
       <global>1</global>
-      <local>$Rev:$</local>
+      <local>$Rev$</local>
       <mode>(version==2)</mode>
     </version>
 
