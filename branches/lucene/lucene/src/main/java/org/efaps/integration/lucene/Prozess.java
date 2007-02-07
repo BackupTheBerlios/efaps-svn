@@ -38,14 +38,14 @@ public class Prozess extends AbstractTransaction {
    * @param args
    */
   public static void main(String[] args) {
-//    String usage = "java org.efaps.integration.lucene.Prozess <unique_term>";
-//    if (args.length == 0) {
-//      System.err.println("Usage: " + usage);
-//      System.exit(1);
-//    }
+    String usage = "java org.efaps.integration.lucene.Prozess <action>";
+    if (args.length == 0) {
+      System.err.println("Usage: " + usage);
+      System.exit(1);
+    }
     if (args[0].equals("new")){
       (new Prozess()).createNewIndex();
-    }else{
+    }else if (args[0].equals("run")){
     (new Prozess()).run();
     }
     

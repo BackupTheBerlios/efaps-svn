@@ -27,6 +27,7 @@ import java.util.Set;
 import org.apache.lucene.analysis.Analyzer;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.db.Insert;
+import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
 import org.efaps.util.EFapsException;
 
@@ -78,7 +79,7 @@ public class LuceneAnalyzer {
 
   public String getID() {
     if (ID==null) {
-      Long id = Type.get(getOID()).getId();
+      Long id =  new Instance(getOID()).getId();
       setID(id.toString());
     }
     return ID;
