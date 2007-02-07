@@ -1,5 +1,5 @@
 /*
- * Copyright 2007 The eFaps Team
+ * Copyright 2003 - 2007 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,14 +12,16 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
- * Author:          jmo
+ * 
  * Revision:        $Rev$
  * Last Changed:    $Date$
  * Last Changed By: $Author$
  */
 
 package org.efaps.integration.lucene.indexer;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -31,170 +33,203 @@ import org.apache.lucene.document.Field;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 
-import org.efaps.integration.lucene.TypeDocFactory;
+import org.efaps.integration.lucene.TypeFileFactory;
 import org.efaps.integration.lucene.Action;
 import org.efaps.integration.lucene.type.LuceneIndex;
 import org.efaps.util.EFapsException;
 
+/**
+ * Class for Indexer. Responsible for indexing a Document (e.g. ".xls",".doc").
+ * Here the basic functions are defined. To get the actual context from the
+ * document, there has to be always a own class.
+ * 
+ * @author jmo
+ * 
+ */
 public abstract class AbstractIndexer {
-    private static int DELETED;
+  /**
+   * Logger for this class
+   */
+  private static final Log LOG    = LogFactory.getLog(AbstractIndexer.class);
 
-    private boolean CREATE_INDEX;
+  private static int       DELETED;
 
-    private TypeDocFactory TYPEDOCFACTORY;
+  private boolean          CREATE_INDEX;
 
-    private InputStream STREAM = null;
+  private TypeFileFactory   TYPEDOCFACTORY;
 
-    private String FILE_NAME;
+  private InputStream      STREAM = null;
 
-    private String OID;
+  private String           FILE_NAME;
 
-    private IndexWriter WRITER;
+  private String           OID;
 
-    protected LuceneIndex INDEX;
+  private IndexWriter      WRITER;
 
-    public abstract String getContent();
+  protected LuceneIndex    INDEX;
 
-    public abstract Field getContentField();
+  /**
+   * gives access to file we wanted to indes in Form of a String
+   * 
+   * @return String with the content
+   */
+  public abstract String getContent();
 
-   
-    
-    
-    public Document getLuceneDocument() throws EFapsException {
+  /**
+   * the access to the lucene.document.Field which contains the actual content
+   * of the file we wanted to index
+   * 
+   * @return a lucene.document.Field
+   */
+  public abstract Field getContentField();
 
-	Document doc;
-	doc = getTypeDocFactory().getLuceneDocument(this.getIndex());
-	doc.add(this.getContentField());
+  /**
+   * @return LuceneDocument for adding it to an index
+   * @throws EFapsException
+   */
+  public Document getLuceneDocument() throws EFapsException {
 
-	return doc;
+    Document doc;
+    doc = getTypeDocFactory().getLuceneDocument(this.getIndex());
+    doc.add(this.getContentField());
 
+    return doc;
+
+  }
+
+  public IndexWriter getWriter() {
+    return WRITER;
+  }
+
+  public void setWriter(Analyzer ana) {
+    try {
+      WRITER = new IndexWriter(getIndexDir(), ana, createIndex());
+    } catch (IOException e) {
+      LOG.error("setWriter(Analyzer)-", e);
+    }
+  }
+
+  public String getOID() {
+    return OID;
+  }
+
+  public void setOID(String oid) {
+    this.OID = oid;
+  }
+
+  public String getFileName() {
+    return FILE_NAME;
+  }
+
+  public void setFileName(String fileName) {
+    this.FILE_NAME = fileName;
+  }
+
+  public InputStream getStream() {
+    if (!(STREAM == null)) {
+      return STREAM;
+    } else {
+      this.setStream(this.getTypeDocFactory().getStream());
+    }
+    return STREAM;
+
+  }
+
+  public void setStream(InputStream is) {
+    this.STREAM = is;
+  }
+
+  public File getIndexDir() {
+    return INDEX.getIndexDir();
+  }
+
+  public boolean indexExists() {
+    return IndexReader.indexExists(INDEX.getIndexDir());
+  }
+
+  public boolean createIndex() {
+    if (indexExists()) {
+      return CREATE_INDEX;
+    }
+    return true;
+  }
+
+  /**
+   * Adds a lucene.document to the index
+   * 
+   * @param _Analyzer
+   */
+  public synchronized void addDoctoIndex(Analyzer _Analyzer) {
+
+    if (getWriter() == null) {
+      setWriter(_Analyzer);
     }
 
-    public IndexWriter getWriter() {
-	return WRITER;
+    try {
+      getWriter().addDocument(getLuceneDocument());
+      getWriter().close();
+    } catch (IOException e) {
+
+      LOG.error("addDoctoIndex(Analyzer)", e);
+    } catch (EFapsException e) {
+
+      LOG.error("addDoctoIndex(Analyzer)", e);
     }
 
-    public void setWriter(Analyzer ana) {
-	try {
-	    WRITER = new IndexWriter(getIndexDir(), ana, createIndex());
-	} catch (IOException e) {
-	    // TODO Auto-generated catch block
-	    e.printStackTrace();
-	}
+  }
+
+  public synchronized void indexUnique(Analyzer _Analyzer) {
+    if (this.indexExists()) {
+      DELETED += Action.delete(INDEX.getIndexDir(), "OID", getTypeDocFactory()
+          .getOID());
+    }
+    addDoctoIndex(_Analyzer);
+
+  }
+
+  public void indexUnique() {
+    if (this.indexExists()) {
+      DELETED += Action.delete(INDEX.getIndexDir(), "OID", getTypeDocFactory()
+          .getOID());
     }
 
-    public String getOID() {
-	return OID;
+    addDoctoIndex(getIndex().getIndex2Type(
+        getTypeDocFactory().getTypeID().toString()).getLuceneAnalyzer()
+        .getAnalyzer());
+
+  }
+
+  /**
+   * optimizes the index
+   */
+  public void optimize() {
+    try {
+      getWriter().optimize();
+    } catch (IOException e) {
+
+      LOG.error("optimize()", e);
     }
+  }
 
-    public void setOID(String oid) {
-	this.OID = oid;
-    }
+  public void setTypeDocFactory(TypeFileFactory _typedocfactory) {
+    TYPEDOCFACTORY = _typedocfactory;
 
-    public String getFileName() {
-	return FILE_NAME;
-    }
+  }
 
-    public void setFileName(String fileName) {
-	this.FILE_NAME = fileName;
-    }
+  public TypeFileFactory getTypeDocFactory() {
 
-    public InputStream getStream() {
-	if (!(STREAM == null)) {
-	    return STREAM;
-	} else {
-	    this.setStream(this.getTypeDocFactory().getStream());
-	}
-	return STREAM;
+    return TYPEDOCFACTORY;
+  }
 
-    }
+  public int getDeleted() {
+    return DELETED;
+  }
 
-    public void setStream(InputStream is) {
-	this.STREAM = is;
-    }
+  public LuceneIndex getIndex() {
+    return INDEX;
+  }
 
-    public File getIndexDir() {
-	return INDEX.getIndexDir();
-    }
-
-    public boolean indexExists() {
-	return IndexReader.indexExists(INDEX.getIndexDir());
-    }
-
-    public boolean createIndex() {
-	if (indexExists()) {
-	    return CREATE_INDEX;
-	}
-	return true;
-    }
-
-    public synchronized void indezies(Analyzer _Analyzer) {
-
-	if (getWriter() == null) {
-	    setWriter(_Analyzer);
-	}
-
-	try {
-	    getWriter().addDocument(getLuceneDocument());
-	    getWriter().close();
-	} catch (IOException e) {
-	    // TODO Auto-generated catch block
-	    e.printStackTrace();
-	} catch (EFapsException e) {
-	    // TODO Auto-generated catch block
-	    e.printStackTrace();
-	}
-
-    }
-
-    public synchronized void indexUnique(Analyzer _Analyzer) {
-	if (this.indexExists()) {
-	    DELETED += Action.delete(INDEX.getIndexDir(), "OID",
-		    getTypeDocFactory().getOID());
-	}
-	indezies(_Analyzer);
-
-    }
-
-    public void optimize() {
-	try {
-	    getWriter().optimize();
-	} catch (IOException e) {
-	    // TODO Auto-generated catch block
-	    e.printStackTrace();
-	}
-    }
-
-    public void setTypeDocFactory(TypeDocFactory _typedocfactory) {
-	TYPEDOCFACTORY = _typedocfactory;
-
-    }
-
-    public TypeDocFactory getTypeDocFactory() {
-
-	return TYPEDOCFACTORY;
-    }
-
-    public int getDeleted() {
-	return DELETED;
-    }
-
-    public void setIndex(LuceneIndex _LuceneIndex) {
-	INDEX = _LuceneIndex;
-    }
-
-    public LuceneIndex getIndex() {
-	return INDEX;
-    }
-
-    public void indexUnique() {
-	if (this.indexExists()) {
-	    DELETED += Action.delete(INDEX.getIndexDir(), "OID",
-		    getTypeDocFactory().getOID());
-	}
-
-	indezies(getIndex().getIndex2Type(getTypeDocFactory().getTypeID().toString())
-		.getLuceneAnalyzer().getAnalyzer());
-
-    }
+  public void setIndex(LuceneIndex _LuceneIndex) {
+    INDEX = _LuceneIndex;
+  }
 }

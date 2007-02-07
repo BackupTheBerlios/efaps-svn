@@ -1,5 +1,5 @@
 /*
- * Copyright 2007 The eFaps Team
+ * Copyright 2003 - 2007 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,13 +12,11 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
- * Author:          jmo
+ *
  * Revision:        $Rev$
  * Last Changed:    $Date$
  * Last Changed By: $Author$
  */
-
 
 package org.efaps.integration.lucene.indexer;
 
@@ -26,20 +24,21 @@ import java.io.InputStreamReader;
 
 import org.apache.lucene.document.Field;
 
-
+/**
+ * Class for getting the content out of an "Txt"-File
+ * 
+ * @author jmo
+ * 
+ */
 public class TxtIndexer extends AbstractIndexer {
-	@Override
-	public String getContent() {
-		return null;
-	}
+  @Override
+  public String getContent() {
+    return new InputStreamReader(getStream()).toString();
+  }
 
-	@Override
-	public Field getContentField() {
-	    return new Field("contents",new InputStreamReader(getStream()));
-	}
+  @Override
+  public Field getContentField() {
+    return new Field("contents", new InputStreamReader(getStream()));
+  }
 
-	
-	
-	
-	
 }

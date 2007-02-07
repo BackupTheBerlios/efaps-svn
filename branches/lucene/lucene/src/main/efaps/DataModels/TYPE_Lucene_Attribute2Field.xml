@@ -50,13 +50,26 @@
       <sqlcolumn>ID</sqlcolumn>
     </attribute>
 
+   <attribute>
+      <name>Creator</name>
+      <type>CreatorLink</type>
+      <sqltable>Lucene_Attribute2FieldSQLTable</sqltable>
+      <sqlcolumn>CREATOR</sqlcolumn>
+    </attribute>
+
     <attribute>
       <name>Created</name>
       <type>Created</type>
       <sqltable>Lucene_Attribute2FieldSQLTable</sqltable>
       <sqlcolumn>CREATED</sqlcolumn>
     </attribute>
-  
+
+    <attribute>
+      <name>Modifier</name>
+      <type>ModifierLink</type>
+      <sqltable>Lucene_Attribute2FieldSQLTable</sqltable>
+      <sqlcolumn>MODIFIER</sqlcolumn>
+    </attribute>
 
     <attribute>
       <name>Modified</name>
@@ -64,29 +77,26 @@
       <sqltable>Lucene_Attribute2FieldSQLTable</sqltable>
       <sqlcolumn>MODIFIED</sqlcolumn>
     </attribute>
-	
-	 </definition>
-   <definition> 
+  </definition>
+  <definition> 
     <version>
       <application>lucene</application>
       <global>1</global>
       <local>$Rev$</local>
       <mode>(version==2)</mode>
     </version>
-
-
+    
     <name>Lucene_Attribute2Field</name>
- <attribute>
+    
+    <attribute>
       <name>IndexTypeLink</name>
       <type>Link</type>
       <typelink>Lucene_Index2Type</typelink>
       <sqltable>Lucene_Attribute2FieldSQLTable</sqltable>
       <sqlcolumn>INDEX2TYPE</sqlcolumn>
     </attribute>
- 
- 
- 
- <attribute>
+    
+    <attribute>
       <name>Attribute</name>
       <type>Link</type>
       <typelink>Admin_Abstract</typelink>
@@ -94,7 +104,7 @@
       <sqlcolumn>ATTRIBUTE</sqlcolumn>
     </attribute>
  
- <attribute>
+    <attribute>
       <name>Field</name>
       <type>Link</type>
       <typelink>Lucene_Field</typelink>

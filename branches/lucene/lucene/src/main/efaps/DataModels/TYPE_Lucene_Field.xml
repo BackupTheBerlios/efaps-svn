@@ -51,21 +51,6 @@
     </attribute>
 
     <attribute>
-      <name>Created</name>
-      <type>Created</type>
-      <sqltable>Lucene_FieldSQLTable</sqltable>
-      <sqlcolumn>CREATED</sqlcolumn>
-    </attribute>
-  
-
-    <attribute>
-      <name>Modified</name>
-      <type>Modified</type>
-      <sqltable>Lucene_FieldSQLTable</sqltable>
-      <sqlcolumn>MODIFIED</sqlcolumn>
-    </attribute>
-	
-	<attribute>
       <name>Method</name>
       <type>String</type>
       <sqltable>Lucene_FieldSQLTable</sqltable>
@@ -93,6 +78,33 @@
       <sqlcolumn>INDEX</sqlcolumn>
     </attribute>
     
+    <attribute>
+      <name>Creator</name>
+      <type>CreatorLink</type>
+      <sqltable>Lucene_FieldSQLTable</sqltable>
+      <sqlcolumn>CREATOR</sqlcolumn>
+    </attribute>
+
+    <attribute>
+      <name>Created</name>
+      <type>Created</type>
+      <sqltable>Lucene_FieldSQLTable</sqltable>
+      <sqlcolumn>CREATED</sqlcolumn>
+    </attribute>
+
+    <attribute>
+      <name>Modifier</name>
+      <type>ModifierLink</type>
+      <sqltable>Lucene_FieldSQLTable</sqltable>
+      <sqlcolumn>MODIFIER</sqlcolumn>
+    </attribute>
+
+    <attribute>
+      <name>Modified</name>
+      <type>Modified</type>
+      <sqltable>Lucene_FieldSQLTable</sqltable>
+      <sqlcolumn>MODIFIED</sqlcolumn>
+    </attribute>
    
     <!-- properties -->
     

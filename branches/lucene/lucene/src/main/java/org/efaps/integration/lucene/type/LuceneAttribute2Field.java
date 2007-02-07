@@ -1,5 +1,5 @@
 /*
- * Copyright 2007 The eFaps Team
+ * Copyright 2003 - 2007 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Author:          jmo
  * Revision:        $Rev$
  * Last Changed:    $Date$
  * Last Changed By: $Author$
@@ -24,39 +23,46 @@ package org.efaps.integration.lucene.type;
 import org.efaps.db.Insert;
 import org.efaps.util.EFapsException;
 
+/**
+ * Class for the Relation between a Lucene_Index2Type, a Attribute from Efaps
+ * and a Lucene_Field
+ * 
+ * @author jmo
+ * 
+ */
 public class LuceneAttribute2Field {
 
-    /**
-         * Creates a New Lucene_Attribute2Field
-         * 
-         * @param _Index2TypeID
-         *                ID of a Lucene_Index2Type
-         * @param _AttributeID
-         *                ID of an Attribute
-         * @param _FieldID
-         *                ID of a Lucene_Field
-         */
-    public static String createNew(String _Index2TypeID, String _AttributeID,
-	    String _FieldID) {
-	Insert insert;
-	try {
-	    insert = new Insert("Lucene_Attribute2Field");
-	    insert.add("IndexTypeLink", _Index2TypeID);
-	    insert.add("Attribute", _AttributeID);
-	    insert.add("Field", _FieldID);
-	    insert.execute();
-	    String Attribute2FieldID = insert.getId();
-	    insert.close();
-	    return Attribute2FieldID;
-	} catch (EFapsException e) {
-	    // TODO Auto-generated catch block
-	    e.printStackTrace();
-	} catch (Exception e) {
-	    // TODO Auto-generated catch block
-	    e.printStackTrace();
-	}
-
-	return null;
-
+  /**
+   * Creates a New Lucene_Attribute2Field
+   * 
+   * @param _Index2TypeID
+   *          ID of a Lucene_Index2Type
+   * @param _AttributeID
+   *          ID of an Attribute
+   * @param _FieldID
+   *          ID of a Lucene_Field
+   */
+  public static String createNew(String _Index2TypeID, String _AttributeID,
+      String _FieldID) {
+    Insert insert;
+    try {
+      insert = new Insert("Lucene_Attribute2Field");
+      insert.add("IndexTypeLink", _Index2TypeID);
+      insert.add("Attribute", _AttributeID);
+      insert.add("Field", _FieldID);
+      insert.execute();
+      String Attribute2FieldID = insert.getId();
+      insert.close();
+      return Attribute2FieldID;
+    } catch (EFapsException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    } catch (Exception e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
     }
+
+    return null;
+
+  }
 }

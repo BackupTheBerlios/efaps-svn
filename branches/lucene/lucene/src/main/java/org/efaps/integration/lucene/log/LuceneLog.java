@@ -1,5 +1,5 @@
 /*
- * Copyright 2007 The eFaps Team
+ * Copyright 2003 - 2007 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Author:          jmo
  * Revision:        $Rev$
  * Last Changed:    $Date$
  * Last Changed By: $Author$
@@ -30,141 +29,199 @@ import org.efaps.db.Update;
 import org.efaps.util.EFapsException;
 
 /**
+ * Class for the eFaps-Type Lucene_Log. It usese the Database to write a Log
+ * into a SQL-Table. It is useds to determine the last time a Index was
+ * launched, how long it took and what was teh return state. Also it is used to
+ * find out if a prozess is running in the moment. <br>
+ * It must be initialised with Method <code>initialise()</code>
  * 
- * @author janmoxter
- *
+ * @author jmo
+ * 
  */
 public class LuceneLog {
 
-    private Date LASTSTART;
+  private Date   LASTSTART;
 
-    private Date LASTEND;
+  private Date   LASTEND;
 
-    private String OID;
+  private String OID;
 
-    private String INDEXID;
+  private String INDEXID;
 
-    public void start() {
+  /**
+   * If the Class is created with this constructor, the
+   * <code>initialise()</code>-Method is called automatically .
+   * 
+   * @param _IndexID
+   */
+  public LuceneLog(String _IndexID) {
+    setIndexID(_IndexID);
+    initialise();
+  }
 
-	Insert insert;
-	try {
+  /**
+   * default constructor
+   */
+  public LuceneLog() {
 
-	    insert = new Insert("Lucene_Log");
-	    insert.add("log", "Indiziervorgang gestartet");
-	    insert.add("Index", this.getIndexID());
-	    insert.execute();
+  }
 
-	    OID = insert.getInstance().getOid();
-	    insert.close();
+  /**
+   * method to initialise the LuceneLog
+   */
+  public void initialise() {
+    this.getRuntime();
+    this.start();
+  }
 
-	} catch (EFapsException e) {
-	    // TODO Auto-generated catch block
-	    e.printStackTrace();
-	} catch (Exception e) {
-	    // TODO Auto-generated catch block
-	    e.printStackTrace();
-	}
+  /**
+   * method to initialise the LuceneLog
+   */
+  public void initialise(String _IndexID) {
+    this.setIndexID(_IndexID);
+    this.getRuntime();
+    this.start();
+  }
 
+  /**
+   * This method can be called to insert the "running" into the database
+   */
+  public void start() {
+
+    Insert insert;
+    try {
+
+      insert = new Insert("Lucene_Log");
+      insert.add("log", "Indiziervorgang gestartet");
+      insert.add("Index", this.getIndexID());
+      insert.execute();
+
+      OID = insert.getInstance().getOid();
+      insert.close();
+
+    } catch (EFapsException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    } catch (Exception e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
     }
 
-    public LuceneLog(String _IndexID) {
-	setIndexID(_IndexID);
-	initialise();
+  }
+
+  public void setIndexID(String _IndexID) {
+    INDEXID = _IndexID;
+  }
+
+  public String getIndexID() {
+    return INDEXID;
+  }
+
+  /**
+   * This method has to be called to write the state of success into the
+   * database
+   * 
+   * @param _deleted
+   *          Number of deleted <code>lucene.document.Document</code>
+   * @param _indexed
+   *          Number of indexed <code>lucene.document.Document</code>
+   */
+  public void end(int _deleted, int _indexed) {
+
+    try {
+      Update update = new Update(OID);
+      String log = "updated: " + _deleted + ", total: " + _indexed;
+      update.add("log", log);
+
+      update.execute();
+      update.close();
+    } catch (EFapsException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    } catch (Exception e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+  }
+
+  private void getRuntime() {
+
+    SearchQuery query = new SearchQuery();
+    try {
+
+      query.setQueryTypes("Lucene_Log");
+      query.addSelect("Created");
+      query.addSelect("Modified");
+
+      query.addWhereExprEqValue("ID", new LuceneLogMaxID(this.getIndexID())
+          .getLogMaxID());
+      query.execute();
+      if (query.next()) {
+        this.setLastStart((Date) query.get("Created"));
+        this.setLastEnd((Date) query.get("Modified"));
+
+      } else {
+        this.setLastStart(new Date(0));
+        this.setLastStart(new Date(System.currentTimeMillis()));
+      }
+      query.close();
+    } catch (EFapsException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
     }
 
-    public LuceneLog() {
+  }
 
+  public Date getLastStart() {
+    if (LASTSTART == null) {
+      this.getRuntime();
     }
+    return LASTSTART;
 
-    public void initialise() {
-	this.getRuntime();
-	this.start();
+  }
+
+  public Date getLastEnd() {
+    if (LASTSTART == null) {
+      this.getRuntime();
     }
+    return LASTEND;
 
-    public void setIndexID(String _IndexID) {
-	INDEXID = _IndexID;
+  }
+
+  /**
+   * Method to close the log with an "error"
+   */
+  public void terminate() {
+    try {
+      Update update = new Update(OID);
+
+      update.add("log", "failure");
+
+      update.execute();
+      update.close();
+    } catch (EFapsException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    } catch (Exception e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
     }
+  }
 
-    public String getIndexID() {
-	return INDEXID;
-    }
+  public void setLastStart(Date _LastStart) {
+    LASTSTART = _LastStart;
+  }
 
-    public void end(int _deleted, int _indexed) {
+  public void setLastEnd(Date _LastEnd) {
+    LASTEND = _LastEnd;
+  }
 
-	try {
-	    Update update = new Update(OID);
-	    String log = "updated: " + _deleted + ", total: " + _indexed;
-	    update.add("log", log);
+  public String getOID() {
+    return OID;
+  }
 
-	    update.execute();
-	    update.close();
-	} catch (EFapsException e) {
-	    // TODO Auto-generated catch block
-	    e.printStackTrace();
-	} catch (Exception e) {
-	    // TODO Auto-generated catch block
-	    e.printStackTrace();
-	}
-    }
+  public void setOID(String _OID) {
+    OID = _OID;
+  }
 
-    private void getRuntime() {
-
-	SearchQuery query = new SearchQuery();
-	try {
-
-	    query.setQueryTypes("Lucene_Log");
-	    query.addSelect("Created");
-	    query.addSelect("Modified");
-
-	    query.addWhereExprEqValue("ID", new LuceneLogMaxID(this
-		    .getIndexID()).getLogMaxID());
-	    query.execute();
-	    if (query.next()) {
-		LASTSTART = (Date) query.get("Created");
-		LASTEND = (Date) query.get("Modified");
-
-	    } else {
-		LASTSTART = new Date(0);
-		LASTEND = new Date(System.currentTimeMillis());
-	    }
-	    query.close();
-	} catch (EFapsException e) {
-	    // TODO Auto-generated catch block
-	    e.printStackTrace();
-	}
-
-    }
-
-    public Date laststart() {
-	if (LASTSTART == null) {
-	    this.getRuntime();
-	}
-	return LASTSTART;
-
-    }
-
-    public Date lastend() {
-	if (LASTSTART == null) {
-	    this.getRuntime();
-	}
-	return LASTEND;
-
-    }
-
-    public void terminate() {
-	try {
-	    Update update = new Update(OID);
-	   
-	    update.add("log", "failure");
-
-	    update.execute();
-	    update.close();
-	} catch (EFapsException e) {
-	    // TODO Auto-generated catch block
-	    e.printStackTrace();
-	} catch (Exception e) {
-	    // TODO Auto-generated catch block
-	    e.printStackTrace();
-	}
-    }
 }

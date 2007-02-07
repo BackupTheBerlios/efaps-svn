@@ -1,5 +1,5 @@
 /*
- * Copyright 2007 The eFaps Team
+ * Copyright 2003- 2007 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Author:          jmo
  * Revision:        $Rev$
  * Last Changed:    $Date$
  * Last Changed By: $Author$
@@ -25,19 +24,25 @@ import org.apache.lucene.document.Field;
 
 import org.efaps.integration.lucene.indexer.AbstractIndexer;
 
+/**
+ * In the case a File should or could not be indexed, this class is used
+ * 
+ * @author jmo
+ * 
+ */
 public class NullIndexer extends AbstractIndexer {
 
-    @Override
-    public String getContent() {
-	
-	return "";
-    }
+  @Override
+  public String getContent() {
 
-    @Override
-    public Field getContentField() {
-	
-	return new Field("contents", getContent(), Field.Store.NO,
-		Field.Index.TOKENIZED);
-    }
+    return "";
+  }
+
+  @Override
+  public Field getContentField() {
+
+    return new Field("contents", getContent(), Field.Store.NO,
+        Field.Index.TOKENIZED);
+  }
 
 }

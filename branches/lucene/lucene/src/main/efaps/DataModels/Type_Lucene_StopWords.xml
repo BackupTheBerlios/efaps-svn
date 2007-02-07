@@ -55,13 +55,26 @@
       <sqltable>Lucene_StopWordsSQLTable</sqltable>
       <sqlcolumn>WORD</sqlcolumn>
     </attribute>
-     
-     
-     <attribute>
+    
+    <attribute>
+      <name>Creator</name>
+      <type>CreatorLink</type>
+      <sqltable>Lucene_StopWordsSQLTable</sqltable>
+      <sqlcolumn>CREATOR</sqlcolumn>
+    </attribute>
+
+    <attribute>
       <name>Created</name>
       <type>Created</type>
       <sqltable>Lucene_StopWordsSQLTable</sqltable>
       <sqlcolumn>CREATED</sqlcolumn>
+    </attribute>
+
+    <attribute>
+      <name>Modifier</name>
+      <type>ModifierLink</type>
+      <sqltable>Lucene_StopWordsSQLTable</sqltable>
+      <sqlcolumn>MODIFIER</sqlcolumn>
     </attribute>
 
     <attribute>
@@ -70,11 +83,9 @@
       <sqltable>Lucene_StopWordsSQLTable</sqltable>
       <sqlcolumn>MODIFIED</sqlcolumn>
     </attribute>
+
   </definition>
-
-
-
- <definition>
+  <definition>
     <version>
       <application>lucene</application>
       <global>1</global>
@@ -84,7 +95,7 @@
 
     <name>Lucene_StopWords</name>
  
- <attribute>
+    <attribute>
       <name>Analyzer</name>
       <type>Link</type>
       <typelink>Lucene_Analyzer</typelink>
@@ -92,9 +103,7 @@
       <sqlcolumn>ANALYZER</sqlcolumn>
     </attribute>
  
- 
- 
-  </definition>
+ </definition>
 
 
 </datamodel-type> 

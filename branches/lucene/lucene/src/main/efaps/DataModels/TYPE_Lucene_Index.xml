@@ -2,7 +2,7 @@
 
 <!--
 
- Copyright 2007 The eFaps Team
+ Copyright 2003 - 2007 The eFaps Team
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -50,22 +50,7 @@
       <sqlcolumn>ID</sqlcolumn>
     </attribute>
 
-    <attribute>
-      <name>Created</name>
-      <type>Created</type>
-      <sqltable>Lucene_IndexSQLTable</sqltable>
-      <sqlcolumn>CREATED</sqlcolumn>
-    </attribute>
-  
-
-    <attribute>
-      <name>Modified</name>
-      <type>Modified</type>
-      <sqltable>Lucene_IndexSQLTable</sqltable>
-      <sqlcolumn>MODIFIED</sqlcolumn>
-    </attribute>
-	
-	<attribute>
+   <attribute>
       <name>Path</name>
       <type>String</type>
       <sqltable>Lucene_IndexSQLTable</sqltable>
@@ -79,7 +64,33 @@
       <sqlcolumn>NAME</sqlcolumn>
     </attribute>
     
-   
+   <attribute>
+      <name>Creator</name>
+      <type>CreatorLink</type>
+      <sqltable>Lucene_IndexSQLTable</sqltable>
+      <sqlcolumn>CREATOR</sqlcolumn>
+    </attribute>
+
+    <attribute>
+      <name>Created</name>
+      <type>Created</type>
+      <sqltable>Lucene_IndexSQLTable</sqltable>
+      <sqlcolumn>CREATED</sqlcolumn>
+    </attribute>
+
+    <attribute>
+      <name>Modifier</name>
+      <type>ModifierLink</type>
+      <sqltable>Lucene_IndexSQLTable</sqltable>
+      <sqlcolumn>MODIFIER</sqlcolumn>
+    </attribute>
+
+    <attribute>
+      <name>Modified</name>
+      <type>Modified</type>
+      <sqltable>Lucene_IndexSQLTable</sqltable>
+      <sqlcolumn>MODIFIED</sqlcolumn>
+    </attribute>
     <!-- properties -->
     
 

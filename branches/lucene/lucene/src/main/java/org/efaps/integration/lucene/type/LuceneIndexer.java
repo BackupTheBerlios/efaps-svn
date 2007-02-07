@@ -33,7 +33,7 @@ public class LuceneIndexer {
 
     private Class<?> INDEXER;
 
-    private String DOCTYP;
+    private String FILETYP;
 
     public LuceneIndexer(String _ID) {
 	setID(_ID);
@@ -49,12 +49,12 @@ public class LuceneIndexer {
 
 	try {
 	    query.setObject(getOID());
-	    query.addSelect("DocTyp");
+	    query.addSelect("FileTyp");
 	    query.addSelect("Indexer");
 	    query.execute();
 	    if (query.next()) {
 		INDEXER = Class.forName(query.get("Indexer").toString());
-		DOCTYP = query.get("DocTyp").toString();
+		FILETYP = query.get("FileTyp").toString();
 	    }
 
 	} catch (EFapsException e) {
@@ -83,21 +83,21 @@ public class LuceneIndexer {
 	return ID;
     }
     
-    public String getDocTyp(){
-	return DOCTYP;
+    public String getFileTyp(){
+	return FILETYP;
     }
     
     public Class<?> getIndexer(){
 	return INDEXER;
     }
     
-    public static String createNew(String _DocTyp, String _Indexer){
+    public static String createNew(String _FileTyp, String _Indexer){
 	
 	Insert insert;
 
 	try {
 	    insert = new Insert("Lucene_Indexer");
-	    insert.add("DocTyp", _DocTyp);
+	    insert.add("FileTyp", _FileTyp);
 	    insert.add("Indexer", _Indexer);
 	   
 	    insert.execute();

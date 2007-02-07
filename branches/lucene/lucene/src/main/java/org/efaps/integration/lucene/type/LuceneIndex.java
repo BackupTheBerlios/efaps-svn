@@ -28,7 +28,7 @@ import java.util.Map;
 import org.efaps.db.Insert;
 import org.efaps.db.SearchQuery;
 import org.efaps.integration.lucene.Action;
-import org.efaps.integration.lucene.TypeDocFactory;
+import org.efaps.integration.lucene.TypeFileFactory;
 import org.efaps.integration.lucene.indexer.AbstractIndexer;
 import org.efaps.util.EFapsException;
 
@@ -199,11 +199,11 @@ public class LuceneIndex {
     }
 
     public void addObject(String _OID) {
-	TypeDocFactory typedocfactory = new TypeDocFactory(_OID);
+	TypeFileFactory typedocfactory = new TypeFileFactory(_OID);
 
 	LuceneIndex2Type index2type = getIndex2Type(typedocfactory.getTypeID());
 
-	Class<?> cl = index2type.getDocIndexer(typedocfactory.getDocType());
+	Class<?> cl = index2type.getDocIndexer(typedocfactory.getFileTyp());
 
 	try {
 	    AbstractIndexer indexer = (AbstractIndexer) cl.newInstance();

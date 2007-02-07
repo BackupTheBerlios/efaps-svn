@@ -1,5 +1,5 @@
 /*
- * Copyright 2007 The eFaps Team
+ * Copyright 2003 - 2007 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,40 +13,43 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Author:          jmo
  * Revision:        $Rev$
  * Last Changed:    $Date$
  * Last Changed By: $Author$
  */
-
 
 package org.efaps.integration.lucene.type;
 
 import org.efaps.db.Insert;
 import org.efaps.util.EFapsException;
 
+/**
+ * Class representing the relation between Lucene_Index2Type and Lucene_Analyzer
+ * 
+ * @author jmo
+ * 
+ */
 public class LuceneType2Analyzer {
 
-    
-    public static String  createNew(String _AnalyzerID,String _IndexTyp){
-	Insert insert;
-	try {
-	    insert = new Insert("Lucene_Type2Analyzer");
-	    insert.add("Analyzer",_AnalyzerID);
-	    insert.add("IndexType", _IndexTyp);
-	    insert.execute();
-	    String Type2AnalyzerID = insert.getId();
-	    insert.close();
-	    return Type2AnalyzerID;
-	} catch (EFapsException e) {
-	    // TODO Auto-generated catch block
-	    e.printStackTrace();
-	} catch (Exception e) {
-	    // TODO Auto-generated catch block
-	    e.printStackTrace();
-	}
-	
-	return null;
-	
+  public static String createNew(String _AnalyzerID, String _IndexTyp) {
+    Insert insert;
+    try {
+      insert = new Insert("Lucene_Type2Analyzer");
+      insert.add("Analyzer", _AnalyzerID);
+      insert.add("IndexType", _IndexTyp);
+      insert.execute();
+      String Type2AnalyzerID = insert.getId();
+      insert.close();
+      return Type2AnalyzerID;
+    } catch (EFapsException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    } catch (Exception e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
     }
+
+    return null;
+
+  }
 }

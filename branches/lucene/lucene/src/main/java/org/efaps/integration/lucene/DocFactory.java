@@ -1,5 +1,5 @@
 /*
- * Copyright 2007 The eFaps Team
+ * Copyright 2003 - 2007 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Author:          jmo
  * Revision:        $Rev$
  * Last Changed:    $Date$
  * Last Changed By: $Author$
@@ -31,55 +30,58 @@ import org.efaps.integration.lucene.type.LuceneIndex2Type;
 import org.efaps.util.EFapsException;
 
 /**
- * Class building the Map holding the different LuceneFields for putting
- * Infotmation from Efaps into an Index
+ * Class building the Map holding the different <code>LuceneField</code> for
+ * putting Information from Efaps into an Index
  * 
- * @author janmoxter
+ * @author jmo
  * 
  */
 public class DocFactory {
 
-    private Map<String, LuceneField> ATTRIBUTE_FIELD = new HashMap<String, LuceneField>();
+  private Map<String, LuceneField> ATTRIBUTE_FIELD = new HashMap<String, LuceneField>();
 
-    /**Map with the LuceneFields
-     * 
-     * @return ATTRIBUTE_FIELD
-     */
-    public Map<String, LuceneField> getFields() {
-	return ATTRIBUTE_FIELD;
+  /**
+   * Map with the LuceneFields
+   * 
+   * @return ATTRIBUTE_FIELD
+   */
+  public Map<String, LuceneField> getFields() {
+    return ATTRIBUTE_FIELD;
 
+  }
+
+  public DocFactory(String _LuceneIndex2TypeOID) {
+    setFields(_LuceneIndex2TypeOID);
+  }
+
+  public DocFactory(LuceneIndex2Type _LuceneIndex2Type) {
+    setFields(_LuceneIndex2Type.getOID());
+  }
+
+  /**
+   * Builds the Map
+   * 
+   * @param _LuceneIndex2TypeOID
+   */
+  private void setFields(String _LuceneIndex2TypeOID) {
+    SearchQuery query = new SearchQuery();
+
+    try {
+      query.setExpand(_LuceneIndex2TypeOID,
+          "Lucene_Attribute2Field\\IndexTypeLink");
+      query.addSelect("Attribute");
+      query.addSelect("Field");
+      query.execute();
+      while (query.next()) {
+        Attribute x = Attribute.get((Long) query.get("Attribute"));
+        ATTRIBUTE_FIELD.put(x.getName(), new LuceneField(query.get("Field")
+            .toString()));
+      }
+      query.close();
+    } catch (EFapsException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
     }
 
-    public DocFactory(String _LuceneIndex2TypeOID) {
-	setFields(_LuceneIndex2TypeOID);
-    }
-
-    public DocFactory(LuceneIndex2Type _LuceneIndex2Type) {
-	setFields(_LuceneIndex2Type.getOID());
-    }
-
-    /**Builds the Map
-     * @param _LuceneIndex2TypeOID
-     */
-    private void setFields(String _LuceneIndex2TypeOID) {
-	SearchQuery query = new SearchQuery();
-
-	try {
-	    query.setExpand(_LuceneIndex2TypeOID,
-		    "Lucene_Attribute2Field\\IndexTypeLink");
-	    query.addSelect("Attribute");
-	    query.addSelect("Field");
-	    query.execute();
-	    while (query.next()) {
-		Attribute x = Attribute.get((Long) query.get("Attribute"));
-		ATTRIBUTE_FIELD.put(x.getName(), new LuceneField(query.get(
-			"Field").toString()));
-	    }
-	    query.close();
-	} catch (EFapsException e) {
-	    // TODO Auto-generated catch block
-	    e.printStackTrace();
-	}
-
-    }
+  }
 }

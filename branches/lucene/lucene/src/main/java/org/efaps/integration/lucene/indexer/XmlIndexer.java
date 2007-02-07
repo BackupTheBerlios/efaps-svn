@@ -1,3 +1,23 @@
+/*
+ * Copyright 2003 - 2007 The eFaps Team
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * Revision:        $Rev$
+ * Last Changed:    $Date$
+ * Last Changed By: $Author$
+ */
+
 package org.efaps.integration.lucene.indexer;
 
 import java.io.IOException;
@@ -11,77 +31,80 @@ import org.apache.lucene.document.Field;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+/**
+ * Class for getting the content out of an "XML"-File
+ * 
+ * @author jmo
+ * 
+ */
 public class XmlIndexer extends AbstractIndexer {
 
-    public static String parse(InputStream _inputstream) {
-	org.w3c.dom.Document document = null;
-	DocumentBuilder builder = null;
-	DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+  public static String parse(InputStream _inputstream) {
+    org.w3c.dom.Document document = null;
+    DocumentBuilder builder = null;
+    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 
-	try {
-	    builder = factory.newDocumentBuilder();
+    try {
+      builder = factory.newDocumentBuilder();
 
-	    document = builder.parse(_inputstream);
-	} catch (ParserConfigurationException e) {
-	    // TODO Auto-generated catch block
-	    e.printStackTrace();
-	}
-
-	catch (SAXException e) {
-	    // TODO Auto-generated catch block
-	    e.printStackTrace();
-	} catch (IOException e) {
-	    // TODO Auto-generated catch block
-	    e.printStackTrace();
-	}
-	return parse(document);
+      document = builder.parse(_inputstream);
+    } catch (ParserConfigurationException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    } catch (SAXException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    } catch (IOException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
     }
 
-    public static String parse(org.w3c.dom.Document _document) {
+    return parse(document);
+  }
 
-	StringBuffer XMLStream = new StringBuffer();
-	NodeList ls = _document.getChildNodes();
-	for (int i = 0; i < ls.getLength(); i++) {
+  public static String parse(org.w3c.dom.Document _document) {
 
-	    String text = "";
+    StringBuffer XMLStream = new StringBuffer();
+    NodeList ls = _document.getChildNodes();
+    for (int i = 0; i < ls.getLength(); i++) {
 
-	    short NodType = ls.item(i).getNodeType();
+      String text = "";
 
-	    if (NodType == org.w3c.dom.Node.ELEMENT_NODE
-		    || NodType == org.w3c.dom.Node.TEXT_NODE) {
-		text = ls.item(i).getTextContent().trim();
-	    } else if (NodType == org.w3c.dom.Node.ATTRIBUTE_NODE) {
-		text = ls.item(i).getNodeValue().trim();
-	    } else if (NodType == org.w3c.dom.Node.CDATA_SECTION_NODE) {
-		text = ls.item(i).getTextContent().trim();
-	    } else if (NodType == org.w3c.dom.Node.COMMENT_NODE) {
+      short NodType = ls.item(i).getNodeType();
 
-	    } else if (NodType == org.w3c.dom.Node.PROCESSING_INSTRUCTION_NODE) {
+      if (NodType == org.w3c.dom.Node.ELEMENT_NODE
+          || NodType == org.w3c.dom.Node.TEXT_NODE) {
+        text = ls.item(i).getTextContent().trim();
+      } else if (NodType == org.w3c.dom.Node.ATTRIBUTE_NODE) {
+        text = ls.item(i).getNodeValue().trim();
+      } else if (NodType == org.w3c.dom.Node.CDATA_SECTION_NODE) {
+        text = ls.item(i).getTextContent().trim();
+      } else if (NodType == org.w3c.dom.Node.COMMENT_NODE) {
 
-	    } else if (NodType == org.w3c.dom.Node.ENTITY_NODE) {
+      } else if (NodType == org.w3c.dom.Node.PROCESSING_INSTRUCTION_NODE) {
 
-	    }
-	    if (text != "") {
-		XMLStream.append(text);
+      } else if (NodType == org.w3c.dom.Node.ENTITY_NODE) {
 
-	    }
+      }
+      if (text != "") {
+        XMLStream.append(text);
 
-	}
-	return XMLStream.toString().trim();
+      }
+
     }
+    return XMLStream.toString().trim();
+  }
 
-    @Override
-    public String getContent() {
-	return parse(getStream());
-    }
+  @Override
+  public String getContent() {
+    return parse(getStream());
+  }
 
-    @Override
-    public Field getContentField() {
+  @Override
+  public Field getContentField() {
 
-	return new Field("contents", getContent(), Field.Store.NO,
-		Field.Index.TOKENIZED);
-    }
-
-    
+    return new Field("contents", getContent(), Field.Store.NO,
+        Field.Index.TOKENIZED);
+  }
 
 }

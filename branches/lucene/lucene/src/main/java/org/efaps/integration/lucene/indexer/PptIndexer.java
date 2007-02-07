@@ -1,5 +1,5 @@
 /*
- * Copyright 2007 The eFaps Team
+ * Copyright 2003 - 2007 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Author:          jmo
  * Revision:        $Rev$
  * Last Changed:    $Date$
  * Last Changed By: $Author$
@@ -26,26 +25,33 @@ import java.io.IOException;
 import org.apache.lucene.document.Field;
 import org.apache.poi.hslf.extractor.QuickButCruddyTextExtractor;
 
+/**
+ * Class for getting the content out of an "Microsoft-Office-Powerpoint"-File
+ * (97-XP)
+ * 
+ * @author jmo
+ * 
+ */
 public class PptIndexer extends AbstractIndexer {
 
-    @Override
-    public String getContent() {
-	QuickButCruddyTextExtractor extractor;
-	try {
-	    extractor = new QuickButCruddyTextExtractor(super.getStream());
-	    return extractor.getTextAsString();
-	} catch (IOException e) {
-	    // TODO Auto-generated catch block
-	    e.printStackTrace();
-	}
-
-	return null;
+  @Override
+  public String getContent() {
+    QuickButCruddyTextExtractor extractor;
+    try {
+      extractor = new QuickButCruddyTextExtractor(super.getStream());
+      return extractor.getTextAsString();
+    } catch (IOException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
     }
 
-    @Override
-    public Field getContentField() {
-	return new Field("contents", getContent(), Field.Store.NO,
-		Field.Index.TOKENIZED);
-    }
+    return null;
+  }
+
+  @Override
+  public Field getContentField() {
+    return new Field("contents", getContent(), Field.Store.NO,
+        Field.Index.TOKENIZED);
+  }
 
 }

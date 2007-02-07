@@ -44,11 +44,7 @@
       <!-- columns -->
       <column name="INDEX"				type="INTEGER"       not-null="true"/>
       <column name="LUCENELOGID"		type="INTEGER"       not-null="true"/>
-      
-      </database>
+    </database>
   </definition>
-  
-   
-
 
 </datamodel-sqltable>

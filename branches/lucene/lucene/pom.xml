@@ -1,6 +1,7 @@
-	<!--
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
 
- Copyright 2006 The eFaps Team
+ Copyright 2003 - 2006 The eFaps Team
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -14,16 +15,13 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 
- Author:          tmo
+ Author:          jmo
  Revision:        $Rev$
  Last Changed:    $Date$
  Last Changed By: $Author$
 
 -->
-
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.efaps</groupId>
@@ -191,6 +189,7 @@
       <version>2.1</version>
       <scope>compile</scope>
     </dependency>
+    
     <!-- Connection Pooling -->
     <dependency>
       <groupId>commons-dbcp</groupId>
@@ -215,28 +214,28 @@
       <scope>package</scope>
     </dependency>
 
-    <dependency>
-      <groupId>org.apache.maven</groupId>
-      <artifactId>maven-plugin-api</artifactId>
-      <version>2.0</version>
-    </dependency>
-   
-   
+   <!-- Lucene Core -->
 	<dependency>
       <groupId>org.apache.lucene</groupId>
       <artifactId>lucene-core</artifactId>
       <version>2.0.0</version>
     </dependency>
+    
+    <!-- Textmining for index MSWord -->
     <dependency>
       <groupId>org.textmining</groupId>
       <artifactId>tm-extractors</artifactId>
       <version>0.4</version>
     </dependency>
+    
+    <!-- jexcelapi for index MSExel -->
     <dependency>
       <groupId>net.sourceforge.jexcelapi</groupId>
       <artifactId>jxl</artifactId>
       <version>2.5.7</version>
     </dependency>
+    
+    <!-- Nekohtml for index Html by transforming it into wellformed XML -->
     <dependency>
       <groupId>nekohtml</groupId>
       <artifactId>nekohtml</artifactId>
@@ -244,7 +243,7 @@
     </dependency>
     
 	
-    <!-- Wird alles fuer PDF gebraucht -->
+    <!-- PDFBox for index PDF, needs fontbox, ant, bouncycastel -->
     <dependency>
       <groupId>pdfbox</groupId>
       <artifactId>pdfbox</artifactId>
@@ -266,14 +265,17 @@
       <version>124</version>
     </dependency>
     <dependency>
-    	<groupId>bouncycastle</groupId>
-		<artifactId>bcmail-jdk14</artifactId>
-		<version>132</version>
+      <groupId>bouncycastle</groupId>
+	  <artifactId>bcmail-jdk14</artifactId>
+      <version>132</version>
 	</dependency>
-	 <dependency>
-    <groupId>poi</groupId>
-    <artifactId>poi</artifactId>
-    <version>3.0-alpha2</version>
-</dependency>
-</dependencies>
+	
+	<!-- poi for index MSPowerpoint -->
+    <dependency>
+      <groupId>poi</groupId>
+      <artifactId>poi</artifactId>
+      <version>3.0-alpha2</version>
+    </dependency>
+    
+  </dependencies>
 </project>

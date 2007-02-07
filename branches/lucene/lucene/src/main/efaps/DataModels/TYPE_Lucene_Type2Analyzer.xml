@@ -51,12 +51,25 @@
     </attribute>
 
     <attribute>
+      <name>Creator</name>
+      <type>CreatorLink</type>
+      <sqltable>Lucene_Type2AnalyzerSQLTable</sqltable>
+      <sqlcolumn>CREATOR</sqlcolumn>
+    </attribute>
+
+    <attribute>
       <name>Created</name>
       <type>Created</type>
       <sqltable>Lucene_Type2AnalyzerSQLTable</sqltable>
       <sqlcolumn>CREATED</sqlcolumn>
     </attribute>
-  
+
+    <attribute>
+      <name>Modifier</name>
+      <type>ModifierLink</type>
+      <sqltable>Lucene_Type2AnalyzerSQLTable</sqltable>
+      <sqlcolumn>MODIFIER</sqlcolumn>
+    </attribute>
 
     <attribute>
       <name>Modified</name>
@@ -77,7 +90,7 @@
 
     <name>Lucene_Type2Analyzer</name>
  
- <attribute>
+    <attribute>
       <name>IndexType</name>
       <type>Link</type>
       <typelink>Lucene_Index2Type</typelink>
@@ -85,7 +98,7 @@
       <sqlcolumn>INDEXTYPE</sqlcolumn>
     </attribute>
  
- <attribute>
+    <attribute>
       <name>Analyzer</name>
       <type>Link</type>
       <typelink>Lucene_Analyzer</typelink>
@@ -94,12 +107,5 @@
     </attribute>
  
   </definition>
-	
-	
-    
-   
-    <!-- properties -->
-    
 
-  
 </datamodel-type>

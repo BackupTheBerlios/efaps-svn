@@ -1,5 +1,5 @@
 /*
- * Copyright 2007 The eFaps Team
+ * Copyright 2003 - 2007 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Author:          jmo
  * Revision:        $Rev$
  * Last Changed:    $Date$
  * Last Changed By: $Author$
@@ -30,43 +29,47 @@ import javax.swing.text.rtf.RTFEditorKit;
 
 import org.apache.lucene.document.Field;
 
+/**
+ * Class for getting the content out of an "Rtf"-File
+ * 
+ * @author jmo
+ * 
+ */
 public class RtfIndexer extends AbstractIndexer {
 
-    public static String parse(InputStream is) {
-	String content = "";
-	DefaultStyledDocument dsd = new DefaultStyledDocument();
-	RTFEditorKit RTFEkit = new RTFEditorKit();
-	try {
-	    RTFEkit.read(is, dsd, 0);
-	} catch (IOException e) {
-	    // TODO Auto-generated catch block
-	    e.printStackTrace();
-	} catch (BadLocationException e) {
-	    // TODO Auto-generated catch block
-	    e.printStackTrace();
-	}
-	try {
-	    content = dsd.getText(0, dsd.getLength());
-	} catch (BadLocationException e) {
-	    // TODO Auto-generated catch block
-	    e.printStackTrace();
-	}
-
-	return content;
+  public static String parse(InputStream is) {
+    String content = "";
+    DefaultStyledDocument dsd = new DefaultStyledDocument();
+    RTFEditorKit RTFEkit = new RTFEditorKit();
+    try {
+      RTFEkit.read(is, dsd, 0);
+    } catch (IOException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    } catch (BadLocationException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    try {
+      content = dsd.getText(0, dsd.getLength());
+    } catch (BadLocationException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
     }
 
-    @Override
-    public String getContent() {
-	return parse(getStream());
-    }
+    return content;
+  }
 
-    @Override
-    public Field getContentField() {
+  @Override
+  public String getContent() {
+    return parse(getStream());
+  }
 
-	return new Field("contents", getContent(), Field.Store.NO,
-		Field.Index.TOKENIZED);
-    }
+  @Override
+  public Field getContentField() {
 
-    
+    return new Field("contents", getContent(), Field.Store.NO,
+        Field.Index.TOKENIZED);
+  }
 
 }

@@ -57,9 +57,6 @@
       <sqlcolumn>LUCENELOGID</sqlcolumn>
     </attribute>
 
-    
-  
-
   </definition>
   <definition>
     <version>
@@ -70,15 +67,13 @@
     </version>
 
     <name>Lucene_LogMaxID</name>
-  <attribute>
+    
+    <attribute>
       <name>Index</name>
       <type>Link</type>
       <typelink>Lucene_Index</typelink>
       <sqltable>Lucene_LogMaxIdSQLView</sqltable>
       <sqlcolumn>INDEX</sqlcolumn>
     </attribute>
-    
- 
- 
   </definition>
 </datamodel-type>

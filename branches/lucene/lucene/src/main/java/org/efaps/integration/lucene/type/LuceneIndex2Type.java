@@ -158,7 +158,7 @@ public class LuceneIndex2Type {
 		LuceneIndexer indexer = new LuceneIndexer(query.get("Indexer")
 			.toString());
 
-		DOCINDEXER.put(indexer.getDocTyp(), indexer.getIndexer());
+		DOCINDEXER.put(indexer.getFileTyp(), indexer.getIndexer());
 
 	    }
 

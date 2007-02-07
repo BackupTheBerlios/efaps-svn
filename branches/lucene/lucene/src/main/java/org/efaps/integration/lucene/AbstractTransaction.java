@@ -1,5 +1,5 @@
 /*
- * Copyright 2007 The eFaps Team
+ * Copyright 2003 - 2007 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Author:          jmo
  * Revision:        $Rev$
  * Last Changed:    $Date$
  * Last Changed By: $Author$
@@ -38,229 +37,225 @@ import org.efaps.db.Context;
 import org.efaps.db.databases.AbstractDatabase;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.Cache;
+
+/**
+ * This class is going to be replaced with a version inside eFaps
+ * @author jmo
+ *
+ */
 public class AbstractTransaction {
 
-    // ///////////////////////////////////////////////////////////////////////////
-    // static variables
+  // ///////////////////////////////////////////////////////////////////////////
+  // static variables
 
-    /**
-         * Theoretically all efaps contexts object instances must include a
-         * transaction manager.
-         */
-    final public static TransactionManager transactionManager = new SlideTransactionManager();
+  /**
+   * Theoretically all efaps contexts object instances must include a
+   * transaction manager.
+   */
+  final public static TransactionManager transactionManager = new SlideTransactionManager();
 
-    // ///////////////////////////////////////////////////////////////////////////
-    // instance variables
+  // ///////////////////////////////////////////////////////////////////////////
+  // instance variables
 
-    /**
-         * The apache maven logger is stored in this instance variable.
-         * 
-         * @see #getLog
-         * @see #setLog
-         */
-    private Log LOG = null;
-    
-   
-    /**
-         * Stores the name of the logged in user.
-         * 
-         * @see #login
-         */
-    private String userName;
+  /**
+   * The apache maven logger is stored in this instance variable.
+   * 
+   * @see #getLog
+   * @see #setLog
+   */
+  private Log                            LOG                = null;
 
-    // ///////////////////////////////////////////////////////////////////////////
-    // constructors / desctructors
+  /**
+   * Stores the name of the logged in user.
+   * 
+   * @see #login
+   */
+  private String                         userName;
 
-    // ///////////////////////////////////////////////////////////////////////////
-    // instance methods
+  // ///////////////////////////////////////////////////////////////////////////
+  // constructors / desctructors
 
-  
-    /**
-         * Initiliase the database information read from the bootstrap file:
-         * <ul>
-         * <li>read boostrap properties from bootstrap file</li>
-         * <li>configure the database type</li>
-         * <li>initiliase the sql datasource (JDBC connection to the database)</li>
-         * </ul>
-         */
-    protected boolean initDatabase()  {
-	    boolean initialised = false;
-	    String bootstrap = "/Users/janmoxter/Documents/workspace/eFaps/bootstrap.xml";
+  // ///////////////////////////////////////////////////////////////////////////
+  // instance methods
 
-	    Properties props = new Properties();
-	    try  {
-	      // read bootstrap properties
-	      FileInputStream fstr = new FileInputStream(bootstrap);
-	      props.loadFromXML(fstr);
-	      fstr.close();
-	    } catch (FileNotFoundException e)  {
-	      LOG.error("could not open file '" + bootstrap + "'", e);
-	    } catch (IOException e)  {
-	      LOG.error("could not read file '" + bootstrap + "'", e);
-	    }
+  /**
+   * Initiliase the database information read from the bootstrap file:
+   * <ul>
+   * <li>read boostrap properties from bootstrap file</li>
+   * <li>configure the database type</li>
+   * <li>initiliase the sql datasource (JDBC connection to the database)</li>
+   * </ul>
+   */
+  protected boolean initDatabase() {
+    boolean initialised = false;
+    String bootstrap = "/Users/janmoxter/Documents/workspace/eFaps/bootstrap.xml";
 
-	    // configure database type
-	    String dbClass   = null;
-	    try  {
-	      Object dbTypeObj = props.get("dbType");
-	      if ((dbTypeObj == null) || (dbTypeObj.toString().length() == 0))  {
-	        LOG.error("could not initaliase database type");
-	      } else  {
-	        dbClass = dbTypeObj.toString();
-	        AbstractDatabase dbType = ((Class<AbstractDatabase>)Class.forName(dbClass)).newInstance();
-	        if (dbType == null)  {
-	          LOG.error("could not initaliase database type");
-	        }
-	        Context.setDbType(dbType);
-	        initialised = true;
-	      }
-	    } catch (ClassNotFoundException e)  {
-	      LOG.error("could not found database description class "
-	                + "'" + dbClass + "'", e);
-	    } catch (InstantiationException e)  {
-	      LOG.error("could not initialise database description class "
-	                + "'" + dbClass + "'", e);
-	    } catch (IllegalAccessException e)  {
-	      LOG.error("could not access database description class "
-	                + "'" + dbClass + "'", e);
-	    }
-
-	    // buildup reference and initialise datasource object
-	    String factory = props.get("factory").toString();
-	    Reference ref = new Reference(DataSource.class.getName(), factory, null);
-	    for (Object key : props.keySet())  {
-	      Object value = props.get(key);
-	      ref.add(new StringRefAddr(key.toString(), 
-	                                (value == null) ? null : value.toString()));
-	    }
-	    ObjectFactory of = null;
-	    try  {
-	      Class factClass = Class.forName(ref.getFactoryClassName());
-	      of = (ObjectFactory) factClass.newInstance();
-	    } catch (ClassNotFoundException e)  {
-	      LOG.error("could not found data source class "
-	                + "'" + ref.getFactoryClassName() + "'", e);
-	    } catch (InstantiationException e)  {
-	      LOG.error("could not initialise data source class "
-	                + "'" + ref.getFactoryClassName() + "'", e);
-	    } catch (IllegalAccessException e)  {
-	      LOG.error("could not access data source class "
-	                + "'" + ref.getFactoryClassName() + "'", e);
-	    }
-	    if (of != null)  {
-	      DataSource ds = null;
-	      try  {
-	        ds = (DataSource) of.getObjectInstance(ref, null, null, null);
-	      } catch (Exception e)  {
-	        LOG.error("coud not get object instance of factory "
-	                  + "'" + ref.getFactoryClassName() + "'", e);
-	      }
-	      if (ds != null)  {
-	        Context.setDataSource(ds);
-	        initialised = initialised && true;
-	      }
-	    }
-	    
-	    return initialised;
-	  }
-    
-    
-    
-    
-    
-    
-    
-    
-
-
-    /**
-         * The user with given user name and password makes a login.
-         * 
-         * @param _userName
-         *                name of user who wants to make a login
-         * @param _password
-         *                password of the user used to check
-         * @throws EFapsException
-         *                 if the user could not login
-         * @see #userName
-         * @todo real login with check of password
-         */
-    protected void login(final String _userName, final String _password)
-	    throws EFapsException {
-	this.userName = _userName;
+    Properties props = new Properties();
+    try {
+      // read bootstrap properties
+      FileInputStream fstr = new FileInputStream(bootstrap);
+      props.loadFromXML(fstr);
+      fstr.close();
+    } catch (FileNotFoundException e) {
+      LOG.error("could not open file '" + bootstrap + "'", e);
+    } catch (IOException e) {
+      LOG.error("could not read file '" + bootstrap + "'", e);
     }
 
-    /**
-         * Reloads the internal eFaps cache.
-         * 
-         * @todo remove Exception
-         */
-    protected void reloadCache() throws EFapsException, Exception {
-	startTransaction();
-	Cache.reloadCache();
-	abortTransaction();
+    // configure database type
+    String dbClass = null;
+    try {
+      Object dbTypeObj = props.get("dbType");
+      if ((dbTypeObj == null) || (dbTypeObj.toString().length() == 0)) {
+        LOG.error("could not initaliase database type");
+      } else {
+        dbClass = dbTypeObj.toString();
+        AbstractDatabase dbType = ((Class<AbstractDatabase>) Class
+            .forName(dbClass)).newInstance();
+        if (dbType == null) {
+          LOG.error("could not initaliase database type");
+        }
+        Context.setDbType(dbType);
+        initialised = true;
+      }
+    } catch (ClassNotFoundException e) {
+      LOG.error("could not found database description class " + "'" + dbClass
+          + "'", e);
+    } catch (InstantiationException e) {
+      LOG.error("could not initialise database description class " + "'"
+          + dbClass + "'", e);
+    } catch (IllegalAccessException e) {
+      LOG.error("could not access database description class " + "'" + dbClass
+          + "'", e);
     }
 
-    /**
-         * 
-         * 
-         * @todo remove Exception
-         * @todo description
-         */
-    protected void startTransaction() throws EFapsException, Exception {
-	getTransactionManager().begin();
-	Context.newThreadContext(getTransactionManager().getTransaction(),
-		this.userName);
+    // buildup reference and initialise datasource object
+    String factory = props.get("factory").toString();
+    Reference ref = new Reference(DataSource.class.getName(), factory, null);
+    for (Object key : props.keySet()) {
+      Object value = props.get(key);
+      ref.add(new StringRefAddr(key.toString(), (value == null) ? null : value
+          .toString()));
+    }
+    ObjectFactory of = null;
+    try {
+      Class factClass = Class.forName(ref.getFactoryClassName());
+      of = (ObjectFactory) factClass.newInstance();
+    } catch (ClassNotFoundException e) {
+      LOG.error("could not found data source class " + "'"
+          + ref.getFactoryClassName() + "'", e);
+    } catch (InstantiationException e) {
+      LOG.error("could not initialise data source class " + "'"
+          + ref.getFactoryClassName() + "'", e);
+    } catch (IllegalAccessException e) {
+      LOG.error("could not access data source class " + "'"
+          + ref.getFactoryClassName() + "'", e);
+    }
+    if (of != null) {
+      DataSource ds = null;
+      try {
+        ds = (DataSource) of.getObjectInstance(ref, null, null, null);
+      } catch (Exception e) {
+        LOG.error("coud not get object instance of factory " + "'"
+            + ref.getFactoryClassName() + "'", e);
+      }
+      if (ds != null) {
+        Context.setDataSource(ds);
+        initialised = initialised && true;
+      }
     }
 
-    /**
-         * @todo remove Exception
-         * @todo description
-         */
-    protected void abortTransaction() throws EFapsException, Exception {
-	getTransactionManager().rollback();
-	Context.getThreadContext().close();
-    }
+    return initialised;
+  }
 
-    /**
-         * @todo remove Exception
-         * @todo description
-         */
-    protected void commitTransaction() throws EFapsException, Exception {
-	getTransactionManager().commit();
-	Context.getThreadContext().close();
-    }
+  /**
+   * The user with given user name and password makes a login.
+   * 
+   * @param _userName
+   *          name of user who wants to make a login
+   * @param _password
+   *          password of the user used to check
+   * @throws EFapsException
+   *           if the user could not login
+   * @see #userName
+   * @todo real login with check of password
+   */
+  protected void login(final String _userName, final String _password)
+      throws EFapsException {
+    this.userName = _userName;
+  }
 
-    /**
-         * @todo description
-         */
-    protected TransactionManager getTransactionManager() {
-	return transactionManager;
-    }
+  /**
+   * Reloads the internal eFaps cache.
+   * 
+   * @todo remove Exception
+   */
+  protected void reloadCache() throws EFapsException, Exception {
+    startTransaction();
+    Cache.reloadCache();
+    abortTransaction();
+  }
 
-    // ///////////////////////////////////////////////////////////////////////////
-    // instance getter and setter methods
+  /**
+   * 
+   * 
+   * @todo remove Exception
+   * @todo description
+   */
+  protected void startTransaction() throws EFapsException, Exception {
+    getTransactionManager().begin();
+    Context.newThreadContext(getTransactionManager().getTransaction(),
+        this.userName);
+  }
 
-    /**
-         * This is the setter method for instance variable {@link #log}.
-         * 
-         * @param _log
-         *                new value for instance variable {@link #log}
-         * @see #log
-         * @see #getLog
-         */
-    public void setLog(final Log _log) {
-	this.LOG = _log;
-    }
+  /**
+   * @todo remove Exception
+   * @todo description
+   */
+  protected void abortTransaction() throws EFapsException, Exception {
+    getTransactionManager().rollback();
+    Context.getThreadContext().close();
+  }
 
-    /**
-         * This is the getter method for instance variable {@link #log}.
-         * 
-         * @return value of instance variable {@link #log}
-         * @see #log
-         * @see #setLog
-         */
-    public Log getLog() {
-	return this.LOG;
-    }
+  /**
+   * @todo remove Exception
+   * @todo description
+   */
+  protected void commitTransaction() throws EFapsException, Exception {
+    getTransactionManager().commit();
+    Context.getThreadContext().close();
+  }
+
+  /**
+   * @todo description
+   */
+  protected TransactionManager getTransactionManager() {
+    return transactionManager;
+  }
+
+  // ///////////////////////////////////////////////////////////////////////////
+  // instance getter and setter methods
+
+  /**
+   * This is the setter method for instance variable {@link #log}.
+   * 
+   * @param _log
+   *          new value for instance variable {@link #log}
+   * @see #log
+   * @see #getLog
+   */
+  public void setLog(final Log _log) {
+    this.LOG = _log;
+  }
+
+  /**
+   * This is the getter method for instance variable {@link #log}.
+   * 
+   * @return value of instance variable {@link #log}
+   * @see #log
+   * @see #setLog
+   */
+  public Log getLog() {
+    return this.LOG;
+  }
 }

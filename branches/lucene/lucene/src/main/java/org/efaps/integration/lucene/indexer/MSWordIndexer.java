@@ -1,5 +1,5 @@
 /*
- * Copyright 2007 The eFaps Team
+ * Copyright 2003 - 2007 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,40 +13,42 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Author:          jmo
  * Revision:        $Rev$
  * Last Changed:    $Date$
  * Last Changed By: $Author$
  */
-
 
 package org.efaps.integration.lucene.indexer;
 
 import org.apache.lucene.document.Field;
 import org.textmining.text.extraction.WordExtractor;
 
-public class MSWordIndexer extends AbstractIndexer{
-	WordExtractor EXTRACTOR = new WordExtractor();
+/**
+ * Class for getting the content out of an "Microsoft-Word"-File (97-XP)
+ * 
+ * @author jmo
+ * 
+ */
+public class MSWordIndexer extends AbstractIndexer {
+  WordExtractor EXTRACTOR = new WordExtractor();
 
-	@Override
-	public String getContent() {
-		try {
-			return EXTRACTOR.extractText(getStream());
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return null;
-		
-	}
+  @Override
+  public String getContent() {
+    try {
+      return EXTRACTOR.extractText(getStream());
+    } catch (Exception e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    return null;
 
+  }
 
-	@Override
-	public Field getContentField() {
-	   
-	    return new Field("contents", getContent(), Field.Store.NO, Field.Index.TOKENIZED);
-	}
+  @Override
+  public Field getContentField() {
 
+    return new Field("contents", getContent(), Field.Store.NO,
+        Field.Index.TOKENIZED);
+  }
 
-	
 }

@@ -50,7 +50,19 @@
       <sqlcolumn>ID</sqlcolumn>
     </attribute>
 
-   
+    <attribute>
+      <name>log</name>
+      <type>String</type>
+      <sqltable>Lucene_LogSQLTable</sqltable>
+      <sqlcolumn>LOG</sqlcolumn>
+    </attribute>
+
+    <attribute>
+      <name>Creator</name>
+      <type>CreatorLink</type>
+      <sqltable>Lucene_LogSQLTable</sqltable>
+      <sqlcolumn>CREATOR</sqlcolumn>
+    </attribute>
 
     <attribute>
       <name>Created</name>
@@ -60,10 +72,10 @@
     </attribute>
 
     <attribute>
-      <name>log</name>
-      <type>String</type>
+      <name>Modifier</name>
+      <type>ModifierLink</type>
       <sqltable>Lucene_LogSQLTable</sqltable>
-      <sqlcolumn>LOG</sqlcolumn>
+      <sqlcolumn>MODIFIER</sqlcolumn>
     </attribute>
 
     <attribute>
@@ -72,13 +84,9 @@
       <sqltable>Lucene_LogSQLTable</sqltable>
       <sqlcolumn>MODIFIED</sqlcolumn>
     </attribute>
-	
-	
-
-    
-
+  
   </definition>
-   <definition> 
+  <definition> 
     <version>
       <application>lucene</application>
       <global>1</global>
@@ -86,18 +94,14 @@
       <mode>(version==2)</mode>
     </version>
 
-
     <name>Lucene_Log</name>
  
- <attribute>
+    <attribute>
       <name>Index</name>
       <type>Link</type>
       <typelink>Lucene_Index</typelink>
       <sqltable>Lucene_LogSQLTable</sqltable>
       <sqlcolumn>INDEX</sqlcolumn>
     </attribute>
- 
- 
- 
-  </definition>
+ </definition>
 </datamodel-type>

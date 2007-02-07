@@ -1,5 +1,5 @@
 /*
- * Copyright 2007 The eFaps Team
+ * Copyright 2003 - 2007 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Author:          jmo
  * Revision:        $Rev$
  * Last Changed:    $Date$
  * Last Changed By: $Author$
@@ -32,51 +31,61 @@ import java.util.zip.ZipInputStream;
 
 import org.apache.lucene.document.Field;
 
+/**
+ * Class for getting the content out of an "Open-Office"-File
+ * 
+ * @author jmo
+ * 
+ */
 public class OOIndexer extends AbstractIndexer {
 
-    public static String parse(InputStream is) {
-	List XMLFiles = unzip(is);
-	String test = XmlIndexer.parse((InputStream) XMLFiles.get(0));
-	return test;
+  public static String parse(InputStream is) {
+    List XMLFiles = unzip(is);
+    String test = XmlIndexer.parse((InputStream) XMLFiles.get(0));
+    return test;
+
+  }
+
+  /**
+   * Unzips the OO-File and returns then the XML-File with the Content
+   * 
+   * @param _InputStream
+   * @return
+   */
+  public static List unzip(InputStream _InputStream) {
+    List<InputStream> res = new ArrayList<InputStream>();
+    try {
+      ZipInputStream in = new ZipInputStream(_InputStream);
+      ZipEntry entry = null;
+      while ((entry = in.getNextEntry()) != null) {
+        if (entry.getName().equals("content.xml")) {
+          ByteArrayOutputStream stream = new ByteArrayOutputStream();
+          byte[] buf = new byte[1024];
+          int len;
+          while ((len = in.read(buf)) > 0) {
+            stream.write(buf, 0, len);
+          }
+          InputStream isEntry = new ByteArrayInputStream(stream.toByteArray());
+          res.add(isEntry);
+        }
+      }
+      in.close();
+    } catch (IOException e) {
 
     }
+    return res;
+  }
 
-    public static List unzip(InputStream is) {
-	List<InputStream> res = new ArrayList<InputStream>();
-	try {
-	    ZipInputStream in = new ZipInputStream(is);
-	    ZipEntry entry = null;
-	    while ((entry = in.getNextEntry()) != null) {
-		if (entry.getName().equals("content.xml")) {
-		    ByteArrayOutputStream stream = new ByteArrayOutputStream();
-		    byte[] buf = new byte[1024];
-		    int len;
-		    while ((len = in.read(buf)) > 0) {
-			stream.write(buf, 0, len);
-		    }
-		    InputStream isEntry = new ByteArrayInputStream(stream
-			    .toByteArray());
-		    res.add(isEntry);
-		}
-	    }
-	    in.close();
-	} catch (IOException e) {
+  @Override
+  public String getContent() {
+    return parse(getStream());
+  }
 
-	}
-	return res;
-    }
+  @Override
+  public Field getContentField() {
 
-    @Override
-    public String getContent() {
-	return parse(getStream());
-    }
+    return new Field("contents", getContent(), Field.Store.NO,
+        Field.Index.TOKENIZED);
+  }
 
-    @Override
-    public Field getContentField() {
-
-	return new Field("contents", getContent(), Field.Store.NO,
-		Field.Index.TOKENIZED);
-    }
-
-   
 }
