@@ -20,6 +20,9 @@
 
 package org.efaps.integration.lucene;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -40,20 +43,25 @@ import org.efaps.util.EFapsException;
 
 /**
  * Class building the Type which are to be indexed into an Index, throught this
- * Class the actual Document behind the Type (which we want to be indexed) can
- * be accesed.
+ * Class the actual File behind the Type (which we want to be indexed) can be
+ * accesed.
  * 
  * @author janmoxter
  * 
  */
 public class TypeFileFactory {
-  private Type          TYPE;
+  /**
+   * Logger for this class
+   */
+  private static final Log LOG    = LogFactory.getLog(TypeFileFactory.class);
 
-  private static String FILE_NAME;
+  private Type             TYPE;
 
-  private static String OID;
+  private static String    FILE_NAME;
 
-  public Boolean        UPDATE = true;
+  private static String    OID;
+
+  public Boolean           UPDATE = true;
 
   public TypeFileFactory(String _OID) {
     setType(new Instance(_OID).getType());
@@ -70,8 +78,8 @@ public class TypeFileFactory {
       this.setFileName(query.get("Name").toString());
       query.close();
     } catch (EFapsException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+
+      LOG.error("TypeFileFactory(String)", e);
     }
 
   }
@@ -113,32 +121,48 @@ public class TypeFileFactory {
    * @param _index
    *          LuceneIndex the Document will be added
    * @return Document
-   * @throws EFapsException
+   * 
    */
-  public Document getLuceneDocument(LuceneIndex _index) throws EFapsException {
+  public Document getLuceneDocument(LuceneIndex _index) {
 
     Document doc = new Document();
 
     SearchQuery query = new SearchQuery();
+    Map<String, LuceneField> lucenefields = null;
 
-    query.setObject(getOID());
+    try {
+      query.setObject(getOID());
 
-    doc.add(new Field("OID", getOID(),
-        org.apache.lucene.document.Field.Store.YES, Field.Index.UN_TOKENIZED));
+      doc
+          .add(new Field("OID", getOID(),
+              org.apache.lucene.document.Field.Store.YES,
+              Field.Index.UN_TOKENIZED));
 
-    Map<String, LuceneField> lucenefields = _index.getIndex2Type(getTypeID())
-        .getLuceneDocFactory().getFields();
+      lucenefields = _index.getIndex2Type(getTypeID()).getLuceneDocFactory()
+          .getFields();
 
-    for (String element : lucenefields.keySet()) {
-      query.addSelect(element);
+      for (String element : lucenefields.keySet()) {
+        query.addSelect(element);
 
+      }
+
+      query.execute();
+
+    } catch (EFapsException e) {
+
+      LOG.error("getLuceneDocument(LuceneIndex)", e);
     }
-
-    query.execute();
 
     while (query.next()) {
       for (String element : lucenefields.keySet()) {
-        Object orgvalue = query.get(element);
+
+        Object orgvalue = null;
+        try {
+          orgvalue = query.get(element);
+        } catch (EFapsException e) {
+
+          LOG.error("getLuceneDocument(LuceneIndex)", e);
+        }
         Object objvalue = null;
         LuceneField lucenefield = lucenefields.get(element);
 
@@ -148,14 +172,14 @@ public class TypeFileFactory {
             objvalue = m.invoke(orgvalue, (Object[]) null);
 
           } catch (IllegalArgumentException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+
+            LOG.error("getLuceneDocument(LuceneIndex)", e);
           } catch (IllegalAccessException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+
+            LOG.error("getLuceneDocument(LuceneIndex)", e);
           } catch (InvocationTargetException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+
+            LOG.error("getLuceneDocument(LuceneIndex)", e);
           }
         } else {
 
@@ -181,7 +205,12 @@ public class TypeFileFactory {
 
     }
 
-    query.close();
+    try {
+      query.close();
+    } catch (EFapsException e) {
+
+      LOG.error("getLuceneDocument(LuceneIndex)", e);
+    }
     return doc;
   }
 
@@ -206,8 +235,8 @@ public class TypeFileFactory {
       return inputstream;
 
     } catch (Exception e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      
+      LOG.error("getStream()", e);
     }
     return null;
   }

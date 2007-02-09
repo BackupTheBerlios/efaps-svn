@@ -22,6 +22,7 @@ package org.efaps.integration.lucene.indexer;
 
 import java.io.IOException;
 
+import org.apache.commons.logging.Log;
 import org.cyberneko.html.parsers.DOMParser;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -34,6 +35,7 @@ import org.xml.sax.SAXException;
  * 
  */
 public class HtmIndexer extends XmlIndexer {
+  static Log LOG = getLog();
 
   @Override
   public String getContent() {
@@ -41,11 +43,11 @@ public class HtmIndexer extends XmlIndexer {
     try {
       Nekoparser.parse(new InputSource(this.getStream()));
     } catch (SAXException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+
+      LOG.error("getContent()", e);
     } catch (IOException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+
+      LOG.error("getContent()", e);
     }
     return XmlIndexer.parse(Nekoparser.getDocument());
 

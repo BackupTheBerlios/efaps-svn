@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import org.apache.commons.logging.Log;
 import org.apache.lucene.document.Field;
 
 /**
@@ -38,12 +39,18 @@ import org.apache.lucene.document.Field;
  * 
  */
 public class OOIndexer extends AbstractIndexer {
-
-  public static String parse(InputStream is) {
-    List XMLFiles = unzip(is);
-    String test = XmlIndexer.parse((InputStream) XMLFiles.get(0));
-    return test;
-
+  
+  static Log LOG = getLog();
+  
+  /**
+   * Parses the content to the XMLIndexer 
+   * @param _InputStream the OO-File
+   * @return the content of the file
+   */
+  public static String parse(InputStream _InputStream) {
+    List XMLFiles = unzip(_InputStream);
+    return  XmlIndexer.parse((InputStream) XMLFiles.get(0));
+  
   }
 
   /**
@@ -71,7 +78,7 @@ public class OOIndexer extends AbstractIndexer {
       }
       in.close();
     } catch (IOException e) {
-
+      LOG.error("unzip()", e);
     }
     return res;
   }

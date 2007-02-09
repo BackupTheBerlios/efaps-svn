@@ -20,6 +20,9 @@
 
 package org.efaps.integration.lucene.log;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import java.util.Date;
 
 import org.efaps.db.Insert;
@@ -39,14 +42,18 @@ import org.efaps.util.EFapsException;
  * 
  */
 public class LuceneLog {
+  /**
+   * Logger for this class
+   */
+  private static final Log LOG = LogFactory.getLog(LuceneLog.class);
 
-  private Date   LASTSTART;
+  private Date             LASTSTART;
 
-  private Date   LASTEND;
+  private Date             LASTEND;
 
-  private String OID;
+  private String           OID;
 
-  private String INDEXID;
+  private String           INDEXID;
 
   /**
    * If the Class is created with this constructor, the
@@ -100,11 +107,11 @@ public class LuceneLog {
       insert.close();
 
     } catch (EFapsException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+
+      LOG.error("start()", e);
     } catch (Exception e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+
+      LOG.error("start()", e);
     }
 
   }
@@ -128,19 +135,35 @@ public class LuceneLog {
    */
   public void end(int _deleted, int _indexed) {
 
+    end("", _deleted, _indexed);
+  }
+
+  /**
+   * This method has to be called to write the state of success into the
+   * database
+   * 
+   * @param _msg
+   *          Message
+   * @param _deleted
+   *          Number of deleted <code>lucene.document.Document</code>
+   * @param _indexed
+   *          Number of indexed <code>lucene.document.Document</code>
+   */
+  public void end(String _msg, int _deleted, int _indexed) {
+
     try {
       Update update = new Update(OID);
-      String log = "updated: " + _deleted + ", total: " + _indexed;
+      String log = _msg + " updated: " + _deleted + ", total: " + _indexed;
       update.add("log", log);
 
       update.execute();
       update.close();
     } catch (EFapsException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+
+      LOG.error("end(int, int)", e);
     } catch (Exception e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+
+      LOG.error("end(int, int)", e);
     }
   }
 
@@ -166,8 +189,8 @@ public class LuceneLog {
       }
       query.close();
     } catch (EFapsException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+
+      LOG.error("getRuntime()", e);
     }
 
   }
@@ -200,11 +223,11 @@ public class LuceneLog {
       update.execute();
       update.close();
     } catch (EFapsException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+
+      LOG.error("terminate()", e);
     } catch (Exception e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+
+      LOG.error("terminate()", e);
     }
   }
 

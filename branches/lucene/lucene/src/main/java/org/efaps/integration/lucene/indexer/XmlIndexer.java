@@ -27,6 +27,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.apache.commons.logging.Log;
 import org.apache.lucene.document.Field;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
@@ -39,7 +40,17 @@ import org.xml.sax.SAXException;
  */
 public class XmlIndexer extends AbstractIndexer {
 
-  public static String parse(InputStream _inputstream) {
+  static Log LOG = getLog();
+
+  /**
+   * Parses the XML-File to a <code>org.w3c.dom.Document</code> and then
+   * extracts the content by using <link>parse(org.w3c.dom.Document _document)</link>
+   * 
+   * @param _InputStream
+   *          with the XML-File
+   * @return String with the content
+   */
+  public static String parse(InputStream _InputStream) {
     org.w3c.dom.Document document = null;
     DocumentBuilder builder = null;
     DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -47,16 +58,16 @@ public class XmlIndexer extends AbstractIndexer {
     try {
       builder = factory.newDocumentBuilder();
 
-      document = builder.parse(_inputstream);
+      document = builder.parse(_InputStream);
     } catch (ParserConfigurationException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+
+      LOG.error("parse(InputStream)", e);
     } catch (SAXException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+
+      LOG.error("parse(InputStream)", e);
     } catch (IOException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+
+      LOG.error("parse(InputStream)", e);
     }
 
     return parse(document);
@@ -97,7 +108,7 @@ public class XmlIndexer extends AbstractIndexer {
 
   @Override
   public String getContent() {
-    return parse(getStream());
+    return parse(super.getStream());
   }
 
   @Override

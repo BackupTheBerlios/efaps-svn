@@ -52,11 +52,7 @@ public abstract class AbstractIndexer {
    */
   private static final Log LOG    = LogFactory.getLog(AbstractIndexer.class);
 
-  private static int       DELETED;
-
-  private boolean          CREATE_INDEX;
-
-  private TypeFileFactory   TYPEDOCFACTORY;
+  private TypeFileFactory  TYPEDOCFACTORY;
 
   private InputStream      STREAM = null;
 
@@ -69,15 +65,16 @@ public abstract class AbstractIndexer {
   protected LuceneIndex    INDEX;
 
   /**
-   * gives access to file we wanted to indes in Form of a String
+   * gives access to actual Content of the file we wanted to index in form of a
+   * String
    * 
    * @return String with the content
    */
   public abstract String getContent();
 
   /**
-   * the access to the lucene.document.Field which contains the actual content
-   * of the file we wanted to index
+   * the access to the <code>lucene.document.Field</code> which contains the
+   * actual content of the file we wanted to index
    * 
    * @return a lucene.document.Field
    */
@@ -140,16 +137,16 @@ public abstract class AbstractIndexer {
   }
 
   public File getIndexDir() {
-    return INDEX.getIndexDir();
+    return getIndex().getIndexDir();
   }
 
   public boolean indexExists() {
-    return IndexReader.indexExists(INDEX.getIndexDir());
+    return IndexReader.indexExists(getIndex().getIndexDir());
   }
 
   public boolean createIndex() {
     if (indexExists()) {
-      return CREATE_INDEX;
+      return getIndex().getNewIndexFiles();
     }
     return true;
   }
@@ -178,24 +175,28 @@ public abstract class AbstractIndexer {
 
   }
 
-  public synchronized void indexUnique(Analyzer _Analyzer) {
+  public synchronized int indexUnique(Analyzer _Analyzer) {
+    int del = 0;
     if (this.indexExists()) {
-      DELETED += Action.delete(INDEX.getIndexDir(), "OID", getTypeDocFactory()
+      del = Action.delete(INDEX.getIndexDir(), "OID", getTypeDocFactory()
           .getOID());
     }
     addDoctoIndex(_Analyzer);
+    return del;
 
   }
 
-  public void indexUnique() {
+  public int indexUnique() {
+    int del = 0;
     if (this.indexExists()) {
-      DELETED += Action.delete(INDEX.getIndexDir(), "OID", getTypeDocFactory()
+      del = Action.delete(INDEX.getIndexDir(), "OID", getTypeDocFactory()
           .getOID());
     }
 
     addDoctoIndex(getIndex().getIndex2Type(
         getTypeDocFactory().getTypeID().toString()).getLuceneAnalyzer()
         .getAnalyzer());
+    return del;
 
   }
 
@@ -221,15 +222,15 @@ public abstract class AbstractIndexer {
     return TYPEDOCFACTORY;
   }
 
-  public int getDeleted() {
-    return DELETED;
-  }
-
   public LuceneIndex getIndex() {
     return INDEX;
   }
 
   public void setIndex(LuceneIndex _LuceneIndex) {
     INDEX = _LuceneIndex;
+  }
+
+  public static Log getLog() {
+    return LOG;
   }
 }

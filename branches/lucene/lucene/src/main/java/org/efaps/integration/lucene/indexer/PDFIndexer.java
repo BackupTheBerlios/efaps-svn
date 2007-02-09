@@ -23,6 +23,7 @@ package org.efaps.integration.lucene.indexer;
 import java.io.IOException;
 import java.io.StringWriter;
 
+import org.apache.commons.logging.Log;
 import org.apache.lucene.document.Field;
 import org.pdfbox.exceptions.CryptographyException;
 import org.pdfbox.exceptions.InvalidPasswordException;
@@ -36,7 +37,10 @@ import org.pdfbox.util.PDFTextStripper;
  * 
  */
 public class PDFIndexer extends AbstractIndexer {
+
   private PDFTextStripper STRIPPER = null;
+
+  static Log              LOG      = getLog();
 
   @Override
   public String getContent() {
@@ -60,14 +64,14 @@ public class PDFIndexer extends AbstractIndexer {
       return contents;
 
     } catch (IOException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+
+      LOG.error("getContent()", e);
     } catch (CryptographyException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+
+      LOG.error("getContent()", e);
     } catch (InvalidPasswordException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+
+      LOG.error("getContent()", e);
     }
 
     return null;

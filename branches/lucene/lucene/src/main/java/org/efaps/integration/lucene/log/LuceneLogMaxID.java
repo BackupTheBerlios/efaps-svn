@@ -20,6 +20,9 @@
 
 package org.efaps.integration.lucene.log;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.efaps.db.SearchQuery;
 import org.efaps.util.EFapsException;
 
@@ -31,7 +34,12 @@ import org.efaps.util.EFapsException;
  * 
  */
 public class LuceneLogMaxID {
-  private String LOGMAXID;
+  /**
+   * Logger for this class
+   */
+  private static final Log LOG = LogFactory.getLog(LuceneLogMaxID.class);
+
+  private String           LOGMAXID;
 
   public void setLogMaxID(String _LogMaxID) {
     LOGMAXID = _LogMaxID;
@@ -55,8 +63,8 @@ public class LuceneLogMaxID {
         setLogMaxID("0");
       }
     } catch (final EFapsException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+
+      LOG.error("LuceneLogMaxID(String)", e);
     }
 
   }

@@ -22,6 +22,7 @@ package org.efaps.integration.lucene.indexer;
 
 import java.io.IOException;
 
+import org.apache.commons.logging.Log;
 import org.apache.lucene.document.Field;
 import org.apache.poi.hslf.extractor.QuickButCruddyTextExtractor;
 
@@ -33,6 +34,7 @@ import org.apache.poi.hslf.extractor.QuickButCruddyTextExtractor;
  * 
  */
 public class PptIndexer extends AbstractIndexer {
+  static Log LOG = getLog();
 
   @Override
   public String getContent() {
@@ -41,8 +43,7 @@ public class PptIndexer extends AbstractIndexer {
       extractor = new QuickButCruddyTextExtractor(super.getStream());
       return extractor.getTextAsString();
     } catch (IOException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      LOG.error("getContent()", e);
     }
 
     return null;

@@ -20,6 +20,9 @@
 
 package org.efaps.integration.lucene;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import java.io.File;
 import java.io.IOException;
 
@@ -38,6 +41,10 @@ import org.apache.lucene.store.FSDirectory;
  * 
  */
 public class Action {
+  /**
+   * Logger for this class
+   */
+  private static final Log LOG = LogFactory.getLog(Action.class);
 
   /**
    * Deletes a LuceneDocument from an Index
@@ -64,8 +71,10 @@ public class Action {
       directory.close();
       return deleted;
     } catch (Exception e) {
-      System.out.println(" caught a " + e.getClass() + "\n with message: "
-          + e.getMessage());
+      if (LOG.isDebugEnabled()) {
+        LOG.debug("delete(File, String, String) -  caught a " + e.getClass()
+            + "n with message: " + e.getMessage());
+      }
     }
     return 0;
   }
@@ -111,9 +120,32 @@ public class Action {
       writer.optimize();
       writer.close();
     } catch (IOException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      
+      LOG.error("optimize(File)", e);
     }
   }
 
+  
+  
+  /**
+   * The number of <code>lucene.documents.Document</code> wich are containded
+   * in an index
+   * 
+   * @return number of documents
+   */
+  public static long getDocCount(File _indexDir){
+    Directory directory;
+    try {
+       directory = FSDirectory.getDirectory(_indexDir, false);
+
+       IndexReader reader = IndexReader.open(directory);
+       return reader.numDocs();
+    } catch (IOException e) {
+      
+      LOG.error("doccount(File)", e);
+    }
+
+    return 0;
+  }
+  
 }

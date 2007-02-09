@@ -20,6 +20,7 @@
 
 package org.efaps.integration.lucene.indexer;
 
+import org.apache.commons.logging.Log;
 import org.apache.lucene.document.Field;
 import org.textmining.text.extraction.WordExtractor;
 
@@ -30,15 +31,18 @@ import org.textmining.text.extraction.WordExtractor;
  * 
  */
 public class MSWordIndexer extends AbstractIndexer {
+  
   WordExtractor EXTRACTOR = new WordExtractor();
+
+  static Log    LOG       = getLog();
 
   @Override
   public String getContent() {
     try {
       return EXTRACTOR.extractText(getStream());
     } catch (Exception e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+     
+      LOG.error("getContent()", e);
     }
     return null;
 

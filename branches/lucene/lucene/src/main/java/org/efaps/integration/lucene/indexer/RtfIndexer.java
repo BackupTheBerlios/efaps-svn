@@ -21,12 +21,12 @@
 package org.efaps.integration.lucene.indexer;
 
 import java.io.IOException;
-import java.io.InputStream;
 
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultStyledDocument;
 import javax.swing.text.rtf.RTFEditorKit;
 
+import org.apache.commons.logging.Log;
 import org.apache.lucene.document.Field;
 
 /**
@@ -37,32 +37,25 @@ import org.apache.lucene.document.Field;
  */
 public class RtfIndexer extends AbstractIndexer {
 
-  public static String parse(InputStream is) {
+  static Log LOG = getLog();
+
+  @Override
+  public String getContent() {
     String content = "";
     DefaultStyledDocument dsd = new DefaultStyledDocument();
     RTFEditorKit RTFEkit = new RTFEditorKit();
     try {
-      RTFEkit.read(is, dsd, 0);
-    } catch (IOException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    } catch (BadLocationException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
-    try {
+      RTFEkit.read(super.getStream(), dsd, 0);
       content = dsd.getText(0, dsd.getLength());
+    } catch (IOException e) {
+
+      LOG.error("getContent()", e);
     } catch (BadLocationException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+
+      LOG.error("getContent()", e);
     }
 
     return content;
-  }
-
-  @Override
-  public String getContent() {
-    return parse(getStream());
   }
 
   @Override

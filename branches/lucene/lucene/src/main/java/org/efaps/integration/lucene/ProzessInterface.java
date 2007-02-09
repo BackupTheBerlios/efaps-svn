@@ -18,28 +18,43 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.integration.lucene.indexer;
-
-import java.io.InputStreamReader;
-
-import org.apache.lucene.document.Field;
+package org.efaps.integration.lucene;
 
 /**
- * Class for getting the content out of an "Txt"-File
+ * Interface for accessing and executing the indexing from e.g. a shell
  * 
  * @author jmo
  * 
  */
-public class TxtIndexer extends AbstractIndexer {
+public interface ProzessInterface {
 
-  @Override
-  public String getContent() {
-    return new InputStreamReader(getStream()).toString();
-  }
+  /**
+   * execute the indexing of one index
+   * 
+   * @param _OID
+   *          object id (LuceneIndex)
+   */
+  public void execute(String _OID);
 
-  @Override
-  public Field getContentField() {
-    return new Field("contents", new InputStreamReader(getStream()));
-  }
+  /**
+   * execute the indexing of all indexes in the database
+   */
+  public void executeAll();
+
+  /**
+   * deletes the index and than indexes all Files
+   * 
+   * @param _OID
+   *          object id (LuceneIndex)
+   */
+  public void reset(String _OID);
+  
+  
+  
+
+  /**
+   * deletes all index and than indexes all Files
+   */
+  public void resetAll();
 
 }

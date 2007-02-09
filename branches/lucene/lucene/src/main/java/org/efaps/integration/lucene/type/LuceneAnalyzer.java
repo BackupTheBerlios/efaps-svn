@@ -20,12 +20,14 @@
 
 package org.efaps.integration.lucene.type;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Set;
 
 import org.apache.lucene.analysis.Analyzer;
-import org.efaps.admin.datamodel.Type;
 import org.efaps.db.Insert;
 import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
@@ -38,6 +40,11 @@ import org.efaps.util.EFapsException;
  *
  */
 public class LuceneAnalyzer {
+  /**
+   * Logger for this class
+   */
+  private static final Log LOG = LogFactory.getLog(LuceneAnalyzer.class);
+
   private String   OID = null;
 
   private String   ID  = null;
@@ -146,28 +153,28 @@ public class LuceneAnalyzer {
       query.close();
     } catch (ClassNotFoundException e) {
       // TODO Auto-generated catch block
-      e.printStackTrace();
+      LOG.error("setAnalyzer()", e);
     } catch (InstantiationException e) {
       // TODO Auto-generated catch block
-      e.printStackTrace();
+      LOG.error("setAnalyzer()", e);
     } catch (IllegalAccessException e) {
       // TODO Auto-generated catch block
-      e.printStackTrace();
+      LOG.error("setAnalyzer()", e);
     } catch (EFapsException e) {
       // TODO Auto-generated catch block
-      e.printStackTrace();
+      LOG.error("setAnalyzer()", e);
     } catch (SecurityException e) {
       // TODO Auto-generated catch block
-      e.printStackTrace();
+      LOG.error("setAnalyzer()", e);
     } catch (NoSuchMethodException e) {
       // TODO Auto-generated catch block
-      e.printStackTrace();
+      LOG.error("setAnalyzer()", e);
     } catch (IllegalArgumentException e) {
       // TODO Auto-generated catch block
-      e.printStackTrace();
+      LOG.error("setAnalyzer()", e);
     } catch (InvocationTargetException e) {
       // TODO Auto-generated catch block
-      e.printStackTrace();
+      LOG.error("setAnalyzer()", e);
     }
 
   }

@@ -28,6 +28,7 @@ import jxl.Sheet;
 import jxl.Workbook;
 import jxl.read.biff.BiffException;
 
+import org.apache.commons.logging.Log;
 import org.apache.lucene.document.Field;
 
 /**
@@ -38,20 +39,28 @@ import org.apache.lucene.document.Field;
  */
 public class ExcelIndexer extends AbstractIndexer {
 
-  public static String parse(InputStream is) {
+  static Log LOG = getLog();
 
-    String content = "";
+  /**
+   * returns the content of the Exel-File
+   * 
+   * @param _InputStream
+   *          Stream with an Exel-Filed
+   * @return Content
+   */
+  public static String parse(InputStream _InputStream) {
+
     StringBuffer sb = new StringBuffer();
 
     Workbook workbook = null;
     try {
-      workbook = Workbook.getWorkbook(is);
+      workbook = Workbook.getWorkbook(_InputStream);
     } catch (BiffException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+
+      LOG.error("parse(InputStream)", e);
     } catch (IOException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+
+      LOG.error("parse(InputStream)", e);
     }
     Sheet[] sheets = workbook.getSheets();
     for (int i = 0; i < sheets.length; i++) {
@@ -65,8 +74,7 @@ public class ExcelIndexer extends AbstractIndexer {
       }
     }
 
-    content = sb.toString();
-    return content;
+    return sb.toString();
 
   }
 
