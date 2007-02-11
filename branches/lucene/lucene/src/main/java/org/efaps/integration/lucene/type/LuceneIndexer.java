@@ -26,95 +26,135 @@ import org.efaps.db.Insert;
 import org.efaps.db.SearchQuery;
 import org.efaps.util.EFapsException;
 
+/**
+ * Class for Lucene_Indexer
+ * 
+ * @author jmo
+ * 
+ */
 public class LuceneIndexer {
-    private String ID;
+  private String   ID;
 
-    private String OID;
+  private String   OID;
 
-    private Class<?> INDEXER;
+  private Class<?> INDEXER;
 
-    private String FILETYP;
+  private String   FILETYP;
 
-    public LuceneIndexer(String _ID) {
-	setID(_ID);
-	Long i = Type.get("Lucene_Indexer").getId();
-	setOID(i.toString() + "." + getID());
-	initialise();
+  public LuceneIndexer(String _ID) {
+    setID(_ID);
+    Long i = Type.get("Lucene_Indexer").getId();
+    setOID(i.toString() + "." + getID());
+    initialise();
 
+  }
+
+  private void initialise() {
+
+    SearchQuery query = new SearchQuery();
+
+    try {
+      query.setObject(getOID());
+      query.addSelect("FileTyp");
+      query.addSelect("Indexer");
+      query.execute();
+      if (query.next()) {
+        INDEXER = Class.forName(query.get("Indexer").toString());
+        FILETYP = query.get("FileTyp").toString();
+      }
+
+    } catch (EFapsException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    } catch (ClassNotFoundException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
     }
 
-    private void initialise() {
+  }
 
-	SearchQuery query = new SearchQuery();
+  public String getOID() {
+    return OID;
+  }
 
-	try {
-	    query.setObject(getOID());
-	    query.addSelect("FileTyp");
-	    query.addSelect("Indexer");
-	    query.execute();
-	    if (query.next()) {
-		INDEXER = Class.forName(query.get("Indexer").toString());
-		FILETYP = query.get("FileTyp").toString();
-	    }
+  public void setOID(String _OID) {
+    OID = _OID;
+  }
 
-	} catch (EFapsException e) {
-	    // TODO Auto-generated catch block
-	    e.printStackTrace();
-	} catch (ClassNotFoundException e) {
-	    // TODO Auto-generated catch block
-	    e.printStackTrace();
-	}
+  public void setID(String _ID) {
+    ID = _ID;
+  }
 
+  public String getID() {
+    return ID;
+  }
+
+  public String getFileTyp() {
+    return FILETYP;
+  }
+
+  public Class<?> getIndexer() {
+    return INDEXER;
+  }
+
+  /**
+   * Creates a new Lucene_Indexer and returns the ID of the new Indexer. If a
+   * Indexer with exact the same values exists the ID of the existing one is
+   * returned
+   * 
+   * @param _FileTyp
+   *          FileTyp we want to index (e.g. "txt",xls")
+   * @param _Indexer
+   *          ClassName of the indexer
+   * @return ID
+   */
+  public static String createNew(String _FileTyp, String _Indexer) {
+    String IndexID;
+    
+    IndexID =getIDofExistingIndexer(_FileTyp, _Indexer);
+    if (IndexID !=null){
+      return IndexID;
     }
+    Insert insert;
+    try {
+      insert = new Insert("Lucene_Indexer");
+      insert.add("FileTyp", _FileTyp);
+      insert.add("Indexer", _Indexer);
 
-    public String getOID() {
-	return OID;
+      insert.execute();
+       IndexID = insert.getId();
+      insert.close();
+      return IndexID;
+
+    } catch (EFapsException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    } catch (Exception e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
     }
+    return null;
 
-    public void setOID(String _OID) {
-	OID = _OID;
-    }
+  }
 
-    public void setID(String _ID) {
-	ID = _ID;
-    }
-
-    public String getID() {
-	return ID;
+  private static String getIDofExistingIndexer(String _FileTyp, String _Indexer) {
+    SearchQuery query = new SearchQuery();
+    try {
+      query.setQueryTypes("Lucene_Indexer");
+      query.addSelect("ID");
+      query.addWhereExprEqValue("FileTyp", _FileTyp);
+      query.addWhereExprEqValue("Indexer", _Indexer);
+      query.execute();
+      if (query.next()){
+        return query.get("ID").toString();
+      }
+    } catch (EFapsException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
     }
     
-    public String getFileTyp(){
-	return FILETYP;
-    }
     
-    public Class<?> getIndexer(){
-	return INDEXER;
-    }
-    
-    public static String createNew(String _FileTyp, String _Indexer){
-	
-	Insert insert;
+    return null;
+  }
 
-	try {
-	    insert = new Insert("Lucene_Indexer");
-	    insert.add("FileTyp", _FileTyp);
-	    insert.add("Indexer", _Indexer);
-	   
-	    insert.execute();
-	    String IndexID = insert.getId();
-	    insert.close();
-	    return IndexID;
-
-	} catch (EFapsException e) {
-	    // TODO Auto-generated catch block
-	    e.printStackTrace();
-	} catch (Exception e) {
-	    // TODO Auto-generated catch block
-	    e.printStackTrace();
-	}
-	return null;
-	
-	
-    }
-    
 }

@@ -40,6 +40,7 @@ public class Prozess extends AbstractTransaction implements ProzessInterface {
    */
   public static void main(String[] args) {
     String usage = "java org.efaps.integration.lucene.Prozess <action>";
+
     if (args.length == 0) {
       LOG.error("main(String[]) - Usage: " + usage, null);
       System.exit(1);
@@ -47,113 +48,27 @@ public class Prozess extends AbstractTransaction implements ProzessInterface {
     if (args[0].equals("new")) {
       (new Prozess()).createNewIndex();
     } else if (args[0].equals("run")) {
-      (new Prozess()).resetAll();
+      (new Prozess()).executeAll();
     }
 
   }
 
   public void createNewIndex() {
-    if (!initDatabase()) {
-      LOG.error("Database Connection could not be initialised!");
-    } else {
+    initialize();
+    try {
 
-      try {
-        login("Administrator", "");
-
-        reloadCache();
-        startTransaction();
-
-        String LuceneAnalyzerID = LuceneAnalyzer
-            .createNew("org.apache.lucene.analysis.standard.StandardAnalyzer");
-
-        LuceneStopWords.insertNew(LuceneAnalyzerID, "by");
-        LuceneStopWords.insertNew(LuceneAnalyzerID, "the");
-        LuceneStopWords.insertNew(LuceneAnalyzerID, "and");
-        LuceneStopWords.insertNew(LuceneAnalyzerID, "but");
-        LuceneStopWords.insertNew(LuceneAnalyzerID, "at");
-        LuceneStopWords.insertNew(LuceneAnalyzerID, "as");
-        LuceneStopWords.insertNew(LuceneAnalyzerID, "for");
-        LuceneStopWords.insertNew(LuceneAnalyzerID, "into");
-        LuceneStopWords.insertNew(LuceneAnalyzerID, "be");
-        LuceneStopWords.insertNew(LuceneAnalyzerID, "in");
-        LuceneStopWords.insertNew(LuceneAnalyzerID, "a");
-        LuceneStopWords.insertNew(LuceneAnalyzerID, "are");
-
-        List<String> LIndexer = new ArrayList<String>();
-        LIndexer.add(LuceneIndexer.createNew("html",
-            "org.efaps.integration.lucene.indexer.HtmIndexer"));
-        LIndexer.add(LuceneIndexer.createNew("odt",
-            "org.efaps.integration.lucene.indexer.OOIndexer"));
-        LIndexer.add(LuceneIndexer.createNew("xls",
-            "org.efaps.integration.lucene.indexer.ExcelIndexer"));
-        LIndexer.add(LuceneIndexer.createNew("xml",
-            "org.efaps.integration.lucene.indexer.XmlIndexer"));
-        LIndexer.add(LuceneIndexer.createNew("txt",
-            "org.efaps.integration.lucene.indexer.TxtIndexer"));
-        LIndexer.add(LuceneIndexer.createNew("doc",
-            "org.efaps.integration.lucene.indexer.MSWordIndexer"));
-        LIndexer.add(LuceneIndexer.createNew("rtf",
-            "org.efaps.integration.lucene.indexer.RtfIndexer"));
-        LIndexer.add(LuceneIndexer.createNew("pdf",
-            "org.efaps.integration.lucene.indexer.PDFIndexer"));
-        LIndexer.add(LuceneIndexer.createNew("ppt",
-            "org.efaps.integration.lucene.indexer.PptIndexer"));
-        String IndexID = LuceneIndex
-            .createNew(
-                "/Users/janmoxter/Documents/workspace/eFaps/lucene/target/lucene/indexMain/",
-                "test");
-        Type testType = Type.get("TeamWork_SourceVersion");
-        Long TypeID = testType.getId();
-
-        String IndexTypesID = LuceneIndex2Type.createNew(IndexID, TypeID
-            .toString());
-
-        List<String> LucenFieldID = new ArrayList<String>();
-
-        LucenFieldID.add(LuceneField.createNew("org.efaps.admin.user.Person",
-            "getName", "YES", "UN_TOKENIZED"));
-        LucenFieldID.add(LuceneField.createNew("org.efaps.admin.user.Person",
-            "getId", "YES", "UN_TOKENIZED"));
-        LucenFieldID.add(LuceneField.createNew("", "", "YES", "UN_TOKENIZED"));
-
-        Long AttributeID;
-
-        AttributeID = testType.getAttribute("Creator").getId();
-        LuceneAttribute2Field.createNew(IndexTypesID, AttributeID.toString(),
-            LucenFieldID.get(0));
-
-        AttributeID = testType.getAttribute("Created").getId();
-        LuceneAttribute2Field.createNew(IndexTypesID, AttributeID.toString(),
-            LucenFieldID.get(2));
-
-        AttributeID = testType.getAttribute("Modifier").getId();
-        LuceneAttribute2Field.createNew(IndexTypesID, AttributeID.toString(),
-            LucenFieldID.get(1));
-
-        AttributeID = testType.getAttribute("Modified").getId();
-        LuceneAttribute2Field.createNew(IndexTypesID, AttributeID.toString(),
-            LucenFieldID.get(2));
-
-        AttributeID = testType.getAttribute("Name").getId();
-        LuceneAttribute2Field.createNew(IndexTypesID, AttributeID.toString(),
-            LucenFieldID.get(2));
-
-        LuceneType2Analyzer.createNew(LuceneAnalyzerID, IndexTypesID);
-
-        for (String object : LIndexer) {
-          LuceneType2Indexer.createNew(IndexTypesID, object);
-
-        }
-
-        commitTransaction();
-      } catch (EFapsException e) {
-        // TODO Auto-generated catch block
-        LOG.error("createNewIndex()", e);
-      } catch (Exception e) {
-        // TODO Auto-generated catch block
-        LOG.error("createNewIndex()", e);
-      }
+      startTransaction();
+      CreateLuceneIndex
+          .create("/Users/janmoxter/Documents/workspace/eFaps/lucene/index.xml");
+      commitTransaction();
+    } catch (EFapsException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    } catch (Exception e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
     }
+
   }
 
   public void initialize() {
@@ -312,7 +227,7 @@ public class Prozess extends AbstractTransaction implements ProzessInterface {
         log.end("Reset", index.getDeleted(), inD);
       } else {
 
-        log.end("Reset",0, 0);
+        log.end("Reset", 0, 0);
       }
     } catch (EFapsException e) {
       // TODO Auto-generated catch block
