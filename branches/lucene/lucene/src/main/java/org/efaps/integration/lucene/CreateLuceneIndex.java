@@ -36,6 +36,7 @@ import org.efaps.integration.lucene.type.LuceneIndex;
 import org.efaps.integration.lucene.type.LuceneIndex2Type;
 import org.efaps.integration.lucene.type.LuceneIndexer;
 import org.efaps.integration.lucene.type.LuceneStopWords;
+import org.efaps.integration.lucene.type.LuceneType2Analyzer;
 import org.efaps.integration.lucene.type.LuceneType2Indexer;
 import org.xml.sax.SAXException;
 
@@ -68,11 +69,19 @@ public class CreateLuceneIndex {
    * 
    * @param _XMLName
    *          Path to the XML-File
+   * @param prozess
    */
   public static void create(String _XMLName) {
     readXML(_XMLName);
+
     createType2Indexer();
 
+    createType2Analyzer();
+
+  }
+
+  private static void createType2Analyzer() {
+    LuceneType2Analyzer.createNew(ID_LUCENEANALYZER, getIndex2TypeID());
   }
 
   /**
@@ -95,8 +104,10 @@ public class CreateLuceneIndex {
     digester.addCallParam("lucene-index/index", 1, "name");
 
     digester.addCallMethod("lucene-index/lucene-analyzer/analyzer",
-        "createLuceneAnalyzer", 0);
-
+        "createLuceneAnalyzer", 2, new Class[] { String.class,Boolean.class });
+    digester.addCallParam("lucene-index/lucene-analyzer/analyzer", 0,"class");
+    digester.addCallParam("lucene-index/lucene-analyzer/analyzer", 1,"forcenew");
+    
     digester.addCallMethod("lucene-index/lucene-analyzer/stopword",
         "createStopword", 0);
 
@@ -238,7 +249,7 @@ public class CreateLuceneIndex {
    * create a new Lucene_Index
    * 
    * @param _path
-   *          Path to the Folde3r wich is going to contain the index
+   *          Path to the Folder wich is going to contain the index
    * @param _name
    *          Name of the Index
    */
@@ -259,14 +270,22 @@ public class CreateLuceneIndex {
 
   }
 
+  public void createLuceneIndexer(String _FileTyp, String _Indexer,
+      boolean _forceNew) {
+    ID_LUCENEINDEXER
+        .add(LuceneIndexer.createNew(_FileTyp, _Indexer, _forceNew));
+
+  }
+
   /**
    * create a new Lucene_Analyzer
    * 
    * @param _Analyzer
    *          className of the Analyzer
    */
-  public void createLuceneAnalyzer(String _Analyzer) {
-    ID_LUCENEANALYZER = LuceneAnalyzer.createNew(_Analyzer);
+  public void createLuceneAnalyzer(String _Analyzer,
+      boolean _forceNew) {
+    ID_LUCENEANALYZER = LuceneAnalyzer.createNew(_Analyzer,_forceNew);
   }
 
   /**
@@ -275,6 +294,6 @@ public class CreateLuceneIndex {
    * @param _StopWord
    */
   public void createStopword(String _StopWord) {
-    LuceneStopWords.insertNew(ID_LUCENEANALYZER, _StopWord);
+    LuceneStopWords.createNew(ID_LUCENEANALYZER, _StopWord);
   }
 }

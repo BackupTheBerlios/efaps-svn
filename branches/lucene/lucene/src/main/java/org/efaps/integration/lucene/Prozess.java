@@ -7,19 +7,9 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import org.efaps.admin.datamodel.Type;
 import org.efaps.db.SearchQuery;
 import org.efaps.integration.lucene.log.LuceneLog;
-import org.efaps.integration.lucene.type.LuceneAnalyzer;
-import org.efaps.integration.lucene.type.LuceneAttribute2Field;
-import org.efaps.integration.lucene.type.LuceneField;
 import org.efaps.integration.lucene.type.LuceneIndex;
-import org.efaps.integration.lucene.type.LuceneIndex2Type;
-import org.efaps.integration.lucene.type.LuceneIndexer;
-import org.efaps.integration.lucene.type.LuceneStopWords;
-import org.efaps.integration.lucene.type.LuceneType2Analyzer;
-import org.efaps.integration.lucene.type.LuceneType2Indexer;
 import org.efaps.util.EFapsException;
 
 /**
@@ -60,13 +50,14 @@ public class Prozess extends AbstractTransaction implements ProzessInterface {
       startTransaction();
       CreateLuceneIndex
           .create("/Users/janmoxter/Documents/workspace/eFaps/lucene/index.xml");
+      
       commitTransaction();
     } catch (EFapsException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      
+      LOG.error("createNewIndex()", e);
     } catch (Exception e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      
+      LOG.error("createNewIndex()", e);
     }
 
   }
@@ -74,7 +65,7 @@ public class Prozess extends AbstractTransaction implements ProzessInterface {
   public void initialize() {
 
     if (!initDatabase()) {
-      getLog().error("Database Connection could not be initialised!");
+      LOG.error("Database Connection could not be initialised!");
     } else {
 
       try {
@@ -82,10 +73,10 @@ public class Prozess extends AbstractTransaction implements ProzessInterface {
         reloadCache();
 
       } catch (EFapsException e) {
-        // TODO Auto-generated catch block
+        
         LOG.error("initialize()", e);
       } catch (Exception e) {
-        // TODO Auto-generated catch block
+        
         LOG.error("initialize()", e);
       }
 
@@ -110,10 +101,10 @@ public class Prozess extends AbstractTransaction implements ProzessInterface {
       abortTransaction();
       return oidlist;
     } catch (EFapsException e) {
-      // TODO Auto-generated catch block
+   
       LOG.error("getAllIndexOID()", e);
     } catch (Exception e) {
-      // TODO Auto-generated catch block
+     
       LOG.error("getAllIndexOID()", e);
     }
     return null;
@@ -179,12 +170,12 @@ public class Prozess extends AbstractTransaction implements ProzessInterface {
 
     try {
       commitTransaction();
-    } catch (EFapsException e1) {
-      // TODO Auto-generated catch block
-      LOG.error("execute(String)", e1);
-    } catch (Exception e1) {
-      // TODO Auto-generated catch block
-      LOG.error("execute(String)", e1);
+    } catch (EFapsException e) {
+      
+      LOG.error("execute(String)", e);
+    } catch (Exception e) {
+     
+      LOG.error("execute(String)", e);
     }
 
   }
@@ -230,22 +221,22 @@ public class Prozess extends AbstractTransaction implements ProzessInterface {
         log.end("Reset", 0, 0);
       }
     } catch (EFapsException e) {
-      // TODO Auto-generated catch block
+      
       LOG.error("reset(String)", e);
     } catch (Exception e) {
-      // TODO Auto-generated catch block
+      
       LOG.error("reset(String)", e);
     }
 
     index.close();
     try {
       commitTransaction();
-    } catch (EFapsException e1) {
-      // TODO Auto-generated catch block
-      LOG.error("reset(String)", e1);
-    } catch (Exception e1) {
-      // TODO Auto-generated catch block
-      LOG.error("reset(String)", e1);
+    } catch (EFapsException e) {
+     
+      LOG.error("reset(String)", e);
+    } catch (Exception e) {
+     
+      LOG.error("reset(String)", e);
     }
   }
 
