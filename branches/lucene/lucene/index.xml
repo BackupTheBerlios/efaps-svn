@@ -27,7 +27,7 @@
   <index name="defaultIndex" path="/Users/janmoxter/Documents/workspace/eFaps/lucene/target/lucene/indexMain/" />
   
   <lucene-analyzer>
-    <analyzer>org.apache.lucene.analysis.standard.StandardAnalyzer</analyzer>
+    <analyzer class="org.apache.lucene.analysis.standard.StandardAnalyzer" forcenew="FALSE"/>
  
      <stopword>a</stopword>
      <stopword>an</stopword>
