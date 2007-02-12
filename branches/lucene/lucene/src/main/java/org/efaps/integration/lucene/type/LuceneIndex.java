@@ -137,6 +137,11 @@ public class LuceneIndex {
 
   }
 
+  public String getIndexPath() {
+
+    return getIndexDir().getAbsolutePath();
+  }
+
   public void setName(String _Name) {
     NAME = _Name;
   }
