@@ -39,8 +39,9 @@ public class Prozess extends AbstractTransaction implements ProzessInterface {
       (new Prozess()).createNewIndex();
     } else if (args[0].equals("run")) {
       (new Prozess()).executeAll();
+    } else if (args[0].equals("reset")) {
+      (new Prozess()).resetAll();
     }
-
   }
 
   public void createNewIndex() {
@@ -50,13 +51,13 @@ public class Prozess extends AbstractTransaction implements ProzessInterface {
       startTransaction();
       CreateLuceneIndex
           .create("/Users/janmoxter/Documents/workspace/eFaps/lucene/index.xml");
-      
+
       commitTransaction();
     } catch (EFapsException e) {
-      
+
       LOG.error("createNewIndex()", e);
     } catch (Exception e) {
-      
+
       LOG.error("createNewIndex()", e);
     }
 
@@ -73,10 +74,10 @@ public class Prozess extends AbstractTransaction implements ProzessInterface {
         reloadCache();
 
       } catch (EFapsException e) {
-        
+
         LOG.error("initialize()", e);
       } catch (Exception e) {
-        
+
         LOG.error("initialize()", e);
       }
 
@@ -101,10 +102,10 @@ public class Prozess extends AbstractTransaction implements ProzessInterface {
       abortTransaction();
       return oidlist;
     } catch (EFapsException e) {
-   
+
       LOG.error("getAllIndexOID()", e);
     } catch (Exception e) {
-     
+
       LOG.error("getAllIndexOID()", e);
     }
     return null;
@@ -171,10 +172,10 @@ public class Prozess extends AbstractTransaction implements ProzessInterface {
     try {
       commitTransaction();
     } catch (EFapsException e) {
-      
+
       LOG.error("execute(String)", e);
     } catch (Exception e) {
-     
+
       LOG.error("execute(String)", e);
     }
 
@@ -221,10 +222,10 @@ public class Prozess extends AbstractTransaction implements ProzessInterface {
         log.end("Reset", 0, 0);
       }
     } catch (EFapsException e) {
-      
+
       LOG.error("reset(String)", e);
     } catch (Exception e) {
-      
+
       LOG.error("reset(String)", e);
     }
 
@@ -232,10 +233,10 @@ public class Prozess extends AbstractTransaction implements ProzessInterface {
     try {
       commitTransaction();
     } catch (EFapsException e) {
-     
+
       LOG.error("reset(String)", e);
     } catch (Exception e) {
-     
+
       LOG.error("reset(String)", e);
     }
   }

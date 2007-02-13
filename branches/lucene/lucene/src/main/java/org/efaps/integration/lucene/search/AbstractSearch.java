@@ -21,19 +21,13 @@
 package org.efaps.integration.lucene.search;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.document.Document;
-import org.apache.lucene.queryParser.ParseException;
-import org.apache.lucene.queryParser.QueryParser;
-import org.apache.lucene.search.Hits;
 import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.Query;
 import org.efaps.db.SearchQuery;
 import org.efaps.integration.lucene.AbstractTransaction;
 import org.efaps.integration.lucene.type.LuceneIndex;
@@ -47,17 +41,28 @@ public abstract class AbstractSearch extends AbstractTransaction {
   private static final Log     LOG      = LogFactory
                                             .getLog(AbstractSearch.class);
 
-  static Query                 query;
-
   private static Analyzer      ANALYZER = null;
 
   private static IndexSearcher SEARCHER = null;
 
   private static LuceneIndex   INDEX;
 
+  /**
+   * Search that returns only the OID of the found objects
+   * 
+   * @param queryString
+   *          word to search for
+   * @return List with all hits
+   */
+  abstract List find(String queryString);
+
   public AbstractSearch(String _IndexID) {
 
     initialise(_IndexID);
+  }
+
+  public Log getLog() {
+    return LOG;
   }
 
   public LuceneIndex getIndex() {
@@ -80,8 +85,8 @@ public abstract class AbstractSearch extends AbstractTransaction {
     try {
       SEARCHER = new IndexSearcher(_Path);
     } catch (IOException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      LOG.error("setSearcher", e);
+
     }
   }
 
@@ -128,38 +133,6 @@ public abstract class AbstractSearch extends AbstractTransaction {
       }
     }
     return ANALYZER;
-
-  }
-
-  public List find(String queryString) {
-    List<String> result = new ArrayList();
-
-    QueryParser test = new QueryParser("contents", getAnalyzer());
-    try {
-      query = test.parse(queryString);
-      Hits hits = getSearcher().search(query);
-      int startindex = 0;
-      int thispage = 0;
-      int maxpage = 50;
-      if ((startindex + maxpage) > hits.length()) {
-        thispage = hits.length() - startindex;
-      }
-
-      for (int i = startindex; i < (thispage + startindex); i++) {
-        Document doc = hits.doc(i);
-        result.add(doc.get("OID"));
-        LOG.debug(doc.get("OID"));
-      }
-      return result;
-    } catch (ParseException e) {
-      // TODO Auto-generated catch block
-      LOG.error("find(String)", e);
-    } catch (IOException e) {
-      // TODO Auto-generated catch block
-      LOG.error("find(String)", e);
-    }
-
-    return null;
 
   }
 
