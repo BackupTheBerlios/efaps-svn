@@ -38,14 +38,18 @@ public abstract class AbstractSearch extends AbstractTransaction {
   /**
    * Logger for this class
    */
-  private static final Log     LOG      = LogFactory
-                                            .getLog(AbstractSearch.class);
+  private static final Log     LOG        = LogFactory
+                                              .getLog(AbstractSearch.class);
 
-  private static Analyzer      ANALYZER = null;
+  private static Analyzer      ANALYZER   = null;
 
-  private static IndexSearcher SEARCHER = null;
+  private static IndexSearcher SEARCHER   = null;
 
   private static LuceneIndex   INDEX;
+
+  private static int           MAXHITPAGE = 50;
+
+  protected int                HITS;
 
   /**
    * Search that returns only the OID of the found objects
@@ -54,11 +58,29 @@ public abstract class AbstractSearch extends AbstractTransaction {
    *          word to search for
    * @return List with all hits
    */
-  abstract List find(String queryString);
+  public abstract List find(String _queryString);
+
+  public abstract List find(String _field, String _queryString);
+
+  public abstract List find(String _field, String _queryString, int _startindex);
+
+  protected abstract void setHits(int _hits);
 
   public AbstractSearch(String _IndexID) {
 
     initialise(_IndexID);
+  }
+
+  public int getHits() {
+    return HITS;
+  }
+
+  public int getMaxHit() {
+    return MAXHITPAGE;
+  }
+
+  public void setMaxHit(int _max) {
+    MAXHITPAGE = _max;
   }
 
   public Log getLog() {

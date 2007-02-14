@@ -28,37 +28,56 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.Hits;
 import org.apache.lucene.search.Query;
-import org.apache.lucene.search.TermQuery;
+import org.apache.lucene.search.WildcardQuery;
 
 /**
- * Class for a simple Search with only one Term, for the use of "AND" other
- * classes must be used
+ * Class to be used when ParserSearch can't be used, e.g. "*ter"
+ * 
+ * Supported wildcards are *, which matches any character sequence (including
+ * the empty one), and ?, which matches any single character. Note this query
+ * can be slow, as it needs to iterate over many terms. In order to prevent
+ * extremely slow WildcardQueries, a Wildcard term should not start with one of
+ * the wildcards * or ?.
  * 
  * @author jmo
  * 
  */
-public class OneTermContentSearch extends AbstractSearch {
+public class WildCardSearch extends AbstractSearch {
 
-  public OneTermContentSearch(String _IndexID) {
+  public WildCardSearch(String _IndexID) {
     super(_IndexID);
+
   }
 
-  public List find(String queryString) {
+  @Override
+  public List find(String _queryString) {
+    return find("contents", _queryString);
+
+  }
+
+  @Override
+  public List find(String _field, String _queryString) {
+    return find(_field, _queryString, 0);
+
+  }
+
+  @Override
+  public List find(String _field, String _queryString, int _startindex) {
     List<String> result = new ArrayList<String>();
 
-    Query query = new TermQuery(new Term("contents", queryString));
+    Query query = new WildcardQuery(new Term(_field, _queryString));
 
     try {
 
       Hits hits = getSearcher().search(query);
-      int startindex = 0;
+
       int thispage = 0;
-      int maxpage = 50;
-      if ((startindex + maxpage) > hits.length()) {
-        thispage = hits.length() - startindex;
+      setHits(hits.length());
+      if ((_startindex + getMaxHit()) > getHits()) {
+        thispage = hits.length() - _startindex;
       }
 
-      for (int i = startindex; i < (thispage + startindex); i++) {
+      for (int i = _startindex; i < (thispage + _startindex); i++) {
         Document doc = hits.doc(i);
         result.add(doc.get("OID"));
         getLog().debug(doc.get("OID"));
@@ -70,6 +89,12 @@ public class OneTermContentSearch extends AbstractSearch {
     }
 
     return null;
+
+  }
+
+  @Override
+  protected void setHits(int _HITS) {
+    super.HITS = _HITS;
 
   }
 
