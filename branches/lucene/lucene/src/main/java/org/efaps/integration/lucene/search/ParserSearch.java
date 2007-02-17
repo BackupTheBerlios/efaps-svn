@@ -44,20 +44,17 @@ public class ParserSearch extends AbstractSearch {
 
   }
 
-  @Override
-  public List find(String _queryString) {
+  public void find(String _queryString) {
 
-    return find("contents", _queryString);
+    find("contents", _queryString);
   }
 
-  @Override
-  public List find(String _field, String _queryString) {
-    return find(_field, _queryString, 0);
+  public void find(String _field, String _queryString) {
+    find(_field, _queryString, 0);
 
   }
 
-  @Override
-  public List find(String _field, String _queryString, int _startindex) {
+  public void find(String _field, String _queryString, int _startindex) {
     List<String> result = new ArrayList<String>();
     QueryParser parser = new QueryParser(_field, getAnalyzer());
     try {
@@ -66,8 +63,8 @@ public class ParserSearch extends AbstractSearch {
       Hits hits = getSearcher().search(query);
 
       int thispage = 0;
-      setHits(hits.length());
-      if ((_startindex + getMaxHit()) > getHits()) {
+      setHitsCount(hits.length());
+      if ((_startindex + getMaxHit()) > getHitsCount()) {
         thispage = hits.length() - _startindex;
       }
 
@@ -76,7 +73,7 @@ public class ParserSearch extends AbstractSearch {
         result.add(doc.get("OID"));
         getLog().debug(doc.get("OID"));
       }
-      return result;
+      setHits(result);
     } catch (ParseException e) {
 
       getLog().error("find(String,String,int)", e);
@@ -85,12 +82,17 @@ public class ParserSearch extends AbstractSearch {
       getLog().error("find(String,String,int)", e);
     }
 
-    return null;
   }
 
   @Override
-  protected void setHits(int _HITS) {
-   super.HITS=_HITS;
-    
+  protected void setHits(List _Hits) {
+    super.HITS = _Hits;
+
+  }
+
+  @Override
+  protected void setHitsCount(int _HitsCount) {
+    super.HITSCOUNT = _HitsCount;
+
   }
 }

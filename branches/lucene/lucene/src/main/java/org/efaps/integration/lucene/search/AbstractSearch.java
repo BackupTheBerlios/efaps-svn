@@ -34,6 +34,12 @@ import org.efaps.integration.lucene.type.LuceneIndex;
 import org.efaps.integration.lucene.type.LuceneIndex2Type;
 import org.efaps.util.EFapsException;
 
+/**
+ * This class defines the abstract search for all searches
+ * 
+ * @author jmo
+ * 
+ */
 public abstract class AbstractSearch extends AbstractTransaction {
   /**
    * Logger for this class
@@ -49,30 +55,28 @@ public abstract class AbstractSearch extends AbstractTransaction {
 
   private static int           MAXHITPAGE = 50;
 
-  protected int                HITS;
+  protected int                HITSCOUNT;
 
-  /**
-   * Search that returns only the OID of the found objects
-   * 
-   * @param queryString
-   *          word to search for
-   * @return List with all hits
-   */
-  public abstract List find(String _queryString);
+  protected List               HITS;
 
-  public abstract List find(String _field, String _queryString);
-
-  public abstract List find(String _field, String _queryString, int _startindex);
-
-  protected abstract void setHits(int _hits);
-
-  public AbstractSearch(String _IndexID) {
-
-    initialise(_IndexID);
+  public List getHits() {
+    return HITS;
   }
 
-  public int getHits() {
-    return HITS;
+  protected abstract void setHitsCount(int _HitsCount);
+
+  protected abstract void setHits(List _Hits);
+
+  public AbstractSearch(String _IndexID) {
+    if ((getIndex() == null)) {
+      initialise(_IndexID);
+    } else if (!_IndexID.equals(getIndex().getID())) {
+      initialise(_IndexID);
+    }
+  }
+
+  public int getHitsCount() {
+    return HITSCOUNT;
   }
 
   public int getMaxHit() {

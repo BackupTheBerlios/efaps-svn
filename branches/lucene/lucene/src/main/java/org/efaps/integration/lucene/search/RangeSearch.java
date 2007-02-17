@@ -25,39 +25,29 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.lucene.document.Document;
-import org.apache.lucene.index.Term;
+import org.apache.lucene.search.ConstantScoreRangeQuery;
 import org.apache.lucene.search.Hits;
 import org.apache.lucene.search.Query;
-import org.apache.lucene.search.TermQuery;
 
 /**
- * Class for a simple Search with only one Term, like Field equals or contains
- * value
+ * For Search like "value < Field < value"
  * 
  * @author jmo
  * 
  */
-public class SingleTermSearch extends AbstractSearch {
+public class RangeSearch extends AbstractSearch {
 
-  public SingleTermSearch(String _IndexID) {
+  public RangeSearch(String _IndexID) {
     super(_IndexID);
-  }
-
-  public void find(String _queryString) {
-    find("contents", _queryString);
 
   }
 
-  public void find(String _field, String _queryString) {
-    find(_field, _queryString, 0);
-
-  }
-
-  public void find(String _field, String _queryString, int _startindex) {
+  public void find(String _field, String _lowerVal, String _upperVal,
+      boolean _includeLower, boolean _includeUpper, int _startindex) {
     List<String> result = new ArrayList<String>();
 
-    Query query = new TermQuery(new Term(_field, _queryString));
-
+    Query query = new ConstantScoreRangeQuery(_field, _lowerVal, _upperVal,
+        _includeLower, _includeUpper);
     try {
 
       Hits hits = getSearcher().search(query);
@@ -82,14 +72,13 @@ public class SingleTermSearch extends AbstractSearch {
   }
 
   @Override
-  protected void setHitsCount(int _HitsCount) {
-    super.HITSCOUNT = _HitsCount;
-
+  protected void setHits(List _Hits) {
+    super.HITS = _Hits;
   }
 
   @Override
-  protected void setHits(List _Hits) {
-    super.HITS = _Hits;
+  protected void setHitsCount(int _HitsCount) {
+    super.HITSCOUNT = _HitsCount;
 
   }
 
