@@ -36,6 +36,7 @@ import org.apache.slide.transaction.SlideTransactionManager;
 import org.efaps.db.Context;
 import org.efaps.db.databases.AbstractDatabase;
 import org.efaps.util.EFapsException;
+import org.efaps.util.RunLevel;
 import org.efaps.util.cache.Cache;
 
 /**
@@ -78,6 +79,10 @@ public class AbstractTransaction {
   // ///////////////////////////////////////////////////////////////////////////
   // instance methods
 
+  
+  protected void loadRunLevel(){
+    new RunLevel("types");
+  }
   /**
    * Initiliase the database information read from the bootstrap file:
    * <ul>

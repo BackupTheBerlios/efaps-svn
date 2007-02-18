@@ -37,7 +37,7 @@
     <name>Lucene_Type2IndexerSQLTable</name>
 
     <database>
-      <table-name>LUCENETYPE2INDEXER</table-name>
+      <table-name>T_LUCENETYPE2INDEXER</table-name>
       <create>true</create>
       <update>true</update>
       
@@ -62,10 +62,10 @@
     <name>Lucene_Type2IndexerSQLTable</name>
 
     <database>
-      <table-name>LUCENETYPE2INDEXER</table-name>
+      <table-name>T_LUCENETYPE2INDEXER</table-name>
       <update>true</update>
-      <foreign name="LUCENETYPE2INDEXER_FK_INDEX2TYPE" key="INDEX2TYPE" reference="LUCENEINDEX2TYPE(ID)"/>
-	  <foreign name="LUCENETYPE2INDEXER_FK_INDEXER"	   key="INDEXER"  	reference="LUCENEINDEXER(ID)"/>
+      <foreign name="LUCENETYPE2INDEXER_FK_INDEX2TYPE" key="INDEX2TYPE" reference="T_LUCENEINDEX2TYPE(ID)"/>
+	  <foreign name="LUCENETYPE2INDEXER_FK_INDEXER"	   key="INDEXER"  	reference="T_LUCENEINDEXER(ID)"/>
       <foreign name="LUCENETYPE2INDEXER_FK_CRTR"       key="CREATOR"    reference="USERPERSON(ID)"/>
       <foreign name="LUCENETYPE2INDEXER_FK_MDFR"       key="MODIFIER"   reference="USERPERSON(ID)"/>
     </database>

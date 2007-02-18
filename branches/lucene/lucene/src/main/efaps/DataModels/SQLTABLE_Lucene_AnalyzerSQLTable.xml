@@ -35,7 +35,7 @@
     <name>Lucene_AnalyzerSQLTable</name>
 
     <database>
-      <table-name>LUCENEANALYZER</table-name>
+      <table-name>T_LUCENEANALYZER</table-name>
       <create>true</create>
       <update>true</update>
       <column name="ANALYZER" type="STRING_SHORT" not-null="true" length="255"/>
@@ -57,7 +57,7 @@
     <name>Lucene_AnalyzerSQLTable</name>
 
     <database>
-      <table-name>LUCENEANALYZER</table-name>
+      <table-name>T_LUCENEANALYZER</table-name>
       <update>true</update>
       <foreign name="LUCENEANALYZER_FK_CRTR"        key="CREATOR"   reference="USERPERSON(ID)"/>
       <foreign name="LUCENEANALYZER_FK_MDFR"        key="MODIFIER"  reference="USERPERSON(ID)"/>

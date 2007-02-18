@@ -36,7 +36,7 @@
     <name>Lucene_Type2AnalyzerSQLTable</name>
 
 	<database>
-      <table-name>LUCENETYPE2ANALYZER</table-name>
+      <table-name>T_LUCENETYPE2ANALYZER</table-name>
       <create>true</create>
       <update>true</update>
       
@@ -61,10 +61,10 @@
     <name>Lucene_Type2AnalyzerSQLTable</name>
 
     <database>
-      <table-name>LUCENETYPE2ANALYZER</table-name>
+      <table-name>T_LUCENETYPE2ANALYZER</table-name>
       <update>true</update>
-      <foreign name="LUCENETYPE2ANALYZER_FK_INDEXTYPE"	key="INDEXTYPE" reference="LUCENEINDEX2TYPE(ID)"/>
-	  <foreign name="LUCENETYPE2ANALYZER_FK_ANALYZER"	key="ANALYZER"  reference="LUCENEANALYZER(ID)"/>
+      <foreign name="LUCENETYPE2ANALYZER_FK_INDEXTYPE"	key="INDEXTYPE" reference="T_LUCENEINDEX2TYPE(ID)"/>
+	  <foreign name="LUCENETYPE2ANALYZER_FK_ANALYZER"	key="ANALYZER"  reference="T_LUCENEANALYZER(ID)"/>
       <foreign name="LUCENETYPE2ANALYZER_FK_CRTR"       key="CREATOR"   reference="USERPERSON(ID)"/>
       <foreign name="LUCENETYPE2ANALYZER_FK_MDFR"       key="MODIFIER"  reference="USERPERSON(ID)"/>
     </database>

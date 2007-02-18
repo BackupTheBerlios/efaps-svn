@@ -37,7 +37,7 @@
     <name>Lucene_LogSQLTable</name>
 
     <database>
-      <table-name>LUCENELOG</table-name>
+      <table-name>T_LUCENELOG</table-name>
       <create>true</create>
       <update>true</update>
       
@@ -61,9 +61,9 @@
     <name>Lucene_LogSQLTable</name>
 
     <database>
-      <table-name>LUCENELOG</table-name>
+      <table-name>T_LUCENELOG</table-name>
       <update>true</update>
-      <foreign name="LUCENELOG_FK_INDEX"	key="INDEX"  	reference="LUCENEINDEX(ID)"/>
+      <foreign name="LUCENELOG_FK_INDEX"   key="INDEX"     reference="T_LUCENEINDEX(ID)"/>
 	  <foreign name="LUCENELOG_FK_CRTR"    key="CREATOR"   reference="USERPERSON(ID)"/>
       <foreign name="LUCENELOG_FK_MDFR"    key="MODIFIER"  reference="USERPERSON(ID)"/>
     </database>

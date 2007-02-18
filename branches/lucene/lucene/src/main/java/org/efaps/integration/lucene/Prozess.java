@@ -65,23 +65,24 @@ public class Prozess extends AbstractTransaction implements ProzessInterface {
 
   public void initialize() {
 
-    if (!initDatabase()) {
-      LOG.error("Database Connection could not be initialised!");
-    } else {
-
-      try {
-        login("Administrator", "");
-        reloadCache();
-
-      } catch (EFapsException e) {
-
-        LOG.error("initialize()", e);
-      } catch (Exception e) {
-
-        LOG.error("initialize()", e);
-      }
-
-    }
+    loadRunLevel();
+//    if (!initDatabase()) {
+//      LOG.error("Database Connection could not be initialised!");
+//    } else {
+//
+//      try {
+//     login("Administrator", "");
+//        reloadCache();
+//
+//      } catch (EFapsException e) {
+//
+//        LOG.error("initialize()", e);
+//      } catch (Exception e) {
+//
+//        LOG.error("initialize()", e);
+//      }
+//
+//    }
   }
 
   private List getAllIndexOID() {
