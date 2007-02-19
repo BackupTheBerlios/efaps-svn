@@ -20,29 +20,20 @@
 
 package org.efaps.integration.lucene;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.Properties;
-
-import javax.naming.Reference;
-import javax.naming.StringRefAddr;
-import javax.naming.spi.ObjectFactory;
-import javax.sql.DataSource;
 import javax.transaction.TransactionManager;
 
 import org.apache.commons.logging.Log;
 import org.apache.slide.transaction.SlideTransactionManager;
 import org.efaps.db.Context;
-import org.efaps.db.databases.AbstractDatabase;
 import org.efaps.util.EFapsException;
 import org.efaps.util.RunLevel;
 import org.efaps.util.cache.Cache;
 
 /**
  * This class is going to be replaced with a version inside eFaps
+ * 
  * @author jmo
- *
+ * 
  */
 public class AbstractTransaction {
 
@@ -73,16 +64,11 @@ public class AbstractTransaction {
    */
   private String                         userName;
 
-  // ///////////////////////////////////////////////////////////////////////////
-  // constructors / desctructors
-
-  // ///////////////////////////////////////////////////////////////////////////
-  // instance methods
-
   
-  protected void loadRunLevel(){
+  protected void loadRunLevel() {
     new RunLevel("types");
   }
+
   /**
    * Initiliase the database information read from the bootstrap file:
    * <ul>
@@ -91,87 +77,6 @@ public class AbstractTransaction {
    * <li>initiliase the sql datasource (JDBC connection to the database)</li>
    * </ul>
    */
-  protected boolean initDatabase() {
-    boolean initialised = false;
-    String bootstrap = "/Users/janmoxter/Documents/workspace/eFaps/bootstrap.xml";
-
-    Properties props = new Properties();
-    try {
-      // read bootstrap properties
-      FileInputStream fstr = new FileInputStream(bootstrap);
-      props.loadFromXML(fstr);
-      fstr.close();
-    } catch (FileNotFoundException e) {
-      LOG.error("could not open file '" + bootstrap + "'", e);
-    } catch (IOException e) {
-      LOG.error("could not read file '" + bootstrap + "'", e);
-    }
-
-    // configure database type
-    String dbClass = null;
-    try {
-      Object dbTypeObj = props.get("dbType");
-      if ((dbTypeObj == null) || (dbTypeObj.toString().length() == 0)) {
-        LOG.error("could not initaliase database type");
-      } else {
-        dbClass = dbTypeObj.toString();
-        AbstractDatabase dbType = ((Class<AbstractDatabase>) Class
-            .forName(dbClass)).newInstance();
-        if (dbType == null) {
-          LOG.error("could not initaliase database type");
-        }
-        Context.setDbType(dbType);
-        initialised = true;
-      }
-    } catch (ClassNotFoundException e) {
-      LOG.error("could not found database description class " + "'" + dbClass
-          + "'", e);
-    } catch (InstantiationException e) {
-      LOG.error("could not initialise database description class " + "'"
-          + dbClass + "'", e);
-    } catch (IllegalAccessException e) {
-      LOG.error("could not access database description class " + "'" + dbClass
-          + "'", e);
-    }
-
-    // buildup reference and initialise datasource object
-    String factory = props.get("factory").toString();
-    Reference ref = new Reference(DataSource.class.getName(), factory, null);
-    for (Object key : props.keySet()) {
-      Object value = props.get(key);
-      ref.add(new StringRefAddr(key.toString(), (value == null) ? null : value
-          .toString()));
-    }
-    ObjectFactory of = null;
-    try {
-      Class factClass = Class.forName(ref.getFactoryClassName());
-      of = (ObjectFactory) factClass.newInstance();
-    } catch (ClassNotFoundException e) {
-      LOG.error("could not found data source class " + "'"
-          + ref.getFactoryClassName() + "'", e);
-    } catch (InstantiationException e) {
-      LOG.error("could not initialise data source class " + "'"
-          + ref.getFactoryClassName() + "'", e);
-    } catch (IllegalAccessException e) {
-      LOG.error("could not access data source class " + "'"
-          + ref.getFactoryClassName() + "'", e);
-    }
-    if (of != null) {
-      DataSource ds = null;
-      try {
-        ds = (DataSource) of.getObjectInstance(ref, null, null, null);
-      } catch (Exception e) {
-        LOG.error("coud not get object instance of factory " + "'"
-            + ref.getFactoryClassName() + "'", e);
-      }
-      if (ds != null) {
-        Context.setDataSource(ds);
-        initialised = initialised && true;
-      }
-    }
-
-    return initialised;
-  }
 
   /**
    * The user with given user name and password makes a login.
@@ -195,10 +100,15 @@ public class AbstractTransaction {
    * 
    * @todo remove Exception
    */
-  protected void reloadCache() throws EFapsException, Exception {
-    startTransaction();
-    Cache.reloadCache();
-    abortTransaction();
+  protected void reloadCache() {
+
+    try {
+      Cache.reloadCacheRunLevel();
+    } catch (Exception e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+
   }
 
   /**

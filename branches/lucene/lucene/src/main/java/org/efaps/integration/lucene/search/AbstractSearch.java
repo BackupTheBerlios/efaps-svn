@@ -118,33 +118,29 @@ public abstract class AbstractSearch extends AbstractTransaction {
 
   public void initialise(String _IndexID) {
 
-    if (!initDatabase()) {
-      LOG.error("Database Connection could not be initialised!");
-    } else {
+    loadRunLevel();
 
-      try {
-        login("Administrator", "");
-        reloadCache();
-        startTransaction();
-        SearchQuery query = new SearchQuery();
-        query.setQueryTypes("Lucene_Index");
-        query.addSelect("OID");
-        query.execute();
-        if (query.next()) {
-          setIndex(query.get("OID").toString());
+    try {
+      login("Administrator", "");
+      reloadCache();
+      startTransaction();
+      SearchQuery query = new SearchQuery();
+      query.setQueryTypes("Lucene_Index");
+      query.addSelect("OID");
+      query.execute();
+      if (query.next()) {
+        setIndex(query.get("OID").toString());
 
-        } else {
-          LOG.error("can't find the index");
-        }
-        abortTransaction();
-      } catch (IOException e) {
-        LOG.error("initialize()", e);
-      } catch (EFapsException e) {
-        LOG.error("initialize()", e);
-      } catch (Exception e) {
-        LOG.error("initialize()", e);
+      } else {
+        LOG.error("can't find the index");
       }
-
+      abortTransaction();
+    } catch (IOException e) {
+      LOG.error("initialize()", e);
+    } catch (EFapsException e) {
+      LOG.error("initialize()", e);
+    } catch (Exception e) {
+      LOG.error("initialize()", e);
     }
 
   }

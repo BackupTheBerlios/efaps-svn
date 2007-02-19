@@ -45,7 +45,7 @@ public class Prozess extends AbstractTransaction implements ProzessInterface {
   }
 
   public void createNewIndex() {
-    initialize();
+    loadRunLevel();
     try {
 
       startTransaction();
@@ -63,27 +63,7 @@ public class Prozess extends AbstractTransaction implements ProzessInterface {
 
   }
 
-  public void initialize() {
-
-    loadRunLevel();
-//    if (!initDatabase()) {
-//      LOG.error("Database Connection could not be initialised!");
-//    } else {
-//
-//      try {
-//     login("Administrator", "");
-//        reloadCache();
-//
-//      } catch (EFapsException e) {
-//
-//        LOG.error("initialize()", e);
-//      } catch (Exception e) {
-//
-//        LOG.error("initialize()", e);
-//      }
-//
-//    }
-  }
+  
 
   private List getAllIndexOID() {
     List<String> oidlist = new ArrayList<String>();
@@ -114,7 +94,7 @@ public class Prozess extends AbstractTransaction implements ProzessInterface {
 
   public void executeAll() {
 
-    initialize();
+    loadRunLevel();
     for (Iterator iter = getAllIndexOID().iterator(); iter.hasNext();) {
       execute((String) iter.next());
 
@@ -243,7 +223,7 @@ public class Prozess extends AbstractTransaction implements ProzessInterface {
   }
 
   public void resetAll() {
-    initialize();
+    loadRunLevel();
     for (Iterator iter = getAllIndexOID().iterator(); iter.hasNext();) {
       reset((String) iter.next());
 
