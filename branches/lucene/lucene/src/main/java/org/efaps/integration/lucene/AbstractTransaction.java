@@ -66,7 +66,7 @@ public class AbstractTransaction {
 
   
   protected void loadRunLevel() {
-    new RunLevel("types");
+    new RunLevel("ui");
   }
 
   /**
@@ -93,6 +93,7 @@ public class AbstractTransaction {
   protected void login(final String _userName, final String _password)
       throws EFapsException {
     this.userName = _userName;
+    
   }
 
   /**

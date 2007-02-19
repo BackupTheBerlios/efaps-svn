@@ -118,13 +118,13 @@ public class RunLevel {
   }
 
   private void initialise() {
-    
+
     Statement stmt = null;
     String parentID = null;
     ConnectionResource con = null;
     try {
-    startTransaction();
-     
+      startTransaction();
+
       con = Context.getThreadContext().getConnectionResource();
 
       stmt = con.getConnection().createStatement();
@@ -168,7 +168,7 @@ public class RunLevel {
       LOG.error("initialise()", e);
     } catch (Exception e) {
       // TODO Auto-generated catch block
-      e.printStackTrace();
+      LOG.error("initialise()", e);
     }
 
     finally {
