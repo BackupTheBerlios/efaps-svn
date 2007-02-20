@@ -7,10 +7,10 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.efaps.admin.Properties;
 import org.efaps.db.SearchQuery;
 import org.efaps.integration.lucene.log.LuceneLog;
 import org.efaps.integration.lucene.type.LuceneIndex;
+import org.efaps.properties.Properties;
 import org.efaps.util.EFapsException;
 
 /**

@@ -18,7 +18,7 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.admin;
+package org.efaps.properties;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -34,6 +34,17 @@ import org.efaps.db.Context;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.util.EFapsException;
 
+/**
+ * This class reads the Properties for eFaps from the connected Database and
+ * holds them in a cache. It is possible to use a localized Version for the
+ * Properties, by setting the Language of the Properties. If no Language is
+ * explicitly set the default from the System is used.<br>
+ * The value returned is the value from the localised version, if one is
+ * existing, otherwise it returns the default value.
+ * 
+ * @author jmo
+ * 
+ */
 public class Properties {
   /**
    * Logger for this class
@@ -41,25 +52,69 @@ public class Properties {
   private static final Log           LOG       = LogFactory
                                                    .getLog(Properties.class);
 
+  /**
+   * Cache for the Properties
+   */
   private static Map<String, String> PROPCACHE = new HashMap<String, String>();
 
+  /**
+   * used Language
+   */
   private static String              LANGUAGE  = null;
 
-  public static void setLanguage(String _Language) {
-    LANGUAGE = _Language;
+  /**
+   * are the Properties initialised?
+   */
+  private static boolean             INITIALISED;
 
+  /**
+   * Constructor using the System default language
+   */
+  public Properties() {
+    new Properties(getLanguage());
   }
 
-  public static String getProperty(String _key) {
-    return PROPCACHE.get(_key);
-
-  }
-
+  /**
+   * Constructor for using an explicit language
+   * 
+   * @param _Language
+   *          Language to use for the Properties
+   */
   public Properties(String _Language) {
     setLanguage(_Language);
     initialise();
   }
 
+  /**
+   * Method for setting an explicit language
+   * 
+   * @param _Language
+   */
+  public static void setLanguage(String _Language) {
+    LANGUAGE = _Language;
+
+  }
+
+  /**
+   * Method that returns the value, depending on the language, for the given key
+   * 
+   * @param _key
+   *          Key to Search for
+   * @return if key exists, the value for the key, otherwise null
+   */
+  public static String getProperty(String _key) {
+    if (!isInitialised()) {
+      initialise();
+    }
+    return PROPCACHE.get(_key);
+
+  }
+
+  /**
+   * Method that returns the actual language used for the current properties
+   * 
+   * @return language
+   */
   public static String getLanguage() {
     if (LANGUAGE == null) {
       setLanguage(Locale.getDefault().getLanguage());
@@ -67,15 +122,20 @@ public class Properties {
     return LANGUAGE;
   }
 
-  public Properties() {
-    new Properties(getLanguage());
-  }
-
+  /**
+   * Method to initialise the Propeties using an explicit language
+   * 
+   * @param _Language
+   *          language to use
+   */
   public static void initialise(String _Language) {
     setLanguage(_Language);
     initialise();
   }
 
+  /**
+   * Method to initialise the Propeties using the System default language
+   */
   public static void initialise() {
     String SQLStmt = "select KEY, DEFAULTV, VALUE from T_ADPROP "
         + " left join (select PROPID, VALUE from T_ADPROPLOC"
@@ -97,6 +157,7 @@ public class Properties {
         }
         PROPCACHE.put(rs.getString(1).trim(), value.trim());
       }
+      INITIALISED = true;
     } catch (EFapsException e) {
 
       LOG.error("initialise()", e);
@@ -107,4 +168,12 @@ public class Properties {
 
   }
 
+  /**
+   * Returns, if the properties are initialised
+   * 
+   * @return true if initilised, otherwise false
+   */
+  public static boolean isInitialised() {
+    return INITIALISED;
+  }
 }
