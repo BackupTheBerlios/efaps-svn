@@ -7,10 +7,10 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.efaps.db.SearchQuery;
 import org.efaps.integration.lucene.log.LuceneLog;
 import org.efaps.integration.lucene.type.LuceneIndex;
-import org.efaps.properties.Properties;
 import org.efaps.util.EFapsException;
 
 /**
@@ -50,7 +50,7 @@ public class Prozess extends AbstractTransaction implements ProzessInterface {
     try {
       login("Administrator", "");
       startTransaction();
-      
+
       CreateLuceneIndex
           .create("/Users/janmoxter/Documents/workspace/eFaps/lucene/index.xml");
 
@@ -65,14 +65,12 @@ public class Prozess extends AbstractTransaction implements ProzessInterface {
 
   }
 
-  
-
   private List getAllIndexOID() {
     List<String> oidlist = new ArrayList<String>();
     SearchQuery query = new SearchQuery();
     try {
       startTransaction();
-      
+
       query.setQueryTypes("Lucene_Index");
       query.addSelect("OID");
       query.execute();
@@ -97,7 +95,7 @@ public class Prozess extends AbstractTransaction implements ProzessInterface {
   public void executeAll() {
 
     loadRunLevel();
-   
+
     try {
       login("Administrator", "");
     } catch (EFapsException e) {
@@ -115,7 +113,7 @@ public class Prozess extends AbstractTransaction implements ProzessInterface {
     LuceneLog log = new LuceneLog();
     try {
       startTransaction();
-      LOG.debug(Properties.getProperty("Button.Close"));
+
       index.setIndex(_OID);
       log.setIndexID(index.getID());
       log.initialise();

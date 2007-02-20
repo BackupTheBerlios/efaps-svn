@@ -18,7 +18,7 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.properties;
+package org.efaps.admin.property;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -45,12 +45,12 @@ import org.efaps.util.EFapsException;
  * @author jmo
  * 
  */
-public class Properties {
+public class DBProperties {
   /**
    * Logger for this class
    */
   private static final Log           LOG       = LogFactory
-                                                   .getLog(Properties.class);
+                                                   .getLog(DBProperties.class);
 
   /**
    * Cache for the Properties
@@ -70,8 +70,8 @@ public class Properties {
   /**
    * Constructor using the System default language
    */
-  public Properties() {
-    new Properties(getLanguage());
+  public DBProperties() {
+    new DBProperties(getLanguage());
   }
 
   /**
@@ -80,7 +80,7 @@ public class Properties {
    * @param _Language
    *          Language to use for the Properties
    */
-  public Properties(String _Language) {
+  public DBProperties(String _Language) {
     setLanguage(_Language);
     initialise();
   }

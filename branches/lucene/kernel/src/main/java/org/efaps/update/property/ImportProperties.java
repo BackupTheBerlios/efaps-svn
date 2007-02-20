@@ -18,7 +18,7 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.properties;
+package org.efaps.update.property;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
