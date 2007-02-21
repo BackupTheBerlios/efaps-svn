@@ -111,6 +111,15 @@ public class DBProperties {
   }
 
   /**
+   * For getting all Properties in a Map
+   * 
+   * @return Map with all Properties
+   */
+  public static Map getProperties() {
+    return PROPCACHE;
+  }
+
+  /**
    * Method that returns the actual language used for the current properties
    * 
    * @return language
@@ -137,7 +146,7 @@ public class DBProperties {
    * Method to initialise the Propeties using the System default language
    */
   public static void initialise() {
-    String SQLStmt = "select KEY, DEFAULTV, VALUE from T_ADPROP "
+    String SQLStmt = "select distinct KEY, DEFAULTV, VALUE from T_ADPROP "
         + " left join (select PROPID, VALUE from T_ADPROPLOC"
         + " left join T_ADLANG on (T_ADPROPLOC.LANGID = T_ADLANG.ID)"
         + " where LANG ='" + getLanguage() + "') tmp "

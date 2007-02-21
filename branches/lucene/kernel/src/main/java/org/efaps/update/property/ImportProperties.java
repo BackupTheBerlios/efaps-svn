@@ -155,7 +155,7 @@ public class ImportProperties {
     String OID = null;
     try {
       query.setQueryTypes("Admin_Properties_Local");
-      query.get("OID");
+      query.addSelect("OID");
       query.addWhereExprEqValue("PropertyID", _PropertyID);
       query.addWhereExprEqValue("LanguageID", getLanguageId());
       query.execute();
@@ -195,7 +195,7 @@ public class ImportProperties {
   private static void updateLocale(String _OID, String _value) {
     try {
       Update update = new Update(_OID);
-      update.add("Default", _value);
+      update.add("Value", _value);
       update.execute();
 
     } catch (EFapsException e) {
