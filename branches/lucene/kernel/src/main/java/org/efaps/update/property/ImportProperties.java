@@ -36,8 +36,8 @@ import org.efaps.db.Update;
 import org.efaps.util.EFapsException;
 
 /**
- * Class for importing Properties from a propertie into the Database for use as
- * eFaps-Admin_Properties
+ * Class for importing Properties from a properties-file into the Database for
+ * use as eFaps-Admin_Properties
  * 
  * @author jmo
  * 
@@ -49,18 +49,35 @@ public class ImportProperties {
   private static final Log LOG         = LogFactory
                                            .getLog(ImportProperties.class);
 
-  private static String    LANGUAGE;
+  private static String    LANGUAGE    = null;
 
   private static String    LANGUAGE_ID = null;
 
+  /**
+   * Sets the Language to use for the Properties-Import
+   * 
+   * @param _Language
+   *          Language to use
+   */
   public static void setLanguage(String _Language) {
     LANGUAGE = _Language;
   }
+
+  /**
+   * returns the Language used for the Properties-Import
+   * 
+   * @return Language if set, otherwise null
+   */
 
   public static String getLanguage() {
     return LANGUAGE;
   }
 
+  /**
+   * find out the Id of the language used for this import
+   * 
+   * @return ID of the Language
+   */
   private static String getLanguageId() {
     if (LANGUAGE_ID == null) {
 
@@ -84,6 +101,13 @@ public class ImportProperties {
 
   }
 
+  /**
+   * Import Properties from a Properties-File as default, if the key is already
+   * existing the default will be replaced with the new default
+   * 
+   * @param _filename
+   *          Complete Path/Name of the File to import
+   */
   public static void importFromProperties(String _filename) {
 
     try {
@@ -111,6 +135,15 @@ public class ImportProperties {
     }
   }
 
+  /**
+   * Import Properties from a Properties-File as language-specific value, if the
+   * key is not existing, a new default(=value) will also be created
+   * 
+   * @param _filename
+   *          Complete Path/Name of the File to import
+   * @param _language
+   *          Language to use for the Import
+   */
   public static void importFromProperties(String _filename, String _language) {
     setLanguage(_language);
     String propOID;
@@ -150,6 +183,13 @@ public class ImportProperties {
     }
   }
 
+  /**
+   * Is a localized value already existing
+   * 
+   * @param _PropertyID
+   *          ID of the Property, the localized value is related to
+   * @return OID of the value, otherwise null
+   */
   private static String getExistingLocale(String _PropertyID) {
     SearchQuery query = new SearchQuery();
     String OID = null;
@@ -166,13 +206,21 @@ public class ImportProperties {
 
       return OID;
     } catch (EFapsException e) {
-      // TODO Auto-generated catch block
+
       LOG.error("getExistingLocale(String)", e);
     }
 
     return null;
   }
 
+  /**
+   * Insert a new localized Value
+   * 
+   * @param PropertyID
+   *          ID of the Property, the localized value is related to
+   * @param _value
+   *          Value of the Property
+   */
   private static void insertNewLocal(String PropertyID, String _value) {
     try {
       Insert insert = new Insert("Admin_Properties_Local");
@@ -192,6 +240,14 @@ public class ImportProperties {
 
   }
 
+  /**
+   * Update a localized Value
+   * 
+   * @param _OID
+   *          OID, of the localized Value
+   * @param _value
+   *          Value
+   */
   private static void updateLocale(String _OID, String _value) {
     try {
       Update update = new Update(_OID);
@@ -208,6 +264,14 @@ public class ImportProperties {
 
   }
 
+  /**
+   * Is a key already existing
+   * 
+   * 
+   * @param _key
+   *          Key to search for
+   * @return OID of the key, otherwise null
+   */
   private static String getExistingKey(String _key) {
     String OID = null;
     SearchQuery query = new SearchQuery();
@@ -230,6 +294,14 @@ public class ImportProperties {
     return null;
   }
 
+  /**
+   * Update a Default
+   * 
+   * @param _OID
+   *          OID of the value to update
+   * @param _value
+   *          value
+   */
   private static void updateDefault(String _OID, String _value) {
     try {
       Update update = new Update(_OID);
@@ -246,6 +318,15 @@ public class ImportProperties {
 
   }
 
+  /**
+   * Insert a new Property
+   * 
+   * @param _key
+   *          Key to insert
+   * @param _value
+   *          value to insert
+   * @return ID of the new Property
+   */
   private static String insertNewProp(String _key, String _value) {
     try {
       Insert insert = new Insert("Admin_Properties");
@@ -267,6 +348,12 @@ public class ImportProperties {
 
   }
 
+  /**
+   * Find out the ID for the OID
+   * 
+   * @param OID
+   * @return ID
+   */
   private static String getId(String OID) {
     Long id = new Instance(OID).getId();
     return id.toString();

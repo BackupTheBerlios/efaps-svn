@@ -20,9 +20,20 @@
 
 package org.efaps.update.property;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import java.io.BufferedOutputStream;
+import java.io.BufferedWriter;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Comparator;
+import java.io.OutputStreamWriter;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.Properties;
 import java.util.TreeMap;
@@ -30,18 +41,31 @@ import java.util.TreeMap;
 import org.efaps.db.SearchQuery;
 import org.efaps.util.EFapsException;
 
-public class ExportProperties  {
+/**
+ * This class exports the Properties from eFaps into a XML-Properties File, a
+ * XML-Properties File sorted by key or a Properties-File
+ * 
+ * @author jmo
+ * 
+ */
+public class ExportProperties {
+  /**
+   * Logger for this class
+   */
+  private static final Log               LOG     = LogFactory
+                                                     .getLog(ExportProperties.class);
 
-  private static Properties              PROP;
+  private static TreeMap<String, String> TM      = new TreeMap<String, String>();
 
-  private static TreeMap<String, String> TM = new TreeMap<String, String>();
+  private static List<String>            KEYLIST = new ArrayList<String>();
 
-  private static TreeMap<String, String> TM2 ;
-
-  public ExportProperties() {
+  /**
+   * get the Properties from the Database
+   */
+  private static void getProperties() {
     SearchQuery query = new SearchQuery();
-    PROP = new Properties();
 
+    String key;
     try {
       query.setQueryTypes("Admin_Properties");
       query.addSelect("Key");
@@ -49,56 +73,142 @@ public class ExportProperties  {
 
       query.execute();
       while (query.next()) {
-        TM.put(query.get("Key").toString(), query.get("Default").toString());
-
-      }
-
-      MyStringComparator myStringComparator = new MyStringComparator();
-      TM2 = new TreeMap<String, String>(myStringComparator);
-      TM2.putAll( TM );
-      
-      Iterator it = TM2.entrySet().iterator();
-      while( it.hasNext() )
-      {
-        Map.Entry me = (Map.Entry)it.next();
-        System.out.println(me.getKey().toString()) ;
-        PROP.setProperty(me.getKey().toString(), me.getValue().toString());
-        
-      }
-      
-      
-      
-      
-      try {
-        PROP.storeToXML((System.out), "gehtdas");
-      } catch (IOException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
+        key = query.get("Key").toString();
+        TM.put(key, query.get("Default").toString());
+        KEYLIST.add(key);
       }
 
     } catch (EFapsException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+
+      LOG.error("setProperties()", e);
+    }
+  }
+
+  /**
+   * Exports the Properties from the Database into an XML-File sorted by the key
+   * 
+   * @param _filename
+   *          Complete Path/Name of the File to import
+   */
+  public static void exportToXMLsorted(String _filename) {
+
+    getProperties();
+    Collections.sort(KEYLIST);
+
+    BufferedOutputStream x;
+    try {
+      x = new BufferedOutputStream(new FileOutputStream(_filename));
+
+      BufferedOutputStream bos = new BufferedOutputStream(x);
+      OutputStreamWriter osw = new OutputStreamWriter(bos, "UTF-8");
+      BufferedWriter bw = new BufferedWriter(osw);
+
+      bw.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+      bw.newLine();
+      bw
+          .write("<!DOCTYPE properties SYSTEM \"http://java.sun.com/dtd/properties.dtd\">");
+      bw.newLine();
+      bw.write("<properties>");
+      bw.newLine();
+      bw.write("  <comment>eFaps sorted XML-OUPUT</comment>");
+      bw.newLine();
+
+      ListIterator<String> y = KEYLIST.listIterator();
+      while (y.hasNext()) {
+        String element = (String) y.next();
+
+        bw.write("  <entry key=\"");
+        bw.write(element);
+
+        bw.write("\">");
+        bw.write(replaceTags(TM.get(element)));
+        bw.write("</entry>");
+        bw.newLine();
+      }
+
+      bw.write("</properties>");
+
+      bw.flush();
+      bw.close();
+    } catch (FileNotFoundException e) {
+
+      LOG.error("exportToXMLsorted(String)", e);
+    } catch (IOException e) {
+
+      LOG.error("exportToXMLsorted(String)", e);
     }
 
   }
 
-  
-  class MyStringComparator implements Comparator
-  {
-    public int compare( Object o1, Object o2 )
-    {
-      int i = prepairForCompare( o1 ).compareTo( prepairForCompare( o2 ) );
-      return ( 0 != i ) ? i : ((String)o2).compareTo( (String)o1 );
+  /**
+   * replace Tags
+   * 
+   * @param _String
+   * @return
+   */
+  private static String replaceTags(String _String) {
+    _String = replaceTag(_String, "<", "&lt;");
+    _String = replaceTag(_String, ">", "&gt;");
+    _String = replaceTag(_String, "&", "&amp;");
+    return _String;
+
+  }
+
+  private static String replaceTag(String _String, String _target,
+      String _replacement) {
+    return _String.replace(_target, _replacement);
+  }
+
+  /**
+   * Exports the Properties from the Database into an XML-File
+   * 
+   * @param _filename
+   *          Complete Path/Name of the File to import
+   */
+  public static void exportToXML(String _filename) {
+
+    try {
+      copyToProperties().storeToXML(new FileOutputStream(_filename),
+          "eFaps unsorted XML-OUPUT");
+    } catch (IOException e) {
+
+      LOG.error("exportToXML(String)", e);
     }
 
-    private String prepairForCompare( Object o )
-    {
-      return ((String)o).toLowerCase().replace( 'Š', 'a' )
-                                      .replace( 'š', 'o' )
-                                      .replace( 'Ÿ', 'u' )
-                                      .replace( '§', 's' );
+  }
+
+  /**
+   * Exports the Properties from the Database into an Properties-File
+   * 
+   * @param _filename
+   *          Complete Path/Name of the File to import
+   */
+  public static void exportToProperties(String _filename) {
+    try {
+      copyToProperties().store(new FileOutputStream(_filename),
+          "eFaps unsorted Properties");
+    } catch (IOException e) {
+
+      LOG.error("exportToXML(String)", e);
     }
   }
 
+  /**
+   * copy from Map to Properties
+   * 
+   * @return Properties
+   */
+  private static Properties copyToProperties() {
+    getProperties();
+
+    Properties prop = new Properties();
+    Iterator it = TM.entrySet().iterator();
+    while (it.hasNext()) {
+      Map.Entry me = (Map.Entry) it.next();
+
+      prop.setProperty(me.getKey().toString(), me.getValue().toString());
+
+    }
+    return prop;
+  }
 }
