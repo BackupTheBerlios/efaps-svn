@@ -114,10 +114,10 @@ CP=$CP:$shellPathLib/postgresql-8.1-407.jdbc3.jar
 # used for stores
 # set CP=%CP%;%derbyLibPath%/commons-vfs-20050307052300.jar
 # database driver
-# set CP=%CP%;%JH%/oracle-drivers/ojdbc14_g.jar
+[ -z "$ORACLE_HOME" ] && CP=$CP:$ORACLE_HOME/jdbc/lib/ojdbc14.jar
 
 # add external defined class paths
-[ -z "$EFAPS_CLASSPATH" ] & CP=$EFAPS_CLASSPATH:$CP
+[ -z "$EFAPS_CLASSPATH" ] && CP=$EFAPS_CLASSPATH:$CP
 
 # For Cygwin, switch paths to Windows format before running java
 if $cygwin; then
