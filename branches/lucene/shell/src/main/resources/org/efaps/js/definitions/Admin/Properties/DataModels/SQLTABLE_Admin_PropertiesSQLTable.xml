@@ -43,9 +43,26 @@
       <create>true</create>
       <update>true</update>
       <!-- columns -->
+      <column name="BUNDLEID"   type="INTEGER"      not-null="true" />
       <column name="KEY"        type="STRING_SHORT" not-null="true" length="255"/>
-      <column name="DEFAULTV"    type="STRING_SHORT" not-null="true" length="255"/>
+      <column name="DEFAULTV"   type="STRING_SHORT" not-null="true" length="255"/>
       </database>
   </definition>
-  
+  <definition>
+	<version>
+      <application>lucene</application>
+      <global>1</global>
+      <local>$Rev: $</local>
+      <mode>(version>2)</mode>
+    </version>
+
+    <name>Admin_PropertiesSQLTable</name>
+
+    <database>
+      <table-name>T_ADPROP</table-name>
+      <update>true</update>
+  		<foreign name="T_ADPROP_FK_BUNDLEID"	key="BUNDLEID"  	reference="T_ADPROPBUN(ID)"/>
+	  
+	</database>
+  </definition>
  </datamodel-sqltable>

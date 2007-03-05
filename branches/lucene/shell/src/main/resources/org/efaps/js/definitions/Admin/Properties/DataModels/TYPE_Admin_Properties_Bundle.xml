@@ -24,7 +24,7 @@
 -->
 
 <datamodel-type>
-  <uuid>8c839380-ea1c-44a7-97aa-67934b94aca9</uuid>
+  <uuid>03c51ba4-00a6-47ac-b987-270308fe68d8</uuid>
 
  <definition>
     <version>
@@ -34,59 +34,45 @@
       <mode>(version==2)</mode>
     </version>
 
-    <name>Admin_Properties</name>
+    <name>Admin_Properties_Bundle</name>
     
 
    <attribute>
       <name>OID</name>
       <type>OID</type>
-      <sqltable>Admin_PropertiesSQLTable</sqltable>
+      <sqltable>Admin_Properties_BundleSQLTable</sqltable>
       <sqlcolumn>ID</sqlcolumn>
    </attribute>
 
     <attribute>
       <name>ID</name>
       <type>Integer</type>
-      <sqltable>Admin_PropertiesSQLTable</sqltable>
+      <sqltable>Admin_Properties_BundleSQLTable</sqltable>
       <sqlcolumn>ID</sqlcolumn>
     </attribute>
 
 
     <attribute>
-      <name>Key</name>
+      <name>Name</name>
       <type>String</type>
-      <sqltable>Admin_PropertiesSQLTable</sqltable>
-      <sqlcolumn>KEY</sqlcolumn>
+      <sqltable>Admin_Properties_BundleSQLTable</sqltable>
+      <sqlcolumn>NAME</sqlcolumn>
     </attribute>
     
     <attribute>
-      <name>Default</name>
+      <name>UUID</name>
       <type>String</type>
-      <sqltable>Admin_PropertiesSQLTable</sqltable>
-      <sqlcolumn>DEFAULTV</sqlcolumn>
+      <sqltable>Admin_Properties_BundleSQLTable</sqltable>
+      <sqlcolumn>UUID</sqlcolumn>
+    </attribute>
+    
+    <attribute>
+      <name>Sequence</name>
+      <type>Integer</type>
+      <sqltable>Admin_Properties_BundleSQLTable</sqltable>
+      <sqlcolumn>SEQUENCE</sqlcolumn>
     </attribute>
  
   </definition>
-  <definition>
-    <version>
-      <application>eFaps</application>
-      <global>1</global>
-      <local>$Rev$</local>
-      <mode>(version==3)</mode>
-    </version>
-
-    <name>Admin_Properties</name>
-    
-
-   <attribute>
-      <name>BundleID</name>
-      <type>Link</type>
-      <typelink>Admin_Properties_Bundle</typelink>
-      <sqltable>Admin_PropertiesSQLTable</sqltable>
-      <sqlcolumn>BUNDLEID</sqlcolumn>
-   </attribute>
-
-   
-
- </definition>
+  
 </datamodel-type>

@@ -169,8 +169,8 @@ public class Cache<K extends CacheObjectInterface> {
                                       .synchronizedSet(new HashSet<Cache>());
 
   /**
-   * The static method removes all values in the caches. The datamodel cache is
-   * initialised automatically using the RunLevel
+   * The static method first removes all values in the caches. Then the cache is
+   * initialised automatically debenig on the desired RunLevel
    */
   public static void reloadCacheRunLevel() throws Exception {
     synchronized (caches) {
@@ -183,11 +183,17 @@ public class Cache<K extends CacheObjectInterface> {
       for (Iterator iter = RunLevel.getCacheMethods().iterator(); iter
           .hasNext();) {
         CacheMethod element = (CacheMethod) iter.next();
-
         Class<?> cls = Class.forName(element.getClassName());
-        Method m = cls.getMethod(element.getMethodName(), new Class[] {});
-        m.invoke(cls, (Object[]) null);
+        if (element.hasParameter()) {
+          Method m = cls.getMethod(element.getMethodName(),
+              new Class[] { String.class });
+          m.invoke(cls, (String) element.getParameter());
+        } else {
 
+          Method m = cls.getMethod(element.getMethodName(), new Class[] {});
+          m.invoke(cls, (Object[]) null);
+
+        }
       }
 
     }
@@ -206,15 +212,15 @@ public class Cache<K extends CacheObjectInterface> {
       JAASSystem.initialise();
       Role.initialise();
       Group.initialise();
-      
+
       AttributeType.initialise();
       SQLTable.initialise();
       Type.initialise();
       Attribute.initialise();
-      
+
       AccessType.initialise();
       AccessSet.initialise();
-      
+
       UserInterfaceObject.initialise();
       EventDefinition.initialise();
       /*

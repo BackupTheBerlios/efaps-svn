@@ -146,34 +146,16 @@ public class DBProperties {
    * Method to initialise the Propeties using the System default language
    */
   public static void initialise() {
-    String SQLStmt = "select distinct KEY, DEFAULTV, VALUE from T_ADPROP "
+    String SQLStmt = "select distinct KEY, DEFAULTV, VALUE ,SEQUENCE from T_ADPROPBUN "
+        + " left join T_ADPROP on (T_ADPROPBUN.ID = T_ADPROP.BUNDLEID) "
         + " left join (select PROPID, VALUE from T_ADPROPLOC"
         + " left join T_ADLANG on (T_ADPROPLOC.LANGID = T_ADLANG.ID)"
-        + " where LANG ='" + getLanguage() + "') tmp "
-        + " on ( T_ADPROP.ID = tmp.propid )";
+        + " where LANG ='"
+        + getLanguage()
+        + "') tmp "
+        + " on ( T_ADPROP.ID = tmp.propid ) " + " order by SEQUENCE ";
 
-    ConnectionResource con;
-    String value;
-    try {
-      con = Context.getThreadContext().getConnectionResource();
-      Statement stmt = con.getConnection().createStatement();
-
-      ResultSet rs = stmt.executeQuery(SQLStmt);
-      while (rs.next()) {
-        value = rs.getString(3);
-        if (value == null) {
-          value = rs.getString(2);
-        }
-        PROPCACHE.put(rs.getString(1).trim(), value.trim());
-      }
-      INITIALISED = true;
-    } catch (EFapsException e) {
-
-      LOG.error("initialise()", e);
-    } catch (SQLException e) {
-
-      LOG.error("initialise()", e);
-    }
+    initialiseCache(SQLStmt);
 
   }
 
@@ -184,5 +166,68 @@ public class DBProperties {
    */
   public static boolean isInitialised() {
     return INITIALISED;
+  }
+
+  /**
+   * Method to initialise only a Bundle of the Properties
+   * 
+   * @see initialiseBundle(String _BundleUUID)
+   * @param _BundleUUID
+   *          UUID of the Bundle to use
+   * @param _Language
+   *          Language to use
+   */
+  public void initialiseBundle(String _BundleUUID, String _Language) {
+    setLanguage(_Language);
+    initialiseBundle(_BundleUUID);
+  }
+
+  /**
+   * Method to initialise only a Bundle of the Properties
+   * 
+   * @param _BundleUUID
+   *          UUID of the Bundle to use
+   */
+  public void initialiseBundle(String _BundleUUID) {
+    String SQLStmt = "select distinct KEY, DEFAULTV, VALUE from T_ADPROPBUN "
+        + " left join T_ADPROP on (T_ADPROPBUN.ID = T_ADPROP.BUNDLEID) "
+        + " left join (select PROPID, VALUE from T_ADPROPLOC"
+        + " left join T_ADLANG on (T_ADPROPLOC.LANGID = T_ADLANG.ID)"
+        + " where LANG ='" + getLanguage() + "') tmp "
+        + " on ( T_ADPROP.ID = tmp.propid ) " + " where UUID = '" + _BundleUUID
+        + "'";
+    initialiseCache(SQLStmt);
+  }
+
+  /**
+   * This method is initialising the cache
+   * 
+   * @param _SQLStmt
+   *          SQl-Statment to access the database
+   */
+  private static void initialiseCache(String _SQLStmt) {
+    ConnectionResource con;
+    String value;
+    try {
+      con = Context.getThreadContext().getConnectionResource();
+      Statement stmt = con.getConnection().createStatement();
+
+      ResultSet rs = stmt.executeQuery(_SQLStmt);
+      while (rs.next()) {
+        value = rs.getString("VALUE");
+        if (value == null) {
+          value = rs.getString("DEFAULTV");
+        }
+        PROPCACHE.put(rs.getString("KEY").trim(), value.trim());
+      }
+      INITIALISED = true;
+    } catch (EFapsException e) {
+
+      LOG.error("initialiseCache()", e);
+    } catch (SQLException e) {
+
+      LOG.error("initialiseCache()", e);
+    }
+
   }
 }

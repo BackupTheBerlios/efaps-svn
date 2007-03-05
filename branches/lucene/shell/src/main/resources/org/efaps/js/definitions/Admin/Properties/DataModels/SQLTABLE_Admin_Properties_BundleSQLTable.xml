@@ -17,38 +17,36 @@
  limitations under the License.
 
  Author:          jmo
- Revision:        $Rev:  $
- Last Changed:    $Date:  $
- Last Changed By: $Author:  $
+ Revision:        $Rev$
+ Last Changed:    $Date$
+ Last Changed By: $Author$
 
 -->
 
 <datamodel-sqltable>
-  <uuid>ffdf2e8f-ff2b-4cc8-85bf-481c167302ab</uuid>
+  <uuid>5e717f5c-970b-4c5f-a23f-fe7db8ac2ed9</uuid>
 
-  <!-- SQL Table to hold the RunLevel Basic Definitons -->
+  <!-- SQL Table to hold the Bundle-Defenition for the Properties -->
 
   <definition>
     <version>
       <application>eFaps</application>
-      <global>3</global>
+      <global>1</global>
       <local>$Rev: $</local>
-      <mode>(version==3)</mode>
+      <mode>(version==2)</mode>
     </version>
 
-    <name>Admin_RunLevel_DefinitionSQLTable</name>
+    <name>Admin_Properties_BundleSQLTable</name>
 
     <database>
-      <table-name>T_ADRUNLEVELDEF</table-name>
+      <table-name>T_ADPROPBUN</table-name>
       <create>true</create>
       <update>true</update>
       <!-- columns -->
-      <column name="RUNLEVELID" type="INTEGER"      not-null="true" />
-      <column name="PRIORITY"   type="INTEGER"      not-null="true" />
-      <column name="CLASS"      type="STRING_SHORT" not-null="true" length="255"/> 
-      <column name="METHOD"     type="STRING_SHORT" not-null="true" length="128"/> 
-      <column name="PARAMETER"  type="STRING_SHORT"                 length="128"/>
-     <foreign name="T_ADRUNLEVELDEF_FK_T_ADRUNLEVEL"	key="RUNLEVELID"  	reference="T_ADRUNLEVEL(ID)"/>
+      <column name="NAME"      type="STRING_SHORT" not-null="true" length="255"/>
+      <column name="UUID"      type="STRING_SHORT" not-null="true" length="255"/>
+      <column name="SEQUENCE"  type="INTEGER"      not-null="true" />
     </database>
   </definition>
-</datamodel-sqltable>
+  
+ </datamodel-sqltable>

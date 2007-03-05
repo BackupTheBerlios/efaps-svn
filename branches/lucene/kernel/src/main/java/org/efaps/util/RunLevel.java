@@ -45,6 +45,13 @@ import org.efaps.db.databases.AbstractDatabase;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.util.cache.Cache;
 
+/**
+ * Thsi Class is the Runlevel for eFaps. It provides the possibilty to load only
+ * the speciefied parts into the Cache. It can be defined within the databse
+ * 
+ * @author jmo
+ * 
+ */
 public class RunLevel {
   /**
    * Logger for this class
@@ -72,6 +79,11 @@ public class RunLevel {
     new RunLevel("initDB");
   }
 
+  /**
+   * get the List of the CachedMethods
+   * 
+   * @return List
+   */
   public static List getCacheMethods() {
     return CACHEMETHODS;
 
@@ -105,7 +117,7 @@ public class RunLevel {
 
     StringBuilder stmt = new StringBuilder();
     stmt
-        .append("select CLASS, METHOD from T_ADRUNLEVELDEF where RUNLEVELID  in (");
+        .append("select CLASS, METHOD, PARAMETER from T_ADRUNLEVELDEF where RUNLEVELID  in (");
     stmt.append(getId());
     for (Iterator iter = PARENTS.iterator(); iter.hasNext();) {
       String element = (String) iter.next();
@@ -155,9 +167,13 @@ public class RunLevel {
 
       rs = stmt.executeQuery(getMethodSelectStmt());
       while (rs.next()) {
-
-        CACHEMETHODS.add(this.new CacheMethod(rs.getString(1).trim(), rs
-            .getString(2).trim()));
+        if (rs.getString(3) != null) {
+          CACHEMETHODS.add(this.new CacheMethod(rs.getString(1).trim(), rs
+              .getString(2).trim(), rs.getString(3).trim()));
+        } else {
+          CACHEMETHODS.add(this.new CacheMethod(rs.getString(1).trim(), rs
+              .getString(2).trim()));
+        }
       }
 
     } catch (EFapsException e) {
@@ -167,7 +183,7 @@ public class RunLevel {
 
       LOG.error("initialise()", e);
     } catch (Exception e) {
-      // TODO Auto-generated catch block
+
       LOG.error("initialise()", e);
     }
 
@@ -303,17 +319,33 @@ public class RunLevel {
     Context.getThreadContext().close();
   }
 
+  /**
+   * Cache for the Methods, wich are defined for the Runlevel
+   * 
+   * @author jmo
+   * 
+   */
   public class CacheMethod {
 
-    private String CLASSNAME;
+    private String CLASSNAME  = null;
 
-    private String METHODNAME;
+    private String METHODNAME = null;
 
-    public CacheMethod(String _CLASSNAME, String _METHODNAME) {
-      CLASSNAME = _CLASSNAME;
+    private String PARAMETER  = null;
 
-      METHODNAME = _METHODNAME;
+    public CacheMethod(String _ClassName, String _MethodName) {
+      CLASSNAME = _ClassName;
 
+      METHODNAME = _MethodName;
+
+    }
+
+    public CacheMethod(String _ClassName, String _MethodName, String _Parameter) {
+      CLASSNAME = _ClassName;
+
+      METHODNAME = _MethodName;
+
+      PARAMETER = _Parameter;
     }
 
     public String getClassName() {
@@ -322,6 +354,19 @@ public class RunLevel {
 
     public String getMethodName() {
       return METHODNAME;
+    }
+
+    public String getParameter() {
+      return PARAMETER;
+    }
+
+    public boolean hasParameter() {
+      if (PARAMETER != null) {
+        return true;
+      }
+
+      return false;
+
     }
 
   }

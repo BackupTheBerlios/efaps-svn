@@ -80,6 +80,13 @@
       <sqlcolumn>METHOD</sqlcolumn>
     </attribute>
     
+    <attribute>
+      <name>Parameter</name>
+      <type>String</type>
+      <sqltable>Admin_RunLevel_DefinitionSQLTable</sqltable>
+      <sqlcolumn>PARAMETER</sqlcolumn>
+    </attribute>
+    
     
     <!-- properties -->
     
