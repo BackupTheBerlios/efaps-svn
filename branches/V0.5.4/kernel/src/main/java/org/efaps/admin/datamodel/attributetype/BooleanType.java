@@ -27,7 +27,6 @@ import java.util.ArrayList;
 import java.util.Locale;
 
 import org.efaps.db.Context;
-import org.efaps.admin.ui.Field;
 import org.efaps.db.query.CachedResult;
 
 /**
@@ -69,9 +68,17 @@ public class BooleanType extends AbstractType  {
    * @param _context  context for this request
    * @param _value    new value to set
    */
-  public void set(Context _context, String _value)  {
-    if (_value!=null && _value.equalsIgnoreCase("TRUE"))  {
-      setValue(true);
+  public void set(Context _context, Object _value)  {
+    if (_value != null)  {
+      if (_value instanceof String)  {
+        if (((String) _value).equalsIgnoreCase("TRUE"))  {
+          setValue(true);
+        } else  {
+          setValue(false);
+        }
+      } else if (_value instanceof Boolean)  {
+        setValue((Boolean) _value);
+      }
     } else  {
       setValue(false);
     }

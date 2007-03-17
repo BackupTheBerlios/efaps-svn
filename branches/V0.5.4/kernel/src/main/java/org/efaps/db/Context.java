@@ -160,7 +160,9 @@ public class Context {
                   final Map < String, String[] > _parameters,
                   final Map < String, FileItem > _fileParameters)
                                                       throws EFapsException  {
-System.out.println("--------------------------------- new context");
+    if (LOG.isDebugEnabled())  {
+      LOG.debug("create new context for " + _person);
+    }
     this.transaction = _transaction;
     this.person = _person;
     this.locale = _locale;
@@ -181,7 +183,10 @@ e.printStackTrace();
    * Destructor of class <code>Context</code>.
    */
   public final void finalize()  {
-System.out.println("--------------------------------- context.finalize connection=" + getConnection());
+    if (LOG.isDebugEnabled())  {
+      LOG.debug("finalize context for " + this.person);
+      LOG.debug("connection is " + getConnection());
+    }
     try  {
       getConnection().close();
     } catch (Exception e)  {
@@ -224,7 +229,10 @@ System.out.println("--------------------------------- context.finalize connectio
   }
 
   public void close()  {
-System.out.println("--------------------------------- context.close");
+    if (LOG.isDebugEnabled())  {
+      LOG.debug("close context for " + this.person);
+      LOG.debug("connection is " + getConnection());
+    }
     try  {
       getConnection().close();
     } catch (Exception e)  {
@@ -239,58 +247,11 @@ for (ConnectionResource con : this.connectionStore)  {
 // TODO: write in log-file...
     if ((con.getConnection() != null) && !con.getConnection().isClosed())  {
       con.getConnection().close();
-      System.out.println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
-      System.out.println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
-      System.out.println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
-      System.out.println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
-      System.out.println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
-      System.out.println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
-      System.out.println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
-      System.out.println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
-      System.out.println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
-      System.out.println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
-      System.out.println("");
-      System.out.println("");
-      System.out.println("connection not closed");
-      System.out.println("");
-      System.out.println("");
-      System.out.println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
-      System.out.println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
-      System.out.println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
-      System.out.println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
-      System.out.println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
-      System.out.println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
-      System.out.println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
-      System.out.println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
-      System.out.println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
-      System.out.println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
+          LOG.error("connection was not closed!");
     }
   } catch (SQLException e)  {
-      System.out.println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
-      System.out.println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
-      System.out.println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
-      System.out.println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
-      System.out.println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
-      System.out.println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
-      System.out.println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
-      System.out.println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
-      System.out.println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
-      System.out.println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
-      System.out.println("");
-      System.out.println("");
-      System.out.println("SQLException is thrown while trying to get close status of connection or while trying to close");
-      System.out.println("");
-      System.out.println("");
-      System.out.println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
-      System.out.println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
-      System.out.println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
-      System.out.println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
-      System.out.println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
-      System.out.println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
-      System.out.println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
-      System.out.println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
-      System.out.println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
-      System.out.println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
+        LOG.error("QLException is thrown while trying to get close status of "
+                  + "connection or while trying to close", e);
   }
 }
 
@@ -367,7 +328,6 @@ if (provider.equals("org.efaps.db.transaction.JDBCStoreResource"))  {
 } else  {
   storeRsrc = new VFSStoreResource(this, _type, _fileId);
 }
-System.out.println("storeRsrc.getContext()="+storeRsrc.getContext());
     storeRsrc.open();
     this.storeStore.add(storeRsrc);
     return storeRsrc;
