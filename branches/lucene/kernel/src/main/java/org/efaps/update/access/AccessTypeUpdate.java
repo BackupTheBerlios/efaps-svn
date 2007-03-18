@@ -22,22 +22,13 @@ package org.efaps.update.access;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.apache.commons.digester.Digester;
-import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.xml.sax.SAXException;
 
 import org.efaps.update.AbstractUpdate;
-import org.efaps.util.EFapsException;
 
 /**
  * @author tmo
@@ -97,6 +88,10 @@ public class AccessTypeUpdate extends AbstractUpdate  {
       digester.addCallParam("access-type/definition/name", 0);
 
       ret = (AccessTypeUpdate) digester.parse(_file);
+
+      if (ret != null)  {
+        ret.setFile(_file);
+      }
     } catch (SAXException e)  {
 e.printStackTrace();
       //      LOG.error("could not read file '" + _fileName + "'", e);

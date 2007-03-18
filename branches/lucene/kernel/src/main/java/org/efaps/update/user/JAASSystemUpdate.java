@@ -32,7 +32,6 @@ import org.apache.commons.logging.LogFactory;
 import org.xml.sax.SAXException;
 
 import org.efaps.update.AbstractUpdate;
-import org.efaps.util.EFapsException;
 
 /**
  * @author tmo
@@ -173,6 +172,10 @@ public class JAASSystemUpdate extends AbstractUpdate  {
       digester.addCallParam("user-jaassystem/definition/assigned-group/key", 1);
 
       ret = (JAASSystemUpdate) digester.parse(_file);
+
+      if (ret != null)  {
+        ret.setFile(_file);
+      }
     } catch (SAXException e)  {
 e.printStackTrace();
       //      LOG.error("could not read file '" + _fileName + "'", e);

@@ -37,7 +37,7 @@ public abstract class AbstractObject {
 
   public abstract String getType();
 
-  public abstract Map<String, String> getAttributes();
+  public abstract Map<String, Object> getAttributes();
 
   public abstract void setID(String _ID);
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 The eFaps Team
+ * Copyright 2003-2007 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,6 +35,7 @@ import org.apache.commons.logging.LogFactory;
 
 import org.xml.sax.SAXException;
 
+import org.efaps.admin.datamodel.Type;
 import org.efaps.db.Context;
 import org.efaps.db.Insert;
 import org.efaps.db.Instance;
@@ -117,6 +118,9 @@ public class SQLTableUpdate extends AbstractUpdate  {
       digester.addCallMethod("datamodel-sqltable/definition/parent", "setParent", 1);
       digester.addCallParam("datamodel-sqltable/definition/parent", 0);
 
+      digester.addCallMethod("datamodel-sqltable/definition/database/sql", "addSQL", 1);
+      digester.addCallParam("datamodel-sqltable/definition/database/sql", 0);
+
       digester.addCallMethod("datamodel-sqltable/definition/database/table-name", "setSQLTableName", 1);
       digester.addCallParam("datamodel-sqltable/definition/database/table-name", 0);
 
@@ -151,7 +155,12 @@ public class SQLTableUpdate extends AbstractUpdate  {
       digester.addCallParam("datamodel-sqltable/definition/database/foreign", 2, "reference");
 
       ret = (SQLTableUpdate) digester.parse(_file);
+      
+      if (ret != null)  {
+        ret.setFile(_file);
+      }
     } catch (SAXException e)  {
+System.out.println("could not read file '" + _file + "'");
 e.printStackTrace();
       //      LOG.error("could not read file '" + _fileName + "'", e);
     }
@@ -274,10 +283,23 @@ e.printStackTrace();
     // instance variables
 
     /**
-     * The SQL table name of the parent table.
+     * The SQL table name of the parent table (as name in the SQL database).
      */
     private String parentSQLTableName = null;
 
+    /**
+     * The SQL table name of the parent table (as internal name in eFaps).
+     */
+    private String parent = null;
+    
+    /**
+     * SQL statement which is directly executed (e.g. to create a SQL view).
+     *
+     * @see #addSQL
+     * @see #executeSQLs
+     */
+    private final List < String > sqls = new ArrayList < String > ();
+    
     private boolean create = false;
     
     private boolean update = false;
@@ -317,25 +339,22 @@ e.printStackTrace();
     }
 
     /**
+     * Defines sql statements which is directly executed (e.g. to create a
+     * view).
+     *
+     * @param _sql  sql statement to execute
+     * @see #sqls
+     */
+    public void addSQL(final String _sql)  {
+      this.sqls.add(_sql);
+    }
+
+    /**
      * @todo throw Exception is not allowed
      */
     public void setParent(final String _parent) throws Exception {
       if ((_parent != null) && (_parent.length() > 0))  {
-        // search for the instance
-        SearchQuery query = new SearchQuery();
-        query.setQueryTypes("Admin_DataModel_SQLTable");
-        query.addWhereExprEqValue("Name", _parent);
-        query.addSelect("OID");
-        query.executeWithoutAccessCheck();
-        if (query.next())  {
-          Instance instance = new Instance((String) query.get("OID"));
-          addValue("DMTableMain", "" + instance.getId());
-        }  else  {
-          addValue("DMTableMain", null);
-        }
-        query.close();
-      } else  {
-        addValue("DMTableMain", null);
+        this.parent = _parent;
       }
     }
 
@@ -370,13 +389,15 @@ e.printStackTrace();
     }
 
     /**
-     *
+     * @see #executeSQL
+     * @see #createSQLTable
+     * @see #updateSQLTable
      */
-    public Instance updateInDB(final Instance _instance,
-                               final Set < Link > _allLinkTypes,
-                               final Insert _insert) throws EFapsException, Exception  {
-      Instance instance = _instance;
-      
+    public void updateInDB(final Type _dataModelType,
+                           final String _uuid,
+                           final Set < Link > _allLinkTypes) throws EFapsException,Exception {
+    
+      executeSQLs();
       if (this.create)  {
         createSQLTable();
       }
@@ -384,20 +405,69 @@ e.printStackTrace();
         updateSQLTable();
       }
       if (getValue("Name") != null)  {
-        instance = super.updateInDB(_instance, _allLinkTypes, _insert);
+          
+        // search for the parent SQL table name instance (if defined)
+        if (this.parent != null)  {
+          SearchQuery query = new SearchQuery();
+          query.setQueryTypes("Admin_DataModel_SQLTable");
+          query.addWhereExprEqValue("Name", this.parent);
+          query.addSelect("OID");
+          query.executeWithoutAccessCheck();
+          if (query.next())  {
+            Instance instance = new Instance((String) query.get("OID"));
+            addValue("DMTableMain", "" + instance.getId());
+          }
+          query.close();
+        }
+    
+        super.updateInDB(_dataModelType, _uuid, _allLinkTypes);
       }
-      return instance;
     }
 
+    /**
+     * Execute defined SQL statement in the database.
+     *
+     * @see #sqls
+     * @see #updateInDB
+     */
+    protected void executeSQLs() throws EFapsException  {
+      Context context = Context.getThreadContext();
+      ConnectionResource con = null;
+      try  {  
+        con = context.getConnectionResource();
+        Statement stmt = con.getConnection().createStatement();
+        for (String sql : this.sqls)  {
+          stmt.execute(sql);
+        }
+        con.commit();
+      } catch (EFapsException e)  {
+        LOG.error(e);
+        if (con != null)  {
+          con.abort();
+        }
+        throw e;
+      } catch (Throwable e)  {
+        LOG.error(e);
+        if (con != null)  {
+          con.abort();
+        }
+        throw new EFapsException(getClass(), "executeSQL.Throwable", e);
+      }
+    }
 
     /**
+     * Create the SQL table in the database.
      *
+     * @see #updateInDB
      */
     protected void createSQLTable() throws EFapsException  {
       Context context = Context.getThreadContext();
       ConnectionResource con = null;
       String tableName = getValue("SQLTable");
-      try  {  
+      if (LOG.isInfoEnabled())  {
+        LOG.info("    Create DB SQL Table '" + tableName + "'");
+      }
+      try  {
         con = context.getConnectionResource();
 
         Context.getDbType().createTable(con.getConnection(), 
@@ -421,12 +491,17 @@ e.printStackTrace();
     }
 
     /**
+     * Udpate the SQL table in the database.
      *
+     * @see #updateInDB
      */
     protected void updateSQLTable() throws EFapsException  {
       Context context = Context.getThreadContext();
       ConnectionResource con = null;
       String tableName = getValue("SQLTable");
+      if (LOG.isInfoEnabled())  {
+        LOG.info("    Update DB SQL Table '" + tableName + "'");
+      }
       try  {  
         con = context.getConnectionResource();
 

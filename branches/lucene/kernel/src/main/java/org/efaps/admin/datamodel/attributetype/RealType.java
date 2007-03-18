@@ -27,7 +27,6 @@ import java.util.ArrayList;
 import java.util.Locale;
 
 import org.efaps.admin.datamodel.AttributeTypeInterface;
-import org.efaps.admin.ui.Field;
 import org.efaps.db.Context;
 import org.efaps.db.query.CachedResult;
 
@@ -63,6 +62,15 @@ setValue(_rs.getDouble(_indexes.get(0).intValue()));
   public void set(Context _context, String _value) throws NumberFormatException  {
     if (_value!=null)  {
       setValue(Double.parseDouble(_value));
+    }
+  }
+  public void set(final Context _context, final Object _value)  {
+    if (_value != null)  {
+      if ((_value instanceof String) && (((String) _value).length() > 0))  {
+        setValue(Double.parseDouble((String) _value));
+      } else if (_value instanceof Number)  {
+        setValue(((Number) _value).doubleValue());
+      }
     }
   }
 

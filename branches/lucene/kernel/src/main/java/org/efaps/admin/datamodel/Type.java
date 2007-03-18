@@ -27,7 +27,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -1054,6 +1053,10 @@ type.readFromDB4Properties();
       for (Map.Entry < Long, Long > entry : parents.entrySet())  {
         Type child  = Type.get(entry.getKey());
         Type parent = Type.get(entry.getValue());
+// TODO: test if loop
+if (child.getId() == parent.getId())  {
+  throw new CacheReloadException("child and parent type is equal!child is " + child);
+}
 
         child.setParentType(parent);
         parent.addChildType(child);

@@ -22,6 +22,7 @@ package org.efaps.db;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -41,7 +42,6 @@ import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.event.EventDefinition;
 import org.efaps.admin.event.TriggerEvent;
 import org.efaps.admin.event.TriggerKeys4Values;
-import org.efaps.admin.ui.Field;
 import org.efaps.db.Context;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.util.EFapsException;
@@ -81,8 +81,8 @@ public class Update  {
 
   private final Map<String,AttributeTypeInterface> mapAttr2Value = new HashMap<String,AttributeTypeInterface>();
 
-  protected final Map < Attribute , String > values 
-                                        = new HashMap < Attribute, String > ();
+  protected final Map < Attribute , Object > values 
+                                        = new HashMap < Attribute, Object > ();
 
   /////////////////////////////////////////////////////////////////////////////
   // constructors / destructors
@@ -232,6 +232,36 @@ if (attr==null)  {
   public void add(final Attribute _attr, 
                   final String _value, 
                   final boolean _triggerRelevant) throws EFapsException  {
+    add(_attr, (Object) _value, _triggerRelevant);
+  }
+
+  /////////////////////////////////////////////////////////////////////////////
+  // timestamp methods
+
+  public void add(final String _attr,
+                  final Timestamp _value) throws EFapsException  {
+    Attribute attr = getInstance().getType().getAttribute(_attr);
+    if (attr==null)  {
+      throw new EFapsException(getClass(), "add.UnknownAttributeName");
+    }
+    add(attr, (Object) _value, true);
+  }
+
+  /**
+   * @param _attr   attribute to update
+   * @param _value  new attribute value
+   */
+  public void add(final Attribute _attr, 
+                  final Timestamp _value) throws EFapsException  {
+    add(_attr, (Object) _value, true);
+  }
+
+  /////////////////////////////////////////////////////////////////////////////
+  // private common method
+
+  private void add(final Attribute _attr, 
+                   final Object _value, 
+                   final boolean _triggerRelevant) throws EFapsException  {
     Map<String,AttributeTypeInterface> expressions = getExpr4Tables().get(_attr.getTable());
 
     if (expressions==null)  {
@@ -252,7 +282,6 @@ this.mapAttr2Value.put(_attr.getName(), attrType);
       this.values.put(_attr, _value);
     }
   }
-
 
 protected boolean test4Unique(Context _context)  throws Exception  {
   return test4Unique(_context, getType());

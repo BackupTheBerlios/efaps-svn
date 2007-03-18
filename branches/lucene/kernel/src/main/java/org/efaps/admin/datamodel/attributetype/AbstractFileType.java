@@ -20,14 +20,9 @@
 
 package org.efaps.admin.datamodel.attributetype;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Locale;
 
 import org.efaps.db.Context;
-import org.efaps.admin.ui.Field;
 
 /**
  *
@@ -41,7 +36,7 @@ abstract public class AbstractFileType extends AbstractType  {
 /**
  * @todo must an exception thrown?
  */
-public void set(Context _context, String _value)  {
+public void set(final Context _context, final Object _value)  {
 }
   /**
    * The method takes the name of the type and translates them with the help of

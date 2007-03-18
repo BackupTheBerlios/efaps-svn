@@ -23,10 +23,8 @@ package org.efaps.update.datamodel;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.digester.Digester;
@@ -125,6 +123,10 @@ public class TypeUpdate extends AbstractUpdate  {
       digester.addCallParam("datamodel-type/definition/property", 1);
 
       ret = (TypeUpdate) digester.parse(_file);
+
+      if (ret != null)  {
+        ret.setFile(_file);
+      }
     } catch (SAXException e)  {
 e.printStackTrace();
       //      LOG.error("could not read file '" + _fileName + "'", e);
@@ -200,7 +202,7 @@ e.printStackTrace();
       update.add("Table",          "" + sqlTableId);
       update.add("SQLColumn",      this.sqlColumn);
       if (typeLinkId == 0)  {
-        update.add("TypeLink", null);
+        update.add("TypeLink", (String) null);
       } else  {
         update.add("TypeLink", "" + typeLinkId);
       }
@@ -305,6 +307,23 @@ e.printStackTrace();
     ///////////////////////////////////////////////////////////////////////////
     // instance variables
     
+    /**
+     * Stores the name of the parent type. The parent type could not be
+     * evaluated because it could be that the type does not exists (and so
+     * the type id is evaluated before the insert / update from method
+     * {@link #updateInDB}).
+     *
+     * @see #setParent
+     * @see #updateInDB
+     */
+    private String parentType = null;
+
+    /**
+     * All attributes of the type are stored in this list.
+     *
+     * @see #updateInDB
+     * @see #addAttribute
+     */
     private final List < Attribute > attributes 
                                               = new ArrayList < Attribute > ();
     
@@ -312,31 +331,24 @@ e.printStackTrace();
     // instance methods
 
     /**
+     * If a parent type in {@link #parentType} is defined, the type id is
+     * evaluated and added to attributes to update (if no parent type is
+     * defined, the parent type id is set to <code>null</code>).
      * After the type is updated (or inserted if needed), all attributes must
      * be updated.
      *
      * @todo throw Exception is not allowed
+     * @see #parentType
+     * @see #attributes
      */
     public Instance updateInDB(final Instance _instance,
                                final Set < Link > _allLinkTypes,
                                final Insert _insert) throws EFapsException, Exception  {
-
-      Instance instance = super.updateInDB(_instance, _allLinkTypes, _insert);
-
-      for (Attribute attr : this.attributes)  {
-        attr.updateInDB(instance, getValue("Name"));
-      }
-      return instance;
-    }
-
-    /**
-     */
-    public void setParent(final String _parent) throws EFapsException {
-      if ((_parent != null) && (_parent.length() > 0))  {
-        // search for the instance
+      // set the id of the parent type (if defined)
+      if ((this.parentType != null) && (this.parentType.length() > 0))  {
         SearchQuery query = new SearchQuery();
         query.setQueryTypes("Admin_DataModel_Type");
-        query.addWhereExprEqValue("Name", _parent);
+        query.addWhereExprEqValue("Name", this.parentType);
         query.addSelect("OID");
         query.executeWithoutAccessCheck();
         if (query.next())  {
@@ -349,6 +361,23 @@ e.printStackTrace();
       } else  {
         addValue("ParentType", null);
       }
+
+      Instance instance = super.updateInDB(_instance, _allLinkTypes, _insert);
+
+      for (Attribute attr : this.attributes)  {
+        attr.updateInDB(instance, getValue("Name"));
+      }
+      return instance;
+    }
+
+    /**
+     * Setter method for instance variable {@link #parentType}.
+     *
+     * @param _parentType new value to set
+     * @see #parentType
+     */
+    public void setParent(final String _parentType)  {
+      this.parentType = _parentType;
     }
     
     public void addAttribute(final String _name,

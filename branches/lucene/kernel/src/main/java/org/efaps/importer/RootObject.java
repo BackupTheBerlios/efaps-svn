@@ -20,6 +20,7 @@
 
 package org.efaps.importer;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -40,7 +41,7 @@ public class RootObject extends AbstractObject {
   }
 
   @Override
-  public Map<String, String> getAttributes() {
+  public Map<String, Object> getAttributes() {
     // TODO Auto-generated method stub
     return null;
   }
@@ -73,8 +74,14 @@ public class RootObject extends AbstractObject {
         Insert insert = new Insert(object.getType());
 
         for (Entry element : object.getAttributes().entrySet()) {
-          insert
-              .add(element.getKey().toString(), element.getValue().toString());
+          if (element.getValue() instanceof Timestamp) {
+            insert.add(element.getKey().toString(), (Timestamp) element
+                .getValue());
+
+          } else {
+            insert.add(element.getKey().toString(), element.getValue()
+                .toString());
+          }
         }
         for (ForeignObject link : object.getLinks()) {
           insert.add(link.getAttribute(), link.getID());

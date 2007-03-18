@@ -20,6 +20,7 @@
 
 package org.efaps.admin.datamodel.attributetype;
 
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.text.DateFormat;
@@ -27,14 +28,18 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
-import org.efaps.db.Context;
 import org.efaps.admin.ui.Field;
+import org.efaps.db.Context;
 import org.efaps.db.query.CachedResult;
 
 /**
  *
  */
 public class DateTimeType extends AbstractType  {
+
+  public void update(Context _context, final PreparedStatement _stmt, final int _index)  throws SQLException  {
+    _stmt.setTimestamp(_index, getValue());
+  }
 
   /**
    *
@@ -53,7 +58,10 @@ public class DateTimeType extends AbstractType  {
    * @param _context  context for this request
    * @param _value    new value to set
    */
-  public void set(Context _context, String _value)  {
+  public void set(final Context _context, final Object _value)  {
+    if (_value instanceof Date)  {
+      setValue(new Timestamp((((Date) _value)).getTime()));
+    }
   }
 
   /**
@@ -93,7 +101,7 @@ public class DateTimeType extends AbstractType  {
    * @see #getValue
    * @see #setValue
    */
-  private Date value = null;
+  private Timestamp value = null;
 
   /////////////////////////////////////////////////////////////////////////////
 
@@ -104,7 +112,7 @@ public class DateTimeType extends AbstractType  {
    * @see #value
    * @see #getValue
    */
-  public void setValue(Date _value)  {
+  public void setValue(final Timestamp _value)  {
     this.value = _value;
   }
 
@@ -115,7 +123,7 @@ public class DateTimeType extends AbstractType  {
    * @see #value
    * @see #setValue
    */
-  public Date getValue()  {
+  public Timestamp getValue()  {
     return this.value;
   }
 

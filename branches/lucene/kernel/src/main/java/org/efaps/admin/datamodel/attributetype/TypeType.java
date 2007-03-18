@@ -29,7 +29,6 @@ import java.util.ResourceBundle;
 
 import org.efaps.admin.datamodel.Type;
 import org.efaps.db.Context;
-import org.efaps.admin.ui.Field;
 import org.efaps.db.query.CachedResult;
 
 /**
@@ -64,7 +63,7 @@ setValue(value);
 /**
  * @todo must an exception thrown?
  */
-public void set(Context _context, String _value)  {
+public void set(final Context _context, final Object _value)  {
 }
 
   /**

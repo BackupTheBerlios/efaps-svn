@@ -20,7 +20,11 @@
 
 package org.efaps.importer;
 
+import java.sql.Timestamp;
+import java.text.ParsePosition;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -28,22 +32,24 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
 
+import org.efaps.admin.datamodel.Attribute;
+import org.efaps.admin.datamodel.Type;
 import org.efaps.db.Insert;
 import org.efaps.util.EFapsException;
 
 public class InsertObject extends AbstractObject {
 
-  private String              TYPE            = null;
+  private String               TYPE            = null;
 
-  private Map<String, String> ATTRIBUTES      = new HashMap<String, String>();
+  private Map<String, Object>  ATTRIBUTES      = new HashMap<String, Object>();
 
-  private String              PARENTATTRIBUTE = null;
+  private String               PARENTATTRIBUTE = null;
 
   private List<AbstractObject> CHILDS          = new ArrayList<AbstractObject>();
 
-  private String              ID              = null;
+  private String               ID              = null;
 
-  private Set<ForeignObject>  LINKS           = new HashSet<ForeignObject>();
+  private Set<ForeignObject>   LINKS           = new HashSet<ForeignObject>();
 
   public InsertObject() {
 
@@ -67,7 +73,6 @@ public class InsertObject extends AbstractObject {
 
   public void addLink(ForeignObject _Object) {
     LINKS.add(_Object);
- 
 
   }
 
@@ -81,19 +86,23 @@ public class InsertObject extends AbstractObject {
       try {
         Insert insert = new Insert(object.getType());
         for (Entry element : object.getAttributes().entrySet()) {
-          insert
-              .add(element.getKey().toString(), element.getValue().toString());
+
+          if (element.getValue() instanceof Timestamp) {
+            insert.add(element.getKey().toString(), (Timestamp) element
+                .getValue());
+
+          } else {
+            insert.add(element.getKey().toString(), element.getValue()
+                .toString());
+          }
         }
         if (object.getParrentAttribute() != null) {
           insert.add(object.getParrentAttribute(), this.ID);
         }
-        for (ForeignObject link : object.getLinks() ){
+        for (ForeignObject link : object.getLinks()) {
           insert.add(link.getAttribute(), link.getID());
         }
-        
-       
-        
-        
+
         insert.execute();
         String ID = insert.getId();
         insert.close();
@@ -123,8 +132,22 @@ public class InsertObject extends AbstractObject {
   }
 
   @Override
-  public Map<String, String> getAttributes() {
+  public Map<String, Object> getAttributes() {
+    for (Entry element : this.ATTRIBUTES.entrySet()) {
 
+      Attribute attribute = Type.get(this.TYPE).getAttribute(
+          element.getKey().toString());
+
+      if (attribute.getAttributeType().getClassRepr().getName().equals(
+          "org.efaps.admin.datamodel.attributetype.DateTimeType")) {
+
+        Date date = new SimpleDateFormat(RootObject.DATEFORMAT).parse(element
+            .getValue().toString(), new ParsePosition(0));
+
+        this.ATTRIBUTES.put((String) element.getKey(), new Timestamp(date
+            .getTime()));
+      }
+    }
     return this.ATTRIBUTES;
   }
 
@@ -136,11 +159,8 @@ public class InsertObject extends AbstractObject {
 
   @Override
   public Set<ForeignObject> getLinks() {
-    
+
     return this.LINKS;
   }
 
-  
-  
-  
 }

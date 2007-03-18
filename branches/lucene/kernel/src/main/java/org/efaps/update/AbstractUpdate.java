@@ -21,26 +21,19 @@
 package org.efaps.update;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.digester.Digester;
 import org.apache.commons.jexl.Expression;
 import org.apache.commons.jexl.ExpressionFactory;
 import org.apache.commons.jexl.JexlContext;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import org.xml.sax.SAXException;
-
-import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.db.Delete;
 import org.efaps.db.Insert;
@@ -65,6 +58,11 @@ public abstract class AbstractUpdate  {
 
   /////////////////////////////////////////////////////////////////////////////
   // instance variables
+
+  /**
+   * The file is stored in this instance variable.
+   */
+  private File file = null;
 
   /**
    * The name of the data model type is store in this instance variable.
@@ -143,7 +141,8 @@ public abstract class AbstractUpdate  {
    * @param _jexlContext  expression context used to evaluate 
    */
   public void updateInDB(final JexlContext _jexlContext) throws EFapsException,Exception {
-    Instance instance = null;
+try  {
+/*    Instance instance = null;
     Insert insert = null;
 
     // search for the instance
@@ -163,24 +162,39 @@ public abstract class AbstractUpdate  {
 //      insert.add(context, "Name", this.uuid);
       insert.add("UUID", this.uuid);
     }
-
+*/
     for (DefinitionAbstract def : this.definitions)  {
-      if (insert == null)  {
-        _jexlContext.getVars().put("exists", new Boolean(true));
-      } else  {
-        _jexlContext.getVars().put("exists", new Boolean(false));
-      }
+//      if (insert == null)  {
+//        _jexlContext.getVars().put("exists", new Boolean(true));
+//      } else  {
+//        _jexlContext.getVars().put("exists", new Boolean(false));
+//      }
       Expression jexlExpr = ExpressionFactory.createExpression(def.mode);
       boolean exec = new Boolean(jexlExpr.evaluate(_jexlContext).toString());
       if (exec)  {
-        def.updateInDB(instance, this.allLinkTypes, insert);
+//        def.updateInDB(instance, this.allLinkTypes, insert);
+if ((this.file != null) && LOG.isInfoEnabled())  {
+  LOG.info("Executing '" + this.file.getName() + "'");
+}
+def.updateInDB(this.dataModelType, this.uuid, this.allLinkTypes);
       }
-      _jexlContext.getVars().remove("exists");
+//      _jexlContext.getVars().remove("exists");
     }
+} catch (Exception e)  {
+e.printStackTrace();
+throw e;
+}
   }
 
   /////////////////////////////////////////////////////////////////////////////
   // getter and setter methods
+
+  /**
+   * @see #file
+   */
+  protected void setFile(final File _file)  {
+    this.file = _file;
+  }
 
   /**
    * @see #uuid
@@ -362,6 +376,32 @@ public abstract class AbstractUpdate  {
     private final Map < Link, Map < String, Map < String, String > > > links 
         = new HashMap < Link, Map < String, Map < String, String > > >();
 
+public void updateInDB(final Type _dataModelType,
+                       final String _uuid,
+                       final Set < Link > _allLinkTypes) throws EFapsException,Exception {
+    Instance instance = null;
+    Insert insert = null;
+
+    // search for the instance
+    SearchQuery query = new SearchQuery();
+    query.setQueryTypes(_dataModelType.getName());
+    query.addWhereExprEqValue("UUID", _uuid);
+    query.addSelect("OID");
+    query.executeWithoutAccessCheck();
+    if (query.next())  {
+      instance = new Instance((String) query.get("OID"));
+    }
+    query.close();
+
+    // if no instance exists, a new insert must be done
+    if (instance == null)  {
+      insert = new Insert(_dataModelType);
+      insert.add("UUID", _uuid);
+    }
+
+    updateInDB(instance, _allLinkTypes, insert);
+}
+
     /**
      *
      */
@@ -383,7 +423,7 @@ public abstract class AbstractUpdate  {
           _insert.add(entry.getKey(), entry.getValue());
         }
         if (LOG.isInfoEnabled() && (name != null))  {
-          LOG.info("Insert " + _insert.getInstance().getType().getName() + " " 
+          LOG.info("    Insert " + _insert.getInstance().getType().getName() + " " 
                    + "'" + name + "'");
         }
         _insert.executeWithoutAccessCheck();
@@ -398,7 +438,7 @@ public abstract class AbstractUpdate  {
           update.add(entry.getKey(), entry.getValue());
         }
         if (LOG.isInfoEnabled() && (name != null))  {
-          LOG.info("Update " + _instance.getType().getName() + " " 
+          LOG.info("    Update " + _instance.getType().getName() + " " 
                    + "'" + name + "'");
         }
         update.executeWithoutAccessCheck();
