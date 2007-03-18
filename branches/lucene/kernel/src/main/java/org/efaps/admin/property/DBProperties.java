@@ -106,8 +106,9 @@ public class DBProperties {
     if (!isInitialised()) {
       initialise();
     }
-    return PROPCACHE.get(_key);
-
+    String value = PROPCACHE.get(_key);
+    return (value == null) ? _key : value;
+    
   }
 
   /**

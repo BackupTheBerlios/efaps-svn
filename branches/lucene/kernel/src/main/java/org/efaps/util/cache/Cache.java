@@ -170,7 +170,7 @@ public class Cache<K extends CacheObjectInterface> {
 
   /**
    * The static method first removes all values in the caches. Then the cache is
-   * initialised automatically debenig on the desired RunLevel
+   * initialised automatically debending on the desired RunLevel
    */
   public static void reloadCacheRunLevel() throws Exception {
     synchronized (caches) {

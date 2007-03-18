@@ -40,7 +40,8 @@ import org.xml.sax.SAXException;
 
 /**
  * Class for importing Properties from a properties-file into the Database for
- * use as eFaps-Admin_Properties
+ * use as eFaps-Admin_Properties. The import of a XML-formated Properties is
+ * going to be suported later.
  * 
  * @author jmo
  * 

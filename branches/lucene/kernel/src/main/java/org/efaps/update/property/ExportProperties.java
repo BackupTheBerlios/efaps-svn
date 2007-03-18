@@ -55,6 +55,9 @@ public class ExportProperties {
   private static final Log               LOG     = LogFactory
                                                      .getLog(ExportProperties.class);
 
+  /**
+   * TreeMap is used to sort the key-value-Relation for the export
+   */
   private static TreeMap<String, String> TM      = new TreeMap<String, String>();
 
   private static List<String>            KEYLIST = new ArrayList<String>();

@@ -46,8 +46,9 @@ import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.util.cache.Cache;
 
 /**
- * Thsi Class is the Runlevel for eFaps. It provides the possibilty to load only
- * the speciefied parts into the Cache. It can be defined within the databse
+ * This Class is the Runlevel for eFaps. It provides the possibilty to load only
+ * the specified or needed parts into the Cache. It can be defined within the
+ * database.
  * 
  * @author jmo
  * 
@@ -320,7 +321,14 @@ public class RunLevel {
   }
 
   /**
-   * Cache for the Methods, wich are defined for the Runlevel
+   * Cache for the Methods, wich are defined for the Runlevel. The stored
+   * String-Values can be used to invoke the Methods. Therefor the Cache is
+   * seperated in three Fields: <br>
+   * <li> CLASSNAME: Name of the Class as written in a java Class </li>
+   * <li> METHODNAME: Name of the a static Method, it can optional used with on
+   * String-Parameter</li>
+   * <li><i>optional PARAMETER: the String-Value coresponding with the Method</i></li>
+   * <br>
    * 
    * @author jmo
    * 
@@ -333,6 +341,17 @@ public class RunLevel {
 
     private String PARAMETER  = null;
 
+    /**
+     * Constructor for the ChacheMethod in the Case that there are only
+     * ClassName an MethodName
+     * 
+     * @see CacheMethod(String _ClassName, String _MethodName, String
+     *      _Parameter)
+     * @param _ClassName
+     *          Name of the Clasee
+     * @param _MethodName
+     *          Name of the Method
+     */
     public CacheMethod(String _ClassName, String _MethodName) {
       CLASSNAME = _ClassName;
 
@@ -340,6 +359,17 @@ public class RunLevel {
 
     }
 
+    /**
+     * Constructor for the Cache with ClassName, MethodName and Parameter
+     * 
+     * @see CacheMethod(String _ClassName, String _MethodName)
+     * @param _ClassName
+     *          Name of the Class
+     * @param _MethodName
+     *          Name of the Method
+     * @param _Parameter
+     *          Value of the Parameter
+     */
     public CacheMethod(String _ClassName, String _MethodName, String _Parameter) {
       CLASSNAME = _ClassName;
 
@@ -348,18 +378,38 @@ public class RunLevel {
       PARAMETER = _Parameter;
     }
 
+    /**
+     * get the Name of the Class
+     * 
+     * @return Name of the Class
+     */
     public String getClassName() {
       return CLASSNAME;
     }
 
+    /**
+     * get the Name of the Method
+     * 
+     * @return Name of the Method
+     */
     public String getMethodName() {
       return METHODNAME;
     }
 
+    /**
+     * get the value of a String Parameter
+     * 
+     * @return Value of the Parameter, null if not initialised
+     */
     public String getParameter() {
       return PARAMETER;
     }
 
+    /**
+     * has the Method a Parameter
+     * 
+     * @return true if a Parameter is given, else false
+     */
     public boolean hasParameter() {
       if (PARAMETER != null) {
         return true;
