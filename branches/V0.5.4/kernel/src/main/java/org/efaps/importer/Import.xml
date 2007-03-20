@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+ Copyright 2003 - 2007 The eFaps Team
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+
+ Author:         	jmo
+ Revision:       	$Rev: 732 $
+ Last Changed:   	$Date: 2007-03-18 22:17:23 +0000 (Sun, 18 Mar 2007) $
+ Last Changed By:	$Author: jmo $
+
+-->
+
+
+<import dateformat="yyyy-MM-dd'T'HH:mm:ss'Z'">
+  
+  <object type= "YDSS_Share" >
+	<attribute name= "Name" >Share222</attribute>
+	<attribute name= "Description" >Das istas ein not NUll Field</attribute>
+    <linkattribute name="Creator" type="Admin_User_Person">
+      <queryattribute name="Name">Jan.Moxter</queryattribute>
+    </linkattribute>
+    <attribute name= "Created">2001-01-01T18:23:23Z</attribute>
+    
+    <object type= "YDSS_Membership" >
+      <parentattribute name= "ShareFromLink" />
+      <attribute name= "AccessSetToLink">4</attribute>
+      <linkattribute name="UserAbstractFromLink" type="Admin_User_Person">
+        <queryattribute name="Name">Marion.Penders</queryattribute>
+      </linkattribute>
+    </object>
+    
+    <object type= "YDSS_Folder" >
+   	  <parentattribute name= "ParentFolder" />
+      <attribute name= "Name" >MyFoldersadad</attribute>
+	  <attribute name= "Description" >Das ist mssein erster Folder</attribute> 	
+      <linkattribute name="Creator" type="Admin_User_Person">
+        <queryattribute name="Name">Jan.Moxter</queryattribute>
+      </linkattribute>
+      <attribute name= "Created">2007-01-01T18:23:23Z</attribute>
+      
+      <object type= "YDSS_Document" >
+        <parentattribute name= "ParentFolder" />
+        <attribute name= "Name" >Hier_ist_eon_Doc </attribute>
+        <attribute name= "Description" >Geht das ueberhaupt</attribute> 	
+        <linkattribute name="Creator" type="Admin_User_Person">
+          <queryattribute name="Name">Jan.Moxter</queryattribute>
+        </linkattribute>
+        <attribute name= "Created">2007-03-01T20:23:23Z</attribute>
+        
+        <object type= "YDSS_DocumentVersion" >
+          <parentattribute name= "Document" />
+          <attribute name= "FileName" >Das.xls </attribute>
+          <attribute name= "Description" >noch ein Test</attribute>
+          <attribute name= "Version" >1</attribute>  
+          <linkattribute name="Creator" type="Admin_User_Person">
+            <queryattribute name="Name">Jan.Moxter</queryattribute>
+          </linkattribute>
+          <attribute name= "Created">2007-01-01T18:23:23Z</attribute>
+        </object>
+        
+        <object type= "YDSS_DocumentVersion" >
+          <parentattribute name= "Document" />
+          <attribute name= "FileName" >Das.xls </attribute>
+          <attribute name= "Description" >noch ein Test</attribute>
+          <attribute name= "Version" >2</attribute>  
+          <linkattribute name="Creator" type="Admin_User_Person">
+            <queryattribute name="Name">Jan.Moxter</queryattribute>
+          </linkattribute>
+          <attribute name= "Created">2007-01-01T18:23:23Z</attribute>
+        </object>
+      </object>
+    </object>
+    
+  </object>
+ 
+
+
+
+ <!--  
+ <object type= "TeamWork_RootCollection" >
+  <attribute name= "Name" > noch j,hv hvhjv  jhvmein Test </attribute>
+  <attribute name= "Created">2001-01-01T18:23:23Z</attribute>
+  <linkattribute name="Creator" type="Admin_User_Person">
+     <queryattribute name="Name">Jan.Moxter</queryattribute>
+  </linkattribute>
+  
+  <object type= "TeamWork_Collection" >
+    <parentattribute name= "ParentCollectionLink" />
+    <attribute name= "Name" > erste Collection </attribute>
+    <attribute name= "Created">1999-01-01T18:23:23Z</attribute>
+  	<linkattribute name="Creator" type="Admin_User_Person">
+      <queryattribute name="Name">Tim.Moxter</queryattribute>
+  	</linkattribute>
+
+      <object type= "TeamWork_Collection" >
+        <parentattribute name= "ParentCollectionLink" />
+        <attribute name= "Created">1991-01-01T18:23:23Z</attribute>
+        <attribute name= "Name" > noch eine Collection </attribute>
+		<linkattribute name="Creator" type="Admin_User_Person">
+          <queryattribute name="Name">Jan.Moxter</queryattribute>
+  	    </linkattribute>
+          
+          <object type= "TeamWork_Source" >
+            <parentattribute name= "ParentCollectionLink" />
+            <attribute name= "Name" > eine Source </attribute>
+
+            <object type= "TeamWork_SourceVersion" >
+              <parentattribute name= "ParentSourceLink" />
+              <attribute name= "Name" > eine Version </attribute>
+            </object>
+                        <object type= "TeamWork_SourceVersion" >
+              <parentattribute name= "ParentSourceLink" />
+              <attribute name= "Name" > noch ne Version </attribute>
+            </object>
+
+          </object>
+
+        </object>
+
+     </object>
+   
+  </object>
+-->
+</import>
