@@ -28,9 +28,15 @@ import java.util.Set;
 import org.apache.commons.digester.Digester;
 import org.xml.sax.SAXException;
 
+/**
+ * Main Class for Importing Objects into the Database connected to eFaps
+ * 
+ * @author jmo
+ * 
+ */
 public abstract class AbstractObject {
 
-  public abstract Set <ForeignObject>getLinks();
+  public abstract Set<ForeignObject> getLinks();
 
   public abstract String getType();
 
@@ -42,6 +48,10 @@ public abstract class AbstractObject {
 
   public abstract String getParrentAttribute();
 
+  public abstract boolean isCheckinObject();
+
+  public abstract void checkObjectin();
+
   public static void importFromXML(final String _xml) {
     Digester digester = new Digester();
 
@@ -50,22 +60,24 @@ public abstract class AbstractObject {
     digester.addObjectCreate("import", RootObject.class);
     digester.addCallMethod("import", "setDateFormat", 1);
     digester.addCallParam("import", 0, "dateformat");
-    
-    
-   
+
     digester.addObjectCreate("*/object", InsertObject.class);
     digester.addCallMethod("*/object", "setType", 1);
     digester.addCallParam("*/object", 0, "type");
-
-    digester.addSetNext("*/object", "addChild",
-        "org.efaps.importer.InsertObject");
 
     digester.addCallMethod("*/attribute", "setAttribute", 2);
     digester.addCallParam("*/attribute", 0, "name");
     digester.addCallParam("*/attribute", 1);
 
+    digester.addCallMethod("*/file", "setCheckinObject", 2);
+    digester.addCallParam("*/file", 0, "name");
+    digester.addCallParam("*/file", 1, "url");
+
     digester.addCallMethod("*/parentattribute", "setParentAttribute", 1);
     digester.addCallParam("*/parentattribute", 0, "name");
+
+    digester.addSetNext("*/object", "addChild",
+        "org.efaps.importer.InsertObject");
 
     digester.addObjectCreate("*/linkattribute", ForeignObject.class);
     digester.addCallMethod("*/linkattribute", "setLinkAttribute", 2);
@@ -77,9 +89,8 @@ public abstract class AbstractObject {
     digester.addCallParam("*/queryattribute", 1);
 
     digester.addSetNext("*/linkattribute", "addLink",
-    "org.efaps.importer.ForeignObject");
+        "org.efaps.importer.ForeignObject");
 
-    
     try {
       digester.parse(new File(_xml));
     }
@@ -95,4 +106,5 @@ public abstract class AbstractObject {
   public static void insertDB() {
     RootObject.insertDB();
   }
+
 }

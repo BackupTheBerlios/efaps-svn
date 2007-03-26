@@ -20,6 +20,9 @@
 
 package org.efaps.importer;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +34,11 @@ import org.efaps.db.Insert;
 import org.efaps.util.EFapsException;
 
 public class RootObject extends AbstractObject {
+  /**
+   * Logger for this class
+   */
+  private static final Log          LOG        = LogFactory
+                                                   .getLog(RootObject.class);
 
   static final List<AbstractObject> CHILDS     = new ArrayList<AbstractObject>();
 
@@ -42,25 +50,23 @@ public class RootObject extends AbstractObject {
 
   @Override
   public Map<String, Object> getAttributes() {
-    // TODO Auto-generated method stub
+
     return null;
   }
 
   @Override
   public String getType() {
-    // TODO Auto-generated method stub
+
     return null;
   }
 
   @Override
   public void insertObject() {
-    // TODO Auto-generated method stub
 
   }
 
   @Override
   public void setID(String _ID) {
-    // TODO Auto-generated method stub
 
   }
 
@@ -95,12 +101,12 @@ public class RootObject extends AbstractObject {
 
       }
       catch (EFapsException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
+
+        LOG.error("insertDB()", e);
       }
       catch (Exception e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
+
+        LOG.error("insertDB()", e);
       }
 
     }
@@ -108,13 +114,24 @@ public class RootObject extends AbstractObject {
 
   @Override
   public String getParrentAttribute() {
-    // TODO Auto-generated method stub
+
     return null;
   }
 
   @Override
   public Set<ForeignObject> getLinks() {
-    // TODO Auto-generated method stub
+
     return null;
+  }
+
+  @Override
+  public boolean isCheckinObject() {
+
+    return false;
+  }
+
+  @Override
+  public void checkObjectin() {
+
   }
 }

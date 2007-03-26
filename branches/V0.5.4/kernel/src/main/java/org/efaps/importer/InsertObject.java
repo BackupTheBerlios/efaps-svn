@@ -20,6 +20,12 @@
 
 package org.efaps.importer;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.sql.Timestamp;
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
@@ -34,10 +40,17 @@ import java.util.Map.Entry;
 
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Type;
+import org.efaps.db.Checkin;
 import org.efaps.db.Insert;
+import org.efaps.db.Instance;
 import org.efaps.util.EFapsException;
 
 public class InsertObject extends AbstractObject {
+  /**
+   * Logger for this class
+   */
+  private static final Log     LOG             = LogFactory
+                                                   .getLog(InsertObject.class);
 
   private String               TYPE            = null;
 
@@ -50,6 +63,8 @@ public class InsertObject extends AbstractObject {
   private String               ID              = null;
 
   private Set<ForeignObject>   LINKS           = new HashSet<ForeignObject>();
+
+  private CheckinObject        CHECKINOBJECT   = null;
 
   public InsertObject() {
 
@@ -107,16 +122,20 @@ public class InsertObject extends AbstractObject {
         String ID = insert.getId();
         insert.close();
         object.setID(ID);
+        if (object.isCheckinObject()) {
+          object.checkObjectin();
+        }
+
         object.insertObject();
 
       }
       catch (EFapsException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
+
+        LOG.error("insertObject()", e);
       }
       catch (Exception e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
+
+        LOG.error("insertObject()", e);
       }
     }
   }
@@ -161,6 +180,72 @@ public class InsertObject extends AbstractObject {
   public Set<ForeignObject> getLinks() {
 
     return this.LINKS;
+  }
+
+  public void setCheckinObject(String _Name, String _URL) {
+    this.CHECKINOBJECT = new CheckinObject(_Name, _URL);
+
+  }
+
+  @Override
+  public boolean isCheckinObject() {
+    if (this.CHECKINOBJECT != null) {
+      return true;
+    }
+    return false;
+  }
+
+  @Override
+  public void checkObjectin() {
+
+    Checkin checkin = new Checkin(new Instance(this.TYPE, this.ID));
+
+    try {
+      checkin.executeWithoutAccessCheck(this.CHECKINOBJECT.getName(),
+          this.CHECKINOBJECT.getInputStream(), -1);
+    }
+    catch (EFapsException e) {
+      // TODO Auto-generated catch block
+      LOG.error("checkObjectin()", e);
+    }
+  }
+
+  public class CheckinObject {
+    /**
+     * Logger for this class
+     */
+    private Log    LOG  = LogFactory.getLog(CheckinObject.class);
+
+    private String NAME = null;
+
+    private String URL  = null;
+
+    public CheckinObject(String _Name, String _Url) {
+      this.NAME = _Name;
+      this.URL = _Url;
+    }
+
+    public String getName() {
+      return this.NAME;
+    }
+
+    public String getURL() {
+      return this.URL;
+    }
+
+    public InputStream getInputStream() {
+      try {
+        InputStream inputstream = new FileInputStream(this.URL);
+        return inputstream;
+      }
+      catch (FileNotFoundException e) {
+
+        LOG.error("getInputStream()", e);
+      }
+
+      return null;
+
+    }
   }
 
 }

@@ -20,6 +20,9 @@
 
 package org.efaps.importer;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -28,6 +31,12 @@ import org.efaps.db.SearchQuery;
 import org.efaps.util.EFapsException;
 
 public class ForeignObject {
+  /**
+   * Logger for this class
+   */
+  private static final Log    LOG        = LogFactory
+                                             .getLog(ForeignObject.class);
+
   private String              ATTRIBUTE  = null;
 
   private String              TYPE       = null;
@@ -75,8 +84,8 @@ public class ForeignObject {
 
     }
     catch (EFapsException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+
+      LOG.error("getID()", e);
     }
 
     return null;
