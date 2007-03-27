@@ -134,4 +134,10 @@ public class RootObject extends AbstractObject {
   public void checkObjectin() {
 
   }
+
+  @Override
+  public Set<String> getUniqueAttributes() {
+    // TODO Auto-generated method stub
+    return null;
+  }
 }

@@ -20,13 +20,12 @@
 
 package org.efaps.importer;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.efaps.db.SearchQuery;
 import org.efaps.util.EFapsException;
 

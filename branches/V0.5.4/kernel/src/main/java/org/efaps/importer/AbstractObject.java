@@ -52,6 +52,8 @@ public abstract class AbstractObject {
 
   public abstract void checkObjectin();
 
+  public abstract Set<String> getUniqueAttributes() ;
+  
   public static void importFromXML(final String _xml) {
     Digester digester = new Digester();
 
@@ -65,17 +67,23 @@ public abstract class AbstractObject {
     digester.addCallMethod("*/object", "setType", 1);
     digester.addCallParam("*/object", 0, "type");
 
-    digester.addCallMethod("*/attribute", "setAttribute", 2);
+    digester.addCallMethod("*/attribute", "setAttribute", 3);
     digester.addCallParam("*/attribute", 0, "name");
     digester.addCallParam("*/attribute", 1);
+    digester.addCallParam("*/attribute", 2,"unique");
 
     digester.addCallMethod("*/file", "setCheckinObject", 2);
     digester.addCallParam("*/file", 0, "name");
     digester.addCallParam("*/file", 1, "url");
 
-    digester.addCallMethod("*/parentattribute", "setParentAttribute", 1);
+    digester.addCallMethod("*/parentattribute", "setParentAttribute", 2);
     digester.addCallParam("*/parentattribute", 0, "name");
+    digester.addCallParam("*/parentattribute", 1, "unique");
 
+    digester.addCallMethod("*/linkattribute", "addUniqueAttribute", 2);
+    digester.addCallParam("*/linkattribute", 0, "unique");
+    digester.addCallParam("*/linkattribute", 1, "name");
+    
     digester.addSetNext("*/object", "addChild",
         "org.efaps.importer.InsertObject");
 
@@ -83,7 +91,7 @@ public abstract class AbstractObject {
     digester.addCallMethod("*/linkattribute", "setLinkAttribute", 2);
     digester.addCallParam("*/linkattribute", 0, "name");
     digester.addCallParam("*/linkattribute", 1, "type");
-
+    
     digester.addCallMethod("*/queryattribute", "setAttribute", 2);
     digester.addCallParam("*/queryattribute", 0, "name");
     digester.addCallParam("*/queryattribute", 1);
