@@ -109,30 +109,35 @@ public class AbstractTransaction {
     Properties props = new Properties();
     try {
       // read bootstrap properties
-      FileInputStream fstr = new FileInputStream(getBootsrap());
+      FileInputStream fstr = new FileInputStream(getBootstrap());
       props.loadFromXML(fstr);
       fstr.close();
+      
     }
     catch (FileNotFoundException e) {
-      LOG.error("could not open file '" + getBootsrap() + "'", e);
+      LOG.error("could not open file '" + getBootstrap() + "'", e);
     }
     catch (IOException e) {
-      LOG.error("could not read file '" + getBootsrap() + "'", e);
+      LOG.error("could not read file '" + getBootstrap() + "'", e);
     }
 
     // configure database type
     String dbClass = null;
     try {
       Object dbTypeObj = props.get("dbType");
+      
       if ((dbTypeObj == null) || (dbTypeObj.toString().length() == 0)) {
         LOG.error("could not initaliase database type");
       } else {
         dbClass = dbTypeObj.toString();
+        
         AbstractDatabase dbType = (AbstractDatabase) Class.forName(dbClass)
             .newInstance();
+        System.out.println(dbClass);
         if (dbType == null) {
           LOG.error("could not initaliase database type");
         }
+        
         Context.setDbType(dbType);
         initialised = true;
       }
@@ -304,7 +309,7 @@ public class AbstractTransaction {
     BOOTSTRAP = _Bootstrap;
   }
 
-  public String getBootsrap(){
+  public String getBootstrap(){
     return  BOOTSTRAP;
   }
 }

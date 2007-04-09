@@ -51,24 +51,25 @@ public class InsertObject extends AbstractObject {
   /**
    * Logger for this class
    */
-  private static final Log     LOG              = LogFactory
-                                                    .getLog(InsertObject.class);
+  private static final Log                  LOG              = LogFactory
+                                                                 .getLog(InsertObject.class);
 
-  private String               TYPE             = null;
+  private String                            TYPE             = null;
 
-  private Map<String, Object>  ATTRIBUTES       = new HashMap<String, Object>();
+  private Map<String, Object>               ATTRIBUTES       = new HashMap<String, Object>();
 
-  private String               PARENTATTRIBUTE  = null;
+  private String                            PARENTATTRIBUTE  = null;
 
-  private List<AbstractObject> CHILDS           = new ArrayList<AbstractObject>();
+  // private List<AbstractObject> CHILDS = new ArrayList<AbstractObject>();
+  private Map<String, List<AbstractObject>> CHILDS           = new HashMap<String, List<AbstractObject>>();
 
-  private String               ID               = null;
+  private String                            ID               = null;
 
-  private Set<ForeignObject>   LINKS            = new HashSet<ForeignObject>();
+  private Set<ForeignObject>                LINKS            = new HashSet<ForeignObject>();
 
-  private Set<String>          UNIQUEATTRIBUTES = new HashSet<String>();
+  private Set<String>                       UNIQUEATTRIBUTES = new HashSet<String>();
 
-  private CheckinObject        CHECKINOBJECT    = null;
+  private CheckinObject                     CHECKINOBJECT    = null;
 
   public InsertObject() {
 
@@ -79,7 +80,7 @@ public class InsertObject extends AbstractObject {
   }
 
   public void setAttribute(String _Name, String _Value, String _unique) {
-    this.ATTRIBUTES.put(_Name, _Value);
+    this.ATTRIBUTES.put(_Name, _Value.trim());
 
     if (_unique != null && _unique.equals("true")) {
       this.UNIQUEATTRIBUTES.add(_Name);
@@ -95,8 +96,14 @@ public class InsertObject extends AbstractObject {
 
   }
 
-  public void addChild(AbstractObject _Object) {
-    this.CHILDS.add(_Object);
+  public void addChild(AbstractObject _object) {
+    List<AbstractObject> list = this.CHILDS.get(_object.getType());
+    if (list == null) {
+      // TODO: unterscheidung sortiert / nicht sortiert
+      list = new ArrayList<AbstractObject>();
+      this.CHILDS.put(_object.getType(), list);
+    }
+    list.add(_object);
   }
 
   public void addLink(ForeignObject _Object) {
@@ -117,85 +124,66 @@ public class InsertObject extends AbstractObject {
   public void insertObject() {
 
     String ID = null;
-    for (AbstractObject object : this.CHILDS) {
+    for (List<AbstractObject> list : this.CHILDS.values()) {
+      for (AbstractObject object : list) {
 
-      try {
-        if (object.getUniqueAttributes().size() > 0) {
-          SearchQuery query = new SearchQuery();
-          query.setQueryTypes(object.getType());
-          query.addSelect("ID");
-          for (String element : object.getUniqueAttributes()) {
+        try {
+          if (object.getUniqueAttributes().size() > 0) {
+            SearchQuery query = new SearchQuery();
+            query.setQueryTypes(object.getType());
+            query.addSelect("ID");
+            for (String element : object.getUniqueAttributes()) {
 
-            if (object.getAttributes().get(element) != null) {
-              query.addWhereExprEqValue(element, object.getAttributes().get(
-                  element).toString());
-            }
-
-            if (object.getParrentAttribute() != null
-                && object.getParrentAttribute().equals(element)) {
-              query.addWhereExprEqValue(element, this.ID);
-
-            }
-            for (ForeignObject link : object.getLinks()) {
-              if (link.getAttribute().equals(element)) {
-
-                query.addWhereExprEqValue(element, link.getID());
+              if (object.getAttributes().get(element) != null) {
+                query.addWhereExprEqValue(element, object.getAttributes().get(
+                    element).toString());
               }
+
+              if (object.getParrentAttribute() != null
+                  && object.getParrentAttribute().equals(element)) {
+                query.addWhereExprEqValue(element, this.ID);
+
+              }
+              for (ForeignObject link : object.getLinks()) {
+                if (link.getAttribute().equals(element)) {
+
+                  query.addWhereExprEqValue(element, link.getID());
+                }
+              }
+
             }
+            query.executeWithoutAccessCheck();
 
-          }
-          query.executeWithoutAccessCheck();
+            if (query.next()) {
+              ID = UpdateOrInsert(object, new Update(
+                  Type.get(object.getType()), query.get("ID").toString()));
 
-          if (query.next()) {
-            ID = UpdateOrInsert(object, new Update(Type.get(object.getType()),
-                query.get("ID").toString()));
+            } else {
+              ID = UpdateOrInsert(object, new Insert(object.getType()));
+            }
 
           } else {
             ID = UpdateOrInsert(object, new Insert(object.getType()));
+
+          }
+          object.setID(ID);
+
+          if (object.isCheckinObject()) {
+            object.checkObjectin();
           }
 
-        } else {
-          ID = UpdateOrInsert(object, new Insert(object.getType()));
-          // Insert insert = new Insert(object.getType());
-          // for (Entry element : object.getAttributes().entrySet()) {
-          //
-          // if (element.getValue() instanceof Timestamp) {
-          // insert.add(element.getKey().toString(), (Timestamp) element
-          // .getValue());
-          //
-          // } else {
-          // insert.add(element.getKey().toString(), element.getValue()
-          // .toString());
-          // }
-          // }
-          // if (object.getParrentAttribute() != null) {
-          // insert.add(object.getParrentAttribute(), this.ID);
-          // }
-          // for (ForeignObject link : object.getLinks()) {
-          // insert.add(link.getAttribute(), link.getID());
-          // }
-          //
-          // insert.executeWithoutAccessCheck();
-          // ID = insert.getId();
-          // insert.close();
-        }
-        object.setID(ID);
+          object.insertObject();
 
-        if (object.isCheckinObject()) {
-          object.checkObjectin();
         }
 
-        object.insertObject();
+        catch (EFapsException e) {
 
-      }
+          LOG.error("insertObject() " + this.toString(), e);
+        }
+        catch (Exception e) {
 
-      catch (EFapsException e) {
-
-        LOG.error("insertObject()", e);
-      }
-      catch (Exception e) {
-
-        LOG.error("insertObject()", e);
+          LOG.error("insertObject() " + this.toString(), e);
+        }
       }
     }
   }
@@ -226,12 +214,12 @@ public class InsertObject extends AbstractObject {
       return ID;
     }
     catch (EFapsException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+
+      LOG.error("UpdateOrInsert() " + this.toString(), e);
     }
     catch (Exception e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+
+      LOG.error("UpdateOrInsert() " + this.toString(), e);
     }
 
     return ID;
@@ -280,7 +268,7 @@ public class InsertObject extends AbstractObject {
     return this.LINKS;
   }
 
-  public Set getUniqueAttributes() {
+  public Set<String> getUniqueAttributes() {
     return this.UNIQUEATTRIBUTES;
   }
 
@@ -307,9 +295,23 @@ public class InsertObject extends AbstractObject {
           this.CHECKINOBJECT.getInputStream(), -1);
     }
     catch (EFapsException e) {
-      // TODO Auto-generated catch block
-      LOG.error("checkObjectin()", e);
+
+      LOG.error("checkObjectin() " + this.toString(), e);
     }
+  }
+
+  public String toString() {
+
+    StringBuilder tmp = new StringBuilder();
+    tmp.append("Type: ");
+    tmp.append(this.TYPE);
+    tmp.append(" - ParentAttribute: ");
+    tmp.append(this.PARENTATTRIBUTE);
+    tmp.append(" - Attributes: ");
+    tmp.append(this.ATTRIBUTES.toString());
+    tmp.append(" - Links: ");
+    tmp.append(this.LINKS.toString());
+    return tmp.toString();
   }
 
   public class CheckinObject {
@@ -323,8 +325,8 @@ public class InsertObject extends AbstractObject {
     private String URL  = null;
 
     public CheckinObject(String _Name, String _Url) {
-      this.NAME = _Name;
-      this.URL = _Url;
+      this.NAME = _Name.trim();
+      this.URL = _Url.trim();
     }
 
     public String getName() {

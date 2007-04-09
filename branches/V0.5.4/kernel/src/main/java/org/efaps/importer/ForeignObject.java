@@ -43,7 +43,7 @@ public class ForeignObject {
   private Map<String, String> ATTRIBUTES = new HashMap<String, String>();
 
   public void setAttribute(String _Name, String _Value) {
-    this.ATTRIBUTES.put(_Name, _Value);
+    this.ATTRIBUTES.put(_Name, _Value.trim());
   }
 
   public void setLinkAttribute(String _Name, String _Type) {
@@ -73,10 +73,12 @@ public class ForeignObject {
       }
       query.executeWithoutAccessCheck();
       if (query.next()) {
-
         ID = (String) query.get("ID").toString();
 
+      } else {
+        LOG.error("the Search for a ForeignObject did return no Result!: - " + this.toString());
       }
+
       query.close();
 
       return ID;
@@ -88,5 +90,17 @@ public class ForeignObject {
     }
 
     return null;
+  }
+  
+  public String toString(){
+    
+    StringBuilder tmp = new StringBuilder();
+    tmp.append("Type: ");
+    tmp.append(this.TYPE);
+    tmp.append(" - Attribute: ");
+    tmp.append(this.ATTRIBUTE);
+    tmp.append(" - Attributes: ");
+    tmp.append(this.ATTRIBUTES.toString());
+    return tmp.toString();
   }
 }

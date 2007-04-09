@@ -25,6 +25,7 @@ import org.apache.commons.logging.LogFactory;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -37,15 +38,22 @@ public class RootObject extends AbstractObject {
   /**
    * Logger for this class
    */
-  private static final Log          LOG        = LogFactory
-                                                   .getLog(RootObject.class);
+  private static final Log       LOG        = LogFactory
+                                                .getLog(RootObject.class);
 
-  static final List<AbstractObject> CHILDS     = new ArrayList<AbstractObject>();
+  final List<AbstractObject>     CHILDS     = new ArrayList<AbstractObject>();
 
-  static String                     DATEFORMAT = null;
+  static String                  DATEFORMAT = null;
+
+  final Map<String, OrderObject> ORDER      = new HashMap<String, OrderObject>();
 
   public void setDateFormat(String _DateFormat) {
     DATEFORMAT = _DateFormat;
+  }
+
+  public void addOrder(OrderObject _order) {
+
+    ORDER.put(_order.getType(), _order);
   }
 
   @Override
@@ -74,8 +82,8 @@ public class RootObject extends AbstractObject {
     CHILDS.add(_Object);
   }
 
-  public static void insertDB() {
-    for (AbstractObject object : RootObject.CHILDS) {
+  public void insertDB() {
+    for (AbstractObject object : this.CHILDS) {
       try {
         Insert insert = new Insert(object.getType());
 
@@ -140,4 +148,5 @@ public class RootObject extends AbstractObject {
     // TODO Auto-generated method stub
     return null;
   }
+
 }

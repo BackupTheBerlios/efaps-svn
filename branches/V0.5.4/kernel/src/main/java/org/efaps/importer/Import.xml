@@ -24,7 +24,16 @@
 -->
 
 
-<import dateformat="yyyy-MM-dd'T'HH:mm:ss'Z'">
+<import>
+  
+  <definition>
+  	<date format="yyyy-MM-dd'T'HH:mm:ss'Z'"/>
+	<order type="YDSS_DocumentVersion" direction="ascending">
+		<attribute index="1" name="Version" criteria="numerical"/>
+	</order>
+  </definition>
+  
+  
   <!-- generieren eines Shares -->
   <object type= "YDSS_Share" >
 	<attribute name= "Name" >Share222</attribute>
@@ -75,7 +84,7 @@
        <!-- generieren eines Documents -->
       <object type= "YDSS_Document" >
         <parentattribute name= "ParentFolder" />
-        <attribute name= "Name" >Hier_ist_eon_Doc </attribute>
+        <attribute name= "Name" >demo.txt</attribute>
         <attribute name= "Description" >Geht das ueberhaupt</attribute> 	
         <linkattribute name="Creator" type="Admin_User_Person">
           <queryattribute name="Name">Jan.Moxter</queryattribute>
@@ -91,41 +100,37 @@
           </linkattribute>
         </object>
         
+
+
         
-         <!-- Subscription eines Documents-->
-        <object type= "YDSS_Subscription" >
-          <parentattribute name= "ShareFromLink" />
-          <linkattribute name="UserAbstractFromLink" type="Admin_User_Person">
-            <queryattribute name="Name">Jan.Moxter</queryattribute>
-          </linkattribute>
-        </object>
-        
-        
-        <!-- generieren eines Version -->
-        <object type= "YDSS_DocumentVersion" >
+      <!-- generieren einer 2. Version -->
+        <object type= "YDSS_DocumentVersion">
           <parentattribute name= "Document" />
-          <attribute name= "FileName">DateiName.pdf</attribute>
+          <attribute name= "FileName" >demo.txt</attribute>
           <attribute name= "Description" >noch ein Test</attribute>
-          <attribute name= "Version" >1</attribute>  
-          <linkattribute name="Creator" type="Admin_User_Person">
-            <queryattribute name="Name">Jan.Moxter</queryattribute>
-          </linkattribute>
-          <attribute name= "Created">2006-01-01T18:23:23Z</attribute>
-          <file name="DateiName.pdf" url="/Users/janmoxter/Documents/demo.txt"/>
-        </object>
-        
-       <!-- generieren einer 2. Version -->
-        <object type= "YDSS_DocumentVersion" >
-          <parentattribute name= "Document" />
-          <attribute name= "FileName" >DateiName.pdf</attribute>
-          <attribute name= "Description" >noch ein Test</attribute>
-          <attribute name= "Version" >2</attribute>  
+          <attribute name= "Version">2</attribute>  
           <linkattribute name="Creator" type="Admin_User_Person">
             <queryattribute name="Name">Jan.Moxter</queryattribute>
           </linkattribute>
           <attribute name= "Created">2007-01-01T18:23:23Z</attribute>
-          <file name="DateiName.pdf" url="/Users/janmoxter/Documents/demo2.txt"/>
+          <file name="demo.txt" url="/Users/janmoxter/Documents/demo.txt"/>
         </object>
+        
+        
+        <!-- generieren eines Version -->
+        <object type= "YDSS_DocumentVersion">
+          <parentattribute name= "Document" />
+          <attribute name= "FileName">demo.txt</attribute>
+          <attribute name= "Description" >noch ein Test</attribute>
+          <attribute name= "Version">1</attribute>  
+          <linkattribute name="Creator" type="Admin_User_Person">
+            <queryattribute name="Name">Jan.Moxter</queryattribute>
+          </linkattribute>
+          <attribute name= "Created">2006-01-01T18:23:23Z</attribute>
+          <file name="demo.txt" url="/Users/janmoxter/Documents/demo.txt"/>
+        </object>
+        
+       
       </object>
     </object>
     
