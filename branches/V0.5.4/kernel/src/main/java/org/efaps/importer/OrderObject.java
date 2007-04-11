@@ -32,6 +32,12 @@ public class OrderObject implements Comparator<AbstractObject> {
 
   private final Map<Integer, OrderAttribute> orderAttributes = new TreeMap<Integer, OrderAttribute>();
 
+  public OrderObject () {
+    this.type = null;
+    this.ascending = true;
+  }
+  
+  
   public OrderObject(final String _type, final String _direction) {
     this.type = _type;
     this.ascending = !"descending".equalsIgnoreCase(_direction);
