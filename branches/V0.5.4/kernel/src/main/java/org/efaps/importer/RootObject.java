@@ -45,7 +45,7 @@ public class RootObject extends AbstractObject {
 
   static String                  DATEFORMAT = null;
 
-  final Map<String, OrderObject> ORDER      = new HashMap<String, OrderObject>();
+  final static Map<String, OrderObject> ORDER      = new HashMap<String, OrderObject>();
 
   public void setDateFormat(String _DateFormat) {
     DATEFORMAT = _DateFormat;
@@ -54,6 +54,10 @@ public class RootObject extends AbstractObject {
   public void addOrder(OrderObject _order) {
 
     ORDER.put(_order.getType(), _order);
+  }
+
+  public static OrderObject getOrder(final String _type) {
+    return ORDER.get(_type);
   }
 
   @Override

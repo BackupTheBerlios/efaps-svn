@@ -108,10 +108,8 @@ public class StartImport extends AbstractTransaction {
     "org.efaps.importer.OrderObject");
        
     
-    digester.addObjectCreate("*/object", InsertObject.class);
-    digester.addCallMethod("*/object", "setType", 1);
-    digester.addCallParam("*/object", 0, "type");
-
+    digester.addFactoryCreate("*/object",new InsertObjectFactory(),false);
+    
     digester.addCallMethod("*/object/attribute", "setAttribute", 3);
     digester.addCallParam("*/object/attribute", 0, "name");
     digester.addCallParam("*/object/attribute", 1);

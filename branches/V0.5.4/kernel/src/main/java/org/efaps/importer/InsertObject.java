@@ -30,12 +30,15 @@ import java.sql.Timestamp;
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.Map.Entry;
 
 import org.efaps.admin.datamodel.Attribute;
@@ -60,7 +63,6 @@ public class InsertObject extends AbstractObject {
 
   private String                            PARENTATTRIBUTE  = null;
 
-  // private List<AbstractObject> CHILDS = new ArrayList<AbstractObject>();
   private Map<String, List<AbstractObject>> CHILDS           = new HashMap<String, List<AbstractObject>>();
 
   private String                            ID               = null;
@@ -73,6 +75,10 @@ public class InsertObject extends AbstractObject {
 
   public InsertObject() {
 
+  }
+
+  public InsertObject(final String _type) {
+    setType(_type);
   }
 
   public void setType(String _Type) {
@@ -102,8 +108,17 @@ public class InsertObject extends AbstractObject {
       // TODO: unterscheidung sortiert / nicht sortiert
       list = new ArrayList<AbstractObject>();
       this.CHILDS.put(_object.getType(), list);
+    } else {
+      list.add(_object);
+      if (RootObject.getOrder(_object.getType())!=null){
+      
+      TreeSet<AbstractObject> treeSet = new TreeSet<AbstractObject>(new OrderObject());
+      treeSet.addAll(list);
+      list = new ArrayList<AbstractObject>();
+      list.addAll(treeSet);
+      }
+      
     }
-    list.add(_object);
   }
 
   public void addLink(ForeignObject _Object) {
