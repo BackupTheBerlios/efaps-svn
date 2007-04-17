@@ -141,6 +141,8 @@ public class InsertObject extends AbstractObject {
 
     String ID = null;
     boolean noInsert = false;
+    
+    
     for (List<AbstractObject> list : this.CHILDS.values()) {
       for (AbstractObject object : list) {
 
@@ -154,18 +156,21 @@ public class InsertObject extends AbstractObject {
               if (object.getAttributes().get(element) != null) {
                 query.addWhereExprEqValue(element, object.getAttributes().get(
                     element).toString());
+               
               }
 
               if (object.getParrentAttribute() != null
                   && object.getParrentAttribute().equals(element)) {
                 query.addWhereExprEqValue(element, this.ID);
-
+             
+                
               }
               for (ForeignObject link : object.getLinks()) {
                 if (link.getAttribute().equals(element)) {
                   String foreignID = link.getID();
                   if (foreignID != null) {
                     query.addWhereExprEqValue(element, foreignID);
+                  
                   } else {
                     noInsert = true;
                   }
@@ -175,15 +180,16 @@ public class InsertObject extends AbstractObject {
             }
             query.executeWithoutAccessCheck();
 
-            if (query.next()&& !noInsert) {
+            if (query.next() && !noInsert) {
               ID = UpdateOrInsert(object, new Update(
                   Type.get(object.getType()), query.get("ID").toString()));
 
             } else {
               if (noInsert && object.hasChilds() == false) {
-                  LOG.error("skipt: " + object.toString());
+                LOG.error("skipt: " + object.toString());
               } else {
                 ID = UpdateOrInsert(object, new Insert(object.getType()));
+                
               }
             }
 

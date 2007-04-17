@@ -27,6 +27,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
+import java.util.HashMap;
 
 import javax.naming.NamingException;
 import javax.sql.DataSource;
@@ -145,6 +146,11 @@ public class Context {
    */
   private final Map < String, FileItem > fileParameters;
 
+  /**
+   * A map to be able to set Attributes with a lifetime of a servlet request.
+   */
+  private Map<String, Object> requestAttributes = new HashMap<String, Object>();
+
   /////////////////////////////////////////////////////////////////////////////
   // constructors / destructors
 
@@ -166,7 +172,14 @@ public class Context {
     this.transaction = _transaction;
     this.person = _person;
     this.locale = _locale;
-    this.parameters = _parameters;
+    if (_parameters != null)
+    {
+        this.parameters = new HashMap < String, String[] > (_parameters);
+    }
+    else
+    {
+        this.parameters = new HashMap < String, String[] > ();
+    }
     this.fileParameters = _fileParameters;
 try  {
     setConnection(getDataSource().getConnection());
@@ -368,6 +381,19 @@ if (provider.equals("org.efaps.db.transaction.JDBCStoreResource"))  {
 
   /////////////////////////////////////////////////////////////////////////////
   // instance getter and setter methods
+
+
+  public boolean containsRequestAttribute(String _key) {
+      return requestAttributes.containsKey(_key);
+  }
+
+  public Object getRequestAttribute(String _key) {
+      return requestAttributes.get(_key);
+  }
+
+  public Object setRequestAttribute(String _key, Object _value) {
+      return requestAttributes.put(_key, _value);
+  }
 
   /**
    * This is the getter method for instance variable {@link #connection}.

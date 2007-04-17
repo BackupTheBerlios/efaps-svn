@@ -110,19 +110,19 @@ public abstract class UserObject extends AdminObject  {
       StringBuilder cmd = new StringBuilder();
       try  {
         long keyId = 0;
-        if (!rsrc.getConnection().getMetaData().supportsGetGeneratedKeys())  {
+//        if (!rsrc.getConnection().getMetaData().supportsGetGeneratedKeys())  {
           keyId = context.getDbType().getNewId(rsrc.getConnection(),
                           keyType.getMainTable().getSqlTable(), "ID");
           cmd.append("insert into ").append(keyType.getMainTable().getSqlTable())
              .append(   "(ID,KEY,CREATOR,CREATED,MODIFIER,MODIFIED,")
              .append(    "USERABSTRACT,USERJAASSYSTEM) ")
              .append(   "values (").append(keyId).append(",");
-        } else  {
-          cmd.append("insert into ").append(keyType.getMainTable().getSqlTable())
-             .append(   "(KEY,CREATOR,CREATED,MODIFIER,MODIFIED,")
-             .append(    "USERABSTRACT,USERJAASSYSTEM) ")
-             .append(   "values (");
-        }
+//        } else  {
+//          cmd.append("insert into ").append(keyType.getMainTable().getSqlTable())
+//             .append(   "(KEY,CREATOR,CREATED,MODIFIER,MODIFIED,")
+//             .append(    "USERABSTRACT,USERJAASSYSTEM) ")
+//             .append(   "values (");
+//        }
         cmd
            .append("'").append(_jaasKey).append("',")
            .append(context.getPersonId()).append(",")
@@ -205,13 +205,13 @@ public abstract class UserObject extends AdminObject  {
            .append(_assignType.getMainTable().getSqlTable())
            .append("(");
         long keyId = 0;
-        if (!rsrc.getConnection().getMetaData().supportsGetGeneratedKeys())  {
+//        if (!rsrc.getConnection().getMetaData().supportsGetGeneratedKeys())  {
           keyId = context.getDbType().getNewId(
                           rsrc.getConnection(),
                           _assignType.getMainTable().getSqlTable(), 
                           "ID");
           cmd.append("ID,");
-        }
+//        }
         cmd.append("TYPEID,CREATOR,CREATED,MODIFIER,MODIFIED,")
            .append("USERABSTRACTFROM,USERABSTRACTTO,USERJAASSYSTEM) ")
            .append("values (");

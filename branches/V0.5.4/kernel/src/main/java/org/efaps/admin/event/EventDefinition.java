@@ -80,72 +80,73 @@ return null;
 
   public void execute(final Context _context, final Instance _instance, final Map < TriggerKeys4Values, Map > _map) throws org.efaps.util.EFapsException  {
 
-    ConnectionResource con = null;
-    try  {
-      con = _context.getConnectionResource();
-
-      StringBuilder cmd = new StringBuilder();
-
-      cmd.append("insert into HISTORY(EVENTTYPEID,FORTYPEID,FORID,MODIFIER,MODIFIED,ATTRID,ATTRVALUE) ")
-         .append("values (").append(this.eventType.getId()).append(",")
-                            .append(_instance.getType().getId()).append(",")
-                            .append(_instance.getId()).append(",")
-                            .append(_context.getPerson().getId()).append(",")
-                            .append(_context.getDbType().getCurrentTimeStamp()).append(",")
-                            .append("?,")
-                            .append("?)");
-
-      boolean executed = false;
-      Map < Attribute, String> map = (Map < Attribute, String>) _map.get(TriggerKeys4Values.NEW_VALUES);
-      for (Map.Entry < Attribute, String> entry : map.entrySet())  {
-        PreparedStatement stmt = con.getConnection().prepareStatement(cmd.toString());
-        stmt.setLong(1, entry.getKey().getId());
-        stmt.setString(2, entry.getValue());
-        stmt.executeUpdate();
-        stmt.close();
-        executed = true;
-      }
-
-      if (!executed)  {
-        PreparedStatement stmt = con.getConnection().prepareStatement(cmd.toString());
-        stmt.setNull(1, Types.NULL);
-        stmt.setNull(2, Types.NULL);
-        stmt.executeUpdate();
-        stmt.close();
-      }
-
-
-/*
-String [] keyColumn = {"ID"};
-
-        stmt.execute(cmd.toString(), keyColumn);
-
-java.sql.ResultSet rs = stmt.getGeneratedKeys();
-if (rs.next()) {
-  long newId = rs.getLong(1);
-
-  System.out.println("----------------->new id="+newId);
-
-} else  {
-         System.out.println("There are no generated keys.");
-}
-*/
-
-
-      con.commit();
-    } catch (org.efaps.util.EFapsException e)  {
-e.printStackTrace();
-      if (con != null)  {
-        con.abort();
-      }
-      throw e;
-    } catch (Throwable e)  {
-e.printStackTrace();
-      if (con != null)  {
-        con.abort();
-      }
-      throw new org.efaps.util.EFapsException(getClass(), "execute.Throwable");
-    }
+//    ConnectionResource con = null;
+//    try  {
+//      con = _context.getConnectionResource();
+//
+//      StringBuilder cmd = new StringBuilder();
+//
+//      cmd.append("insert into HISTORY(ID,EVENTTYPEID,FORTYPEID,FORID,MODIFIER,MODIFIED,ATTRID,ATTRVALUE) ")
+//         .append("values (HISTORY_SEQ.nextval,").append(this.eventType.getId()).append(",")
+//                            .append(_instance.getType().getId()).append(",")
+//                            .append(_instance.getId()).append(",")
+//                            .append(_context.getPerson().getId()).append(",")
+//                            .append(_context.getDbType().getCurrentTimeStamp()).append(",")
+//                            .append("?,")
+//                            .append("?)");
+//
+//      boolean executed = false;
+//      Map < Attribute, String> map = (Map < Attribute, String>) _map.get(TriggerKeys4Values.NEW_VALUES);
+//      for (Map.Entry < Attribute, String> entry : map.entrySet())  {
+//        PreparedStatement stmt = con.getConnection().prepareStatement(cmd.toString());
+//        stmt.setLong(1, entry.getKey().getId());
+////        stmt.setString(2, entry.getValue());
+//        stmt.setString(2, entry.getValue() == null ? null : entry.getValue().toString());
+//        stmt.executeUpdate();
+//        stmt.close();
+//        executed = true;
+//      }
+//
+//      if (!executed)  {
+//        PreparedStatement stmt = con.getConnection().prepareStatement(cmd.toString());
+//        stmt.setNull(1, Types.NULL);
+//        stmt.setNull(2, Types.NULL);
+//        stmt.executeUpdate();
+//        stmt.close();
+//      }
+//
+//
+///*
+//String [] keyColumn = {"ID"};
+//
+//        stmt.execute(cmd.toString(), keyColumn);
+//
+//java.sql.ResultSet rs = stmt.getGeneratedKeys();
+//if (rs.next()) {
+//  long newId = rs.getLong(1);
+//
+//  System.out.println("----------------->new id="+newId);
+//
+//} else  {
+//         System.out.println("There are no generated keys.");
+//}
+//*/
+//
+//
+//      con.commit();
+//    } catch (org.efaps.util.EFapsException e)  {
+//e.printStackTrace();
+//      if (con != null)  {
+//        con.abort();
+//      }
+//      throw e;
+//    } catch (Throwable e)  {
+//e.printStackTrace();
+//      if (con != null)  {
+//        con.abort();
+//      }
+//      throw new org.efaps.util.EFapsException(getClass(), "execute.Throwable");
+//    }
 
 
   }

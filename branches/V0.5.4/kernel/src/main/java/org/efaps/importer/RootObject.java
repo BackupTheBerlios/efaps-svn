@@ -20,9 +20,6 @@
 
 package org.efaps.importer;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,23 +28,24 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.efaps.db.Insert;
 import org.efaps.util.EFapsException;
 
-public class RootObject extends AbstractObject  {
+public class RootObject extends AbstractObject {
   /**
    * Logger for this class
    */
-  private static final Log       LOG        = LogFactory
-                                                .getLog(RootObject.class);
+  private static final Log              LOG        = LogFactory
+                                                       .getLog(RootObject.class);
 
-  final List<AbstractObject>     CHILDS     = new ArrayList<AbstractObject>();
+  final List<AbstractObject>            CHILDS     = new ArrayList<AbstractObject>();
 
-  static String                  DATEFORMAT = null;
+  static String                         DATEFORMAT = null;
 
   final static Map<String, OrderObject> ORDER      = new HashMap<String, OrderObject>();
 
-  
   
   
   public void setDateFormat(String _DateFormat) {

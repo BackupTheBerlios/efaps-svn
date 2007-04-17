@@ -1070,17 +1070,17 @@ public class Person extends UserObject  {
 
 // TODO: check for uniqueness!
 // TODO: hard coded mofifier and creator
-        if (!rsrc.getConnection().getMetaData().supportsGetGeneratedKeys())  {
+//        if (!rsrc.getConnection().getMetaData().supportsGetGeneratedKeys())  {
           persId = context.getDbType().getNewId(rsrc.getConnection(),
                           persType.getMainTable().getSqlTable(), "ID");
           cmd.append("insert into ").append(persType.getMainTable().getSqlTable())
              .append(   "(ID,TYPEID,NAME,CREATOR,CREATED,MODIFIER,MODIFIED) ")
              .append(   "values (").append(persId).append(",");
-        } else  {
-          cmd.append("insert into ").append(persType.getMainTable().getSqlTable())
-             .append(   "(TYPEID,NAME,CREATOR,CREATED,MODIFIER,MODIFIED) ")
-             .append(   "values (");
-        }
+//        } else  {
+//          cmd.append("insert into ").append(persType.getMainTable().getSqlTable())
+//             .append(   "(TYPEID,NAME,CREATOR,CREATED,MODIFIER,MODIFIED) ")
+//             .append(   "values (");
+//        }
         cmd
            .append(persType.getId()).append(",")
            .append("'").append(_userName).append("',")

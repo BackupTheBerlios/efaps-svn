@@ -27,6 +27,7 @@ import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.List;
 
+import org.efaps.admin.AdminObject;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.AttributeTypeInterface;
 import org.efaps.admin.datamodel.Type;
@@ -151,7 +152,8 @@ if (attr!=null)  {
    * {@link #sortKey} and the sort direction in {@link #sortDirection}.
    */
   public boolean sort()  {
-/*    if (getSortKey()!=null && getSortKey().length()>0)  {
+
+    if (getSortKey()!=null && getSortKey().length()>0)  {
       int sortKey = 0;
       for (int i=0; i<getTable().getFields().size(); i++)  {
         Field field = (Field)getTable().getFields().get(i);
@@ -165,9 +167,37 @@ if (attr!=null)  {
       Collections.sort(getValues(), new Comparator<Row>(){
         public int compare(Row _o1, Row _o2)  {
           int ret;
-          AttributeTypeInterface a1 = _o1.getValues().get(index).getAttrValue();
-          AttributeTypeInterface a2 = _o2.getValues().get(index).getAttrValue();
-          return a1.compareTo(getLocale(), a2);
+
+          // TODO: quick hack, clean implementation needed
+          Object o1 = _o1.getValues().get(index).getValue();
+          String a1 = "";
+          if (o1 != null)
+          {
+              if (o1 instanceof AdminObject)
+              {
+                  a1 = ((AdminObject) o1).getName();
+              }
+              else
+              {
+                  a1 = o1.toString();
+              }
+          }
+
+          Object o2 = _o2.getValues().get(index).getValue();
+          String a2 = "";
+          if (o2 != null)
+          {
+              if (o2 instanceof AdminObject)
+              {
+                  a2 = ((AdminObject) o2).getName();
+              }
+              else
+              {
+                  a2 = o2.toString();
+              }
+          }
+
+          return a1.compareToIgnoreCase(a2);
          }
         }
       );
@@ -176,7 +206,7 @@ if (attr!=null)  {
         Collections.reverse(getValues());
       }
     }
-*/
+
     return true;
   }
 

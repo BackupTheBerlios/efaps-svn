@@ -209,7 +209,7 @@ public class Insert extends Update {
     PreparedStatement stmt = null;
     try {
       if ((ret == 0)
-          && !_con.getConnection().getMetaData().supportsGetGeneratedKeys())  {
+          /*&& !_con.getConnection().getMetaData().supportsGetGeneratedKeys()*/)  {
 
         ret = _context.getDbType().getNewId(_con.getConnection(),
             _table.getSqlTable(), "ID");

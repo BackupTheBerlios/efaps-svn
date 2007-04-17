@@ -34,15 +34,14 @@ import org.xml.sax.SAXException;
 public class StartImport extends AbstractTransaction {
 
   private RootObject root = null;
-  
+
   public static void main(String[] _args) {
-    if(_args.length==3){
-    (new StartImport()).execute(_args);
-    }else{
+    if (_args.length == 3) {
+      (new StartImport()).execute(_args);
+    } else {
       System.out.println("Usage: ");
     }
-    
-    
+
   }
 
   public void execute(final String... _args) {
@@ -50,7 +49,7 @@ public class StartImport extends AbstractTransaction {
     // "/Users/janmoxter/Documents/workspace/ydss/bootstrap.xml"
     setBootstrap(_args[0]);
     System.out.println(_args[0]);
-    
+
     // "file:///Users/janmoxter/Documents/apache-tomcat-5.5.20/webapps/ydss/docs/efaps/store/documents"
     String BaseName = _args[1];
     System.out.println(_args[1]);
@@ -61,9 +60,11 @@ public class StartImport extends AbstractTransaction {
     loadRunLevel();
 
     try {
-      login("Administrator", "");
+      super.login("Administrator", "");
       super.startTransaction();
 
+      
+      
       System.setProperty(javax.naming.Context.INITIAL_CONTEXT_FACTORY,
           "org.efaps.importer.InitialContextFactory");
       VFSStoreFactoryBean bean = new VFSStoreFactoryBean();
@@ -98,35 +99,33 @@ public class StartImport extends AbstractTransaction {
     digester.setValidating(false);
 
     digester.addObjectCreate("import", RootObject.class);
-    
-    
+
     digester.addCallMethod("import/definition/date", "setDateFormat", 1);
     digester.addCallParam("import/definition/date", 0, "format");
 
-    digester.addFactoryCreate("import/definition/order", new OrderObjectFactory(), false);
-    digester.addCallMethod("import/definition/order/attribute", "addAttribute",3,new Class[]{Integer.class,String.class,String.class});
+    digester.addFactoryCreate("import/definition/order",
+        new OrderObjectFactory(), false);
+    digester.addCallMethod("import/definition/order/attribute", "addAttribute",
+        3, new Class[] { Integer.class, String.class, String.class });
     digester.addCallParam("import/definition/order/attribute", 0, "index");
     digester.addCallParam("import/definition/order/attribute", 1, "name");
     digester.addCallParam("import/definition/order/attribute", 2, "criteria");
-    
-    
+
     digester.addObjectCreate("import/definition/default", DefaultObject.class);
     digester.addCallMethod("import/definition/default", "addDefault", 3);
     digester.addCallParam("import/definition/default", 0, "type");
     digester.addCallParam("import/definition/default", 1, "name");
     digester.addCallParam("import/definition/default", 2);
-    
-    
+
     digester.addSetNext("import/definition/order", "addOrder",
-    "org.efaps.importer.OrderObject");
-       
-    
-    digester.addFactoryCreate("*/object",new InsertObjectFactory(),false);
-    
+        "org.efaps.importer.OrderObject");
+
+    digester.addFactoryCreate("*/object", new InsertObjectFactory(), false);
+
     digester.addCallMethod("*/object/attribute", "setAttribute", 3);
     digester.addCallParam("*/object/attribute", 0, "name");
     digester.addCallParam("*/object/attribute", 1);
-    digester.addCallParam("*/object/attribute", 2,"unique");
+    digester.addCallParam("*/object/attribute", 2, "unique");
 
     digester.addCallMethod("*/file", "setCheckinObject", 2);
     digester.addCallParam("*/file", 0, "name");
@@ -139,7 +138,7 @@ public class StartImport extends AbstractTransaction {
     digester.addCallMethod("*/linkattribute", "addUniqueAttribute", 2);
     digester.addCallParam("*/linkattribute", 0, "unique");
     digester.addCallParam("*/linkattribute", 1, "name");
-    
+
     digester.addSetNext("*/object", "addChild",
         "org.efaps.importer.InsertObject");
 
@@ -147,7 +146,7 @@ public class StartImport extends AbstractTransaction {
     digester.addCallMethod("*/linkattribute", "setLinkAttribute", 2);
     digester.addCallParam("*/linkattribute", 0, "name");
     digester.addCallParam("*/linkattribute", 1, "type");
-    
+
     digester.addCallMethod("*/queryattribute", "setAttribute", 2);
     digester.addCallParam("*/queryattribute", 0, "name");
     digester.addCallParam("*/queryattribute", 1);

@@ -45,6 +45,7 @@ public class OracleDatabase extends AbstractDatabase  {
     this.columnMap.put(ColumnType.CLOB,         "clob");
     this.columnMap.put(ColumnType.BOOLEAN,      "number");
   }
+  
 
   /**
    * The method returns string <code>sysdate</code> which let Oracle set the
@@ -54,6 +55,7 @@ public class OracleDatabase extends AbstractDatabase  {
    */
   public String getCurrentTimeStamp()  {
     return "sysdate";
+    
   }
 
   /**
@@ -198,18 +200,50 @@ public class OracleDatabase extends AbstractDatabase  {
         stmt.executeUpdate(cmd.toString());
 
         // create trigger for autoincrement
-        cmd = new StringBuilder();
-        cmd.append("create trigger ").append(_table).append("_TRG")
-           .append("  before insert on ").append(_table)
-           .append("  for each row ")
-           .append("begin")
-           .append("  select ").append(_table).append("_SEQ.nextval ")
-           .append("      into :new.ID from dual;")
-           .append("end;");
-        stmt.executeUpdate(cmd.toString());
+//        cmd = new StringBuilder();
+//        cmd.append("create trigger ").append(_table).append("_TRG")
+//           .append("  before insert on ").append(_table)
+//           .append("  for each row ")
+//           .append("begin")
+//           .append("  select ").append(_table).append("_SEQ.nextval ")
+//           .append("      into :new.ID from dual;")
+//           .append("end;");
+//        stmt.executeUpdate(cmd.toString());
       }
     } finally  {
       stmt.close();
     }
+  }
+
+  /**
+   * A new id for given column of a sql table is returned (with
+   * sequences!).
+   *
+   * @param _con          sql connection
+   * @param _table        sql table for which a new id must returned
+   * @param _column       sql table column for which a new id must returned
+   * @throws SQLException if a new id could not be retrieved
+   */
+  public long getNewId(final Connection _con, final String _table,
+          final String _column)  throws SQLException  {
+
+    long ret = 0;
+    Statement stmt = _con.createStatement();
+
+    try  {
+
+      StringBuilder cmd = new StringBuilder();
+      cmd.append("select ").append(_table).append("_SEQ.nextval from DUAL");
+
+      ResultSet rs = stmt.executeQuery(cmd.toString());
+      if (rs.next())  {
+        ret = rs.getLong(1);
+      }
+      rs.close();
+
+    } finally  {
+      stmt.close();
+    }
+    return ret;
   }
 }
