@@ -111,10 +111,17 @@ CP=$CP:$shellPathLib/commons-collections-2.1.jar
 CP=$CP:$shellPathLib/derbyclient-10.1.2.1.jar
 CP=$CP:$shellPathLib/postgresql-8.1-407.jdbc3.jar
 
-# used for stores
-# set CP=%CP%;%derbyLibPath%/commons-vfs-20050307052300.jar
+# FileSystemManager Driver
+CP=$CP:$shellPathLib/commons-vfs-20050307052300.jar
+
+
+
 # database driver
-[ -z "$ORACLE_HOME" ] && CP=$CP:$ORACLE_HOME/jdbc/lib/ojdbc14.jar
+CP=$CP:$EFAPS_HOME/ojdbc14.jar
+
+# ydss
+CP=$CP:$shellPathLib/ydss-1.0-SNAPSHOT.jar
+
 
 # add external defined class paths
 [ -z "$EFAPS_CLASSPATH" ] && CP=$EFAPS_CLASSPATH:$CP
@@ -126,8 +133,13 @@ if $cygwin; then
   CP=`cygpath --path --windows "$CP"`
 fi
 
+
+FB="file:///Users/janmoxter/Documents/apache-tomcat-5.5.20/webapps/ydss/docs/efaps/store/documents"
+IXML="/Users/janmoxter/Documents/workspace/ydss/Import.xml"
+
+
 echo Classpath:
 echo ~~~~~~~~~~
 echo $CP
 
-java $EFAPS_OPTS -classpath $CP org.efaps.js.Shell -bootstrap $BOOTSTRAP $1 $2 $3 $4 $5 $6 $7 $8 $9
+java $EFAPS_OPTS -classpath $CP org.efaps.importer.StartImport $BOOTSTRAP $FB $IXML

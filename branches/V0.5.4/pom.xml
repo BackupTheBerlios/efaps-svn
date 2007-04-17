@@ -70,6 +70,8 @@
     
     <module>kernel</module>
     <module>shell</module>
+	<module>ydss</module>
+
 <!--
 	<module>derby</module>
     <module>site</module>
@@ -231,6 +233,9 @@ Needed from eFaps within toString methods.
         <comment>The component is needed for the file upload use case from the eFaps web application. It helps to access in the form process JSP to a file like a normal request paramter.</comment>
       </properties-->
     </dependency>
+    
+    
+    
 </dependencies>
 
 

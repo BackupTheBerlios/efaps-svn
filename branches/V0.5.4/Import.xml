@@ -67,14 +67,7 @@
       <attribute name= "Created">2007-01-01T18:23:23Z</attribute>
       
      
-      <!-- verandern eines Members, hier mit 5  -->
-    <object type= "YDSS_Membership" >
-      <parentattribute name= "ShareFromLink" unique="true"/>
-      <attribute name= "AccessSetToLink">5</attribute>
-      <linkattribute name="UserAbstractFromLink" type="Admin_User_Person" unique="true">
-        <queryattribute name="Name">Marion.Penders</queryattribute>
-      </linkattribute>
-    </object>
+  
     
       <!-- Subscription eines Folders-->
       <object type= "YDSS_Subscription" >
