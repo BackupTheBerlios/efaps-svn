@@ -117,12 +117,14 @@
   * All Modules
   ************************************************************************+ -->
   <modules>
-    <module>derby</module>
+    
     <module>kernel</module>
+    
+<!--
+	<module>derby</module>
+    <module>site</module>
     <module>shell</module>
     <module>webapp</module>
-<!--
-    <module>site</module>
 -->
   </modules>
 
@@ -218,6 +220,27 @@ Needed from eFaps within toString methods.
     </dependency>
 
     <dependency>
+      <groupId>javax.activation</groupId>
+      <artifactId>activation</artifactId>
+      <version>1.1</version>
+      <scope>provided</scope>
+    </dependency>
+
+	<dependency>
+      <groupId>javax.mail</groupId>
+      <artifactId>mail</artifactId>
+      <version>1.4</version>
+      <scope>provided</scope>
+    </dependency>
+
+	<dependency>
+      <groupId>commons-email</groupId>
+      <artifactId>commons-email</artifactId>
+      <version>1.0</version>
+      <scope>provided</scope>
+    </dependency>
+
+	<dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>servlet-api</artifactId>
       <version>2.4</version>
@@ -258,8 +281,7 @@ Needed from eFaps within toString methods.
         <comment>The component is needed for the file upload use case from the eFaps web application. It helps to access in the form process JSP to a file like a normal request paramter.</comment>
       </properties-->
     </dependency>
-
-  </dependencies>
+</dependencies>
 
 
 </project>
