@@ -125,7 +125,7 @@ public class AbstractTransaction {
     String dbClass = null;
     try {
       Object dbTypeObj = props.get("dbType");
-      
+        
       if ((dbTypeObj == null) || (dbTypeObj.toString().length() == 0)) {
         LOG.error("could not initaliase database type");
       } else {
@@ -133,7 +133,7 @@ public class AbstractTransaction {
         
         AbstractDatabase dbType = (AbstractDatabase) Class.forName(dbClass)
             .newInstance();
-        System.out.println(dbClass);
+        
         if (dbType == null) {
           LOG.error("could not initaliase database type");
         }
@@ -194,7 +194,7 @@ public class AbstractTransaction {
         initialised = initialised && true;
       }
     }
-
+    System.out.println("geht doch");  
     return initialised;
   }
 
