@@ -31,6 +31,8 @@
 	<order type="YDSS_DocumentVersion" direction="ascending">
 		<attribute index="1" name="Version" criteria="numerical"/>
 	</order>
+	<default type="Admin_User_Person" name="Creator">1</default>
+	
   </definition>
   
   
@@ -41,7 +43,7 @@
     
     <!-- setzen des Creators durch suchen nach einem Namen -->
     <linkattribute name="Creator" type="Admin_User_Person">
-      <queryattribute name="Name">Jan.Moxter</queryattribute>
+      <queryattribute name="Name">defaulttest</queryattribute>
     </linkattribute>
     <attribute name= "Created">2001-01-01T18:23:23Z</attribute>
     
@@ -64,15 +66,16 @@
       </linkattribute>
       <attribute name= "Created">2007-01-01T18:23:23Z</attribute>
       
-      <!-- wiederholtes setzen eines Members, da Aenderung (hier mit 5) -->
-      <object type= "YDSS_Membership" >
-          <parentattribute name= "ShareFromLink" unique="true" />
-          <attribute name= "AccessSetToLink">5</attribute>
-          <linkattribute name="UserAbstractFromLink" type="Admin_User_Person" unique="true">
-            <queryattribute name="Name">Marion.Penders</queryattribute>
-          </linkattribute>
-        </object>
-      
+     
+      <!-- verandern eines Members, hier mit 5  -->
+    <object type= "YDSS_Membership" >
+      <parentattribute name= "ShareFromLink" unique="true"/>
+      <attribute name= "AccessSetToLink">5</attribute>
+      <linkattribute name="UserAbstractFromLink" type="Admin_User_Person" unique="true">
+        <queryattribute name="Name">Marion.Penders</queryattribute>
+      </linkattribute>
+    </object>
+    
       <!-- Subscription eines Folders-->
       <object type= "YDSS_Subscription" >
         <parentattribute name= "ShareFromLink" />
@@ -80,8 +83,10 @@
           <queryattribute name="Name">Marion.Penders</queryattribute>
         </linkattribute>
       </object>
-       
-       <!-- generieren eines Documents -->
+      
+     
+      
+      <!-- generieren eines Documents -->
       <object type= "YDSS_Document" >
         <parentattribute name= "ParentFolder" />
         <attribute name= "Name" >demo.txt</attribute>

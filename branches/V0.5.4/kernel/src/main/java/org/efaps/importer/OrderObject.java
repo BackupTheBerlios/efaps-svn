@@ -32,12 +32,11 @@ public class OrderObject implements Comparator<AbstractObject> {
 
   private final Map<Integer, OrderAttribute> orderAttributes = new TreeMap<Integer, OrderAttribute>();
 
-  public OrderObject () {
+  public OrderObject() {
     this.type = null;
     this.ascending = true;
   }
-  
-  
+
   public OrderObject(final String _type, final String _direction) {
     this.type = _type;
     this.ascending = !"descending".equalsIgnoreCase(_direction);
@@ -53,8 +52,40 @@ public class OrderObject implements Comparator<AbstractObject> {
   }
 
   public int compare(final AbstractObject _arg0, final AbstractObject _arg1) {
-    // TODO Auto-generated method stub
+    // TODO 1 ersetzen,ascending beruecksichtigen
+
+    if (this.ascending) {
+      if (this.orderAttributes.get(1).getCriteria().equalsIgnoreCase(
+          "numerical")) {
+        Long comp1 = Long.parseLong((String) _arg0
+            .getAttribute(this.orderAttributes.get(1).getName()));
+        Long comp2 = Long.parseLong((String) _arg1
+            .getAttribute(this.orderAttributes.get(1).getName()));
+
+        if (comp1 > comp2)
+
+          return 1;
+
+        else if (comp1 < comp2)
+
+          return -1;
+
+        else
+
+          return 0;
+
+      } else {
+
+        String comp1 = (String) _arg0.getAttribute(this.orderAttributes.get(1)
+            .getName());
+        String comp2 = (String) _arg1.getAttribute(this.orderAttributes.get(1)
+            .getName());
+
+        return comp1.compareToIgnoreCase(comp2);
+      }
+    }
     return 0;
+
   }
 
   private class OrderAttribute {
@@ -67,6 +98,13 @@ public class OrderObject implements Comparator<AbstractObject> {
       this.criteria = _criteria;
     }
 
+    public String getName() {
+      return this.name;
+    }
+
+    public String getCriteria() {
+      return this.criteria;
+    }
   }
 
 }

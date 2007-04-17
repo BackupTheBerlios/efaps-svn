@@ -20,9 +20,6 @@
 
 package org.efaps.importer;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
@@ -30,17 +27,17 @@ import java.sql.Timestamp;
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.Map.Entry;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.db.Checkin;
@@ -105,19 +102,23 @@ public class InsertObject extends AbstractObject {
   public void addChild(AbstractObject _object) {
     List<AbstractObject> list = this.CHILDS.get(_object.getType());
     if (list == null) {
-      // TODO: unterscheidung sortiert / nicht sortiert
+
       list = new ArrayList<AbstractObject>();
       this.CHILDS.put(_object.getType(), list);
-    } else {
       list.add(_object);
-      if (RootObject.getOrder(_object.getType())!=null){
-      
-      TreeSet<AbstractObject> treeSet = new TreeSet<AbstractObject>(new OrderObject());
-      treeSet.addAll(list);
-      list = new ArrayList<AbstractObject>();
-      list.addAll(treeSet);
+    } else {
+
+      list.add(_object);
+      if (RootObject.getOrder(_object.getType()) != null) {
+
+        TreeSet<AbstractObject> treeSet = new TreeSet<AbstractObject>(
+            RootObject.getOrder(_object.getType()));
+
+        treeSet.addAll(list);
+        list.clear();
+        list.addAll(treeSet);
       }
-      
+
     }
   }
 
@@ -139,6 +140,7 @@ public class InsertObject extends AbstractObject {
   public void insertObject() {
 
     String ID = null;
+    boolean noInsert = false;
     for (List<AbstractObject> list : this.CHILDS.values()) {
       for (AbstractObject object : list) {
 
@@ -161,20 +163,28 @@ public class InsertObject extends AbstractObject {
               }
               for (ForeignObject link : object.getLinks()) {
                 if (link.getAttribute().equals(element)) {
-
-                  query.addWhereExprEqValue(element, link.getID());
+                  String foreignID = link.getID();
+                  if (foreignID != null) {
+                    query.addWhereExprEqValue(element, foreignID);
+                  } else {
+                    noInsert = true;
+                  }
                 }
               }
 
             }
             query.executeWithoutAccessCheck();
 
-            if (query.next()) {
+            if (query.next()&& !noInsert) {
               ID = UpdateOrInsert(object, new Update(
                   Type.get(object.getType()), query.get("ID").toString()));
 
             } else {
-              ID = UpdateOrInsert(object, new Insert(object.getType()));
+              if (noInsert && object.hasChilds() == false) {
+                  LOG.error("skipt: " + object.toString());
+              } else {
+                ID = UpdateOrInsert(object, new Insert(object.getType()));
+              }
             }
 
           } else {
@@ -271,6 +281,11 @@ public class InsertObject extends AbstractObject {
     return this.ATTRIBUTES;
   }
 
+  public Object getAttribute(final String _attribute) {
+
+    return (this.ATTRIBUTES.get(_attribute));
+  }
+
   @Override
   public String getParrentAttribute() {
 
@@ -365,6 +380,12 @@ public class InsertObject extends AbstractObject {
       return null;
 
     }
+  }
+
+  @Override
+  public boolean hasChilds() {
+
+    return this.CHILDS.size() > 0;
   }
 
 }

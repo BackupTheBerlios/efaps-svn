@@ -34,7 +34,7 @@ import java.util.Map.Entry;
 import org.efaps.db.Insert;
 import org.efaps.util.EFapsException;
 
-public class RootObject extends AbstractObject {
+public class RootObject extends AbstractObject  {
   /**
    * Logger for this class
    */
@@ -47,6 +47,9 @@ public class RootObject extends AbstractObject {
 
   final static Map<String, OrderObject> ORDER      = new HashMap<String, OrderObject>();
 
+  
+  
+  
   public void setDateFormat(String _DateFormat) {
     DATEFORMAT = _DateFormat;
   }
@@ -151,6 +154,18 @@ public class RootObject extends AbstractObject {
   public Set<String> getUniqueAttributes() {
     // TODO Auto-generated method stub
     return null;
+  }
+
+  @Override
+  public Object getAttribute(String _attribute) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public boolean hasChilds() {
+    // TODO Auto-generated method stub
+    return false;
   }
 
 }

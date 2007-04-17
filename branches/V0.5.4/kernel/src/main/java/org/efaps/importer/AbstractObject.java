@@ -49,5 +49,7 @@ public abstract class AbstractObject {
 
   public abstract Set<String> getUniqueAttributes() ;
   
- 
+  public abstract Object getAttribute(final String _attribute);
+  
+  public abstract boolean hasChilds();
 }

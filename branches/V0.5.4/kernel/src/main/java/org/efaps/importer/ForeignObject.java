@@ -74,9 +74,15 @@ public class ForeignObject {
       query.executeWithoutAccessCheck();
       if (query.next()) {
         ID = (String) query.get("ID").toString();
-
       } else {
-        LOG.error("the Search for a ForeignObject did return no Result!: - " + this.toString());
+        ID = DefaultObject.getDefault(this.TYPE, this.ATTRIBUTE);
+
+        if (ID != null) {
+          LOG.debug("Query did not return a Value; set Value to Defaultvalue: " + ID);
+        } else {
+          LOG.error("the Search for a ForeignObject did return no Result!: - "
+              + this.toString());
+        }
       }
 
       query.close();
@@ -91,9 +97,9 @@ public class ForeignObject {
 
     return null;
   }
-  
-  public String toString(){
-    
+
+  public String toString() {
+
     StringBuilder tmp = new StringBuilder();
     tmp.append("Type: ");
     tmp.append(this.TYPE);
