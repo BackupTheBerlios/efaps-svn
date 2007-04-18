@@ -133,8 +133,10 @@ if $cygwin; then
   CP=`cygpath --path --windows "$CP"`
 fi
 
-
+# BaseName of the eFaps-Store
 FB="file:///Users/janmoxter/Documents/apache-tomcat-5.5.20/webapps/ydss/docs/efaps/store/documents"
+
+# xml to import
 IXML="/Users/janmoxter/Documents/workspace/ydss/Import.xml"
 
 
