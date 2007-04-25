@@ -103,7 +103,7 @@ public class RootObject extends AbstractObject {
           }
         }
         for (ForeignObject link : object.getLinks()) {
-          insert.add(link.getAttribute(), link.getID());
+          insert.add(link.getLinkAttribute(), link.getID());
         }
         insert.executeWithoutAccessCheck();
         String ID = insert.getId();

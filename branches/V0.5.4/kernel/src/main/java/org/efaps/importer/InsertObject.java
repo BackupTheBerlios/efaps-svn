@@ -47,6 +47,17 @@ import org.efaps.db.SearchQuery;
 import org.efaps.db.Update;
 import org.efaps.util.EFapsException;
 
+/**
+ * This class presents the main Object for the import of Data into eFaps and the
+ * connected Database.<br>
+ * <br>
+ * Every InsertObject can be a child to an other InsertObject, so that a
+ * parent-child-hirachie can be constructed. The first InsertObject must be the
+ * child to a {@code org.efaps.importer.RootObject}.
+ * 
+ * @author jmo
+ * 
+ */
 public class InsertObject extends AbstractObject {
   /**
    * Logger for this class
@@ -54,57 +65,127 @@ public class InsertObject extends AbstractObject {
   private static final Log                  LOG              = LogFactory
                                                                  .getLog(InsertObject.class);
 
-  private String                            TYPE             = null;
+  /**
+   * contains the Name of the Type of the current InsertObeject
+   */
+  private String                            type             = null;
 
-  private Map<String, Object>               ATTRIBUTES       = new HashMap<String, Object>();
+  /**
+   * Map containing all Attributes of this InsertObject
+   */
+  private Map<String, Object>               attributes       = new HashMap<String, Object>();
 
-  private String                            PARENTATTRIBUTE  = null;
+  /**
+   * contains the Name of the Attribute, wich presents the
+   * parent-child-relation, for this InsertObject
+   */
+  private String                            parentAttribute  = null;
 
-  private Map<String, List<AbstractObject>> CHILDS           = new HashMap<String, List<AbstractObject>>();
+  /**
+   * contains all Childs of this Insterobject
+   */
+  private Map<String, List<AbstractObject>> childs           = new HashMap<String, List<AbstractObject>>();
 
-  private String                            ID               = null;
+  /**
+   * contains the ID for this InsertObject
+   */
+  private String                            id               = null;
 
-  private Set<ForeignObject>                LINKS            = new HashSet<ForeignObject>();
+  /**
+   * contains all {@link ForeignObjects} of this InsertObject
+   */
+  private Set<ForeignObject>                links            = new HashSet<ForeignObject>();
 
-  private Set<String>                       UNIQUEATTRIBUTES = new HashSet<String>();
+  /**
+   * contains all Attributes wich are defined as unique for this InsertObejct
+   */
+  private Set<String>                       uniqueAttributes = new HashSet<String>();
 
+  /**
+   * contains the CheckinObject, if the InsertObject contains one
+   */
   private CheckinObject                     CHECKINOBJECT    = null;
 
   public InsertObject() {
 
   }
 
+  /**
+   * Constructor used by {@link InsertObjectFactory}
+   * 
+   * @param _type
+   *          Type of the InsertObject
+   */
   public InsertObject(final String _type) {
     setType(_type);
   }
 
-  public void setType(String _Type) {
-    TYPE = _Type;
+  /**
+   * set the Type of the InsertObject
+   * 
+   * @param _type
+   *          Type of the InsertObject
+   */
+  public void setType(final String _type) {
+    this.type = _type;
   }
 
-  public void setAttribute(String _Name, String _Value, String _unique) {
-    this.ATTRIBUTES.put(_Name, _Value.trim());
+  /**
+   * adds an Attribute to the <code>attributes</code> of this InsertObject and
+   * in the case that the Parameter "_unique" equals "true" the Attribute will
+   * also be added to the <code>uniqueAttributes.</code>
+   * 
+   * @param _Name
+   *          Name of the Attribute
+   * @param _Value
+   *          Value of the Attribute
+   * @param _unique
+   *          if _unique equals "true" the Attribute will be added to the
+   *          uniqueAttributes of this InsertObject
+   */
+  public void addAttribute(final String _Name, final String _Value,
+                           final String _unique) {
+    this.attributes.put(_Name, _Value.trim());
 
     if (_unique != null && _unique.equals("true")) {
-      this.UNIQUEATTRIBUTES.add(_Name);
+      this.uniqueAttributes.add(_Name);
     }
   }
 
-  public void setParentAttribute(String _ParentAttribute, String _unique) {
-    this.PARENTATTRIBUTE = _ParentAttribute;
+  /**
+   * sets the <code>parentAttribute</code> of this InsertObject. If the
+   * Parameter "_unique" equals "true" the Attribute will also be added to the
+   * <code>uniqueAttributes.</code>
+   * 
+   * @param _ParentAttribute
+   *          Name of the Attribute
+   * @param _unique
+   *          if _unique equals "true" the Attribute will be added to the
+   *          uniqueAttributes of this InsertObject
+   */
+  public void setParentAttribute(final String _ParentAttribute,
+                                 final String _unique) {
+    this.parentAttribute = _ParentAttribute;
 
     if (_unique != null && _unique.equals("true")) {
-      this.UNIQUEATTRIBUTES.add(_ParentAttribute);
+      this.uniqueAttributes.add(_ParentAttribute);
     }
 
   }
 
+  /**
+   * adds a Child to this InsertObject seperated for the diferend Types. If the
+   * Type of the InsertObject is also an OrderObject, the Childs will be sorted.
+   * 
+   * @param _object
+   *          Child to be added
+   */
   public void addChild(AbstractObject _object) {
-    List<AbstractObject> list = this.CHILDS.get(_object.getType());
+    List<AbstractObject> list = this.childs.get(_object.getType());
     if (list == null) {
 
       list = new ArrayList<AbstractObject>();
-      this.CHILDS.put(_object.getType(), list);
+      this.childs.put(_object.getType(), list);
       list.add(_object);
     } else {
 
@@ -122,28 +203,49 @@ public class InsertObject extends AbstractObject {
     }
   }
 
+  @Override
+  public boolean hasChilds() {
+
+    return this.childs.size() > 0;
+  }
+
+  /**
+   * adds a ForeignObject to this InsertObject
+   * 
+   * @param _Object
+   *          ForeignObject to be added
+   */
   public void addLink(ForeignObject _Object) {
-    this.LINKS.add(_Object);
+    this.links.add(_Object);
 
   }
 
+  /**
+   * adds a <code>uniqueAttributes</code>
+   * 
+   * @param _unique
+   *          the Attribute will be added if the Parameter equals "true"
+   * @param _Name
+   *          Name of the Attribute
+   */
   public void addUniqueAttribute(String _unique, String _Name) {
     if (_unique != null && _unique.equals("true")) {
-      this.UNIQUEATTRIBUTES.add(_Name);
+      this.uniqueAttributes.add(_Name);
     }
   }
 
-  public void setID(String _ID) {
-    ID = _ID;
+  @Override
+  public void setID(String _id) {
+    id = _id;
   }
 
+  @Override
   public void insertObject() {
 
     String ID = null;
     boolean noInsert = false;
-    
-    
-    for (List<AbstractObject> list : this.CHILDS.values()) {
+
+    for (List<AbstractObject> list : this.childs.values()) {
       for (AbstractObject object : list) {
 
         try {
@@ -156,21 +258,20 @@ public class InsertObject extends AbstractObject {
               if (object.getAttributes().get(element) != null) {
                 query.addWhereExprEqValue(element, object.getAttributes().get(
                     element).toString());
-               
+
               }
 
               if (object.getParrentAttribute() != null
                   && object.getParrentAttribute().equals(element)) {
-                query.addWhereExprEqValue(element, this.ID);
-             
-                
+                query.addWhereExprEqValue(element, this.id);
+
               }
               for (ForeignObject link : object.getLinks()) {
-                if (link.getAttribute().equals(element)) {
+                if (link.getLinkAttribute().equals(element)) {
                   String foreignID = link.getID();
                   if (foreignID != null) {
                     query.addWhereExprEqValue(element, foreignID);
-                  
+
                   } else {
                     noInsert = true;
                   }
@@ -189,7 +290,7 @@ public class InsertObject extends AbstractObject {
                 LOG.error("skipt: " + object.toString());
               } else {
                 ID = UpdateOrInsert(object, new Insert(object.getType()));
-                
+
               }
             }
 
@@ -219,7 +320,7 @@ public class InsertObject extends AbstractObject {
     }
   }
 
-  private String UpdateOrInsert(AbstractObject _Object, Update _UpIn) {
+  private String UpdateOrInsert(final AbstractObject _Object,final Update _UpIn) {
     try {
       for (Entry element : _Object.getAttributes().entrySet()) {
 
@@ -233,10 +334,10 @@ public class InsertObject extends AbstractObject {
         }
       }
       if (_Object.getParrentAttribute() != null) {
-        _UpIn.add(_Object.getParrentAttribute(), this.ID);
+        _UpIn.add(_Object.getParrentAttribute(), this.id);
       }
       for (ForeignObject link : _Object.getLinks()) {
-        _UpIn.add(link.getAttribute(), link.getID());
+        _UpIn.add(link.getLinkAttribute(), link.getID());
       }
       _UpIn.executeWithoutAccessCheck();
       String ID = _UpIn.getId();
@@ -252,26 +353,31 @@ public class InsertObject extends AbstractObject {
 
       LOG.error("UpdateOrInsert() " + this.toString(), e);
     }
-
-    return ID;
+//TODO warum war da ein this.id?
+    return null;
 
   }
 
+  /**
+   * get the ID of the InsertObject
+   * 
+   * @return the ID of the InsertObject
+   */
   public String getID() {
-    return this.ID;
+    return this.id;
   }
 
   @Override
   public String getType() {
-    return this.TYPE;
+    return this.type;
 
   }
 
   @Override
   public Map<String, Object> getAttributes() {
-    for (Entry element : this.ATTRIBUTES.entrySet()) {
+    for (Entry element : this.attributes.entrySet()) {
 
-      Attribute attribute = Type.get(this.TYPE).getAttribute(
+      Attribute attribute = Type.get(this.type).getAttribute(
           element.getKey().toString());
 
       if (attribute.getAttributeType().getClassRepr().getName().equals(
@@ -280,32 +386,34 @@ public class InsertObject extends AbstractObject {
         Date date = new SimpleDateFormat(RootObject.DATEFORMAT).parse(element
             .getValue().toString(), new ParsePosition(0));
 
-        this.ATTRIBUTES.put((String) element.getKey(), new Timestamp(date
+        this.attributes.put((String) element.getKey(), new Timestamp(date
             .getTime()));
       }
     }
-    return this.ATTRIBUTES;
+    return this.attributes;
   }
 
+  @Override
   public Object getAttribute(final String _attribute) {
 
-    return (this.ATTRIBUTES.get(_attribute));
+    return (this.attributes.get(_attribute));
   }
 
   @Override
   public String getParrentAttribute() {
 
-    return this.PARENTATTRIBUTE;
+    return this.parentAttribute;
   }
 
   @Override
   public Set<ForeignObject> getLinks() {
 
-    return this.LINKS;
+    return this.links;
   }
 
+  @Override
   public Set<String> getUniqueAttributes() {
-    return this.UNIQUEATTRIBUTES;
+    return this.uniqueAttributes;
   }
 
   public void setCheckinObject(String _Name, String _URL) {
@@ -324,7 +432,7 @@ public class InsertObject extends AbstractObject {
   @Override
   public void checkObjectin() {
 
-    Checkin checkin = new Checkin(new Instance(this.TYPE, this.ID));
+    Checkin checkin = new Checkin(new Instance(this.type, this.id));
 
     try {
       checkin.executeWithoutAccessCheck(this.CHECKINOBJECT.getName(),
@@ -336,17 +444,20 @@ public class InsertObject extends AbstractObject {
     }
   }
 
+  /* (non-Javadoc)
+   * @see java.lang.Object#toString()
+   */
   public String toString() {
 
     StringBuilder tmp = new StringBuilder();
     tmp.append("Type: ");
-    tmp.append(this.TYPE);
+    tmp.append(this.type);
     tmp.append(" - ParentAttribute: ");
-    tmp.append(this.PARENTATTRIBUTE);
+    tmp.append(this.parentAttribute);
     tmp.append(" - Attributes: ");
-    tmp.append(this.ATTRIBUTES.toString());
+    tmp.append(this.attributes.toString());
     tmp.append(" - Links: ");
-    tmp.append(this.LINKS.toString());
+    tmp.append(this.links.toString());
     return tmp.toString();
   }
 
@@ -386,12 +497,6 @@ public class InsertObject extends AbstractObject {
       return null;
 
     }
-  }
-
-  @Override
-  public boolean hasChilds() {
-
-    return this.CHILDS.size() > 0;
   }
 
 }

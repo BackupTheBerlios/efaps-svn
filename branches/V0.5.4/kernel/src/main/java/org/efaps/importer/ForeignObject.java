@@ -29,45 +29,93 @@ import org.apache.commons.logging.LogFactory;
 import org.efaps.db.SearchQuery;
 import org.efaps.util.EFapsException;
 
+/**
+ * This class presents an Object which is connected to an
+ * <code>InsertObject</code> through an ID.
+ * 
+ * 
+ * @author jmo
+ * 
+ */
 public class ForeignObject {
   /**
    * Logger for this class
    */
-  private static final Log    LOG        = LogFactory
-                                             .getLog(ForeignObject.class);
+  private static final Log    LOG           = LogFactory
+                                                .getLog(ForeignObject.class);
 
-  private String              ATTRIBUTE  = null;
+  /**
+   * contains the name of the attribute wich links to an InsertObject
+   */
+  private String              linkattribute = null;
 
-  private String              TYPE       = null;
+  /**
+   * contains the type of this ForeignObject
+   */
+  private String              type          = null;
 
-  private Map<String, String> ATTRIBUTES = new HashMap<String, String>();
+  /**
+   * contains the attributes and the values used for the Query
+   */
+  private Map<String, String> attributes    = new HashMap<String, String>();
 
-  public void setAttribute(String _Name, String _Value) {
-    this.ATTRIBUTES.put(_Name, _Value.trim());
+  /**
+   * adds an Attribute, which will be used to construct the Query
+   * 
+   * @param _name
+   *          Name of the attribute
+   * @param _value
+   *          Value of the attribute
+   */
+  public void addAttribute(final String _name, final String _value) {
+    this.attributes.put(_name, _value.trim());
   }
 
-  public void setLinkAttribute(String _Name, String _Type) {
-    this.ATTRIBUTE = _Name;
-    this.TYPE = _Type;
+  /**
+   * sets the LinkAttribute and the Type of the ForeignObject
+   * 
+   * @param _name
+   *          Name of the LinkAttribute
+   * @param _type
+   *          Type of the ForeignObject
+   */
+  public void setLinkAttribute(String _name, String _type) {
+    this.linkattribute = _name;
+    this.type = _type;
 
   }
 
-  public String getAttribute() {
+  /**
+   * returns the LinkAttribute of this ForeignObject
+   * 
+   * @return String containing the Name of the LinkAttribute
+   */
+  public String getLinkAttribute() {
 
-    return this.ATTRIBUTE;
+    return this.linkattribute;
   }
 
+  /**
+   * Method to get the ID of the ForeignObject. <br>
+   * <br>
+   * To get the ID a Query is build. If the Query returns Null, then it will be
+   * controled if a default is defined for this ForeignObject.If is so the
+   * default is returned, otherwise null.
+   * 
+   * @return String with the ID of the ForeignObject. Null if not found and no
+   *         default is defined.
+   */
   public String getID() {
     SearchQuery query = new SearchQuery();
     String ID = null;
     try {
 
-      query.setQueryTypes(this.TYPE);
+      query.setQueryTypes(this.type);
       query.addSelect("ID");
 
       query.setExpandChildTypes(true);
 
-      for (Entry element : this.ATTRIBUTES.entrySet()) {
+      for (Entry element : this.attributes.entrySet()) {
         query.addWhereExprEqValue(element.getKey().toString(), element
             .getValue().toString());
       }
@@ -75,10 +123,11 @@ public class ForeignObject {
       if (query.next()) {
         ID = (String) query.get("ID").toString();
       } else {
-        ID = DefaultObject.getDefault(this.TYPE, this.ATTRIBUTE);
+        ID = DefaultObject.getDefault(this.type, this.linkattribute);
 
         if (ID != null) {
-          LOG.debug("Query did not return a Value; set Value to Defaultvalue: " + ID);
+          LOG.debug("Query did not return a Value; set Value to Defaultvalue: "
+              + ID);
         } else {
           LOG.error("the Search for a ForeignObject did return no Result!: - "
               + this.toString());
@@ -98,15 +147,20 @@ public class ForeignObject {
     return null;
   }
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see java.lang.Object#toString()
+   */
   public String toString() {
 
     StringBuilder tmp = new StringBuilder();
     tmp.append("Type: ");
-    tmp.append(this.TYPE);
+    tmp.append(this.type);
     tmp.append(" - Attribute: ");
-    tmp.append(this.ATTRIBUTE);
+    tmp.append(this.linkattribute);
     tmp.append(" - Attributes: ");
-    tmp.append(this.ATTRIBUTES.toString());
+    tmp.append(this.attributes.toString());
     return tmp.toString();
   }
 }

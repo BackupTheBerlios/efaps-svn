@@ -33,12 +33,25 @@ public abstract class AbstractObject {
 
   public abstract Set<ForeignObject> getLinks();
 
+  /**
+   * get the Type of the Object
+   * 
+   * @return the Type of the Object
+   */
   public abstract String getType();
 
   public abstract Map<String, Object> getAttributes();
 
-  public abstract void setID(String _ID);
+  /**
+   * sets the ID of the Object
+   * 
+   * @param _id
+   */
+  public abstract void setID(String _id);
 
+  /**
+   * Method that executes the Insert into the Database
+   */
   public abstract void insertObject();
 
   public abstract String getParrentAttribute();
@@ -47,9 +60,14 @@ public abstract class AbstractObject {
 
   public abstract void checkObjectin();
 
-  public abstract Set<String> getUniqueAttributes() ;
-  
+  public abstract Set<String> getUniqueAttributes();
+
   public abstract Object getAttribute(final String _attribute);
-  
+
+  /**
+   * has the Object Childs?
+   * 
+   * @return true if the Object has Childs, otherwise false
+   */
   public abstract boolean hasChilds();
 }

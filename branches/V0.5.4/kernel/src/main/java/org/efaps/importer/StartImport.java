@@ -122,7 +122,7 @@ public class StartImport extends AbstractTransaction {
 
     digester.addFactoryCreate("*/object", new InsertObjectFactory(), false);
 
-    digester.addCallMethod("*/object/attribute", "setAttribute", 3);
+    digester.addCallMethod("*/object/attribute", "addAttribute", 3);
     digester.addCallParam("*/object/attribute", 0, "name");
     digester.addCallParam("*/object/attribute", 1);
     digester.addCallParam("*/object/attribute", 2, "unique");
@@ -147,7 +147,7 @@ public class StartImport extends AbstractTransaction {
     digester.addCallParam("*/linkattribute", 0, "name");
     digester.addCallParam("*/linkattribute", 1, "type");
 
-    digester.addCallMethod("*/queryattribute", "setAttribute", 2);
+    digester.addCallMethod("*/queryattribute", "addAttribute", 2);
     digester.addCallParam("*/queryattribute", 0, "name");
     digester.addCallParam("*/queryattribute", 1);
 
