@@ -39,7 +39,7 @@ public class StartImport extends AbstractTransaction {
     if (_args.length == 3) {
       (new StartImport()).execute(_args);
     } else {
-      System.out.println("Usage: ");
+      System.out.println("Usage: Bootstrap.xml Basename.xml Import.xml");
     }
 
   }
@@ -63,6 +63,7 @@ public class StartImport extends AbstractTransaction {
       super.login("Administrator", "");
       super.startTransaction();
 
+      //TODO Administrator klein schreiben
       
       
       System.setProperty(javax.naming.Context.INITIAL_CONTEXT_FACTORY,

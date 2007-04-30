@@ -82,7 +82,7 @@ public class InsertObject extends AbstractObject {
   private String                            parentAttribute  = null;
 
   /**
-   * contains all Childs of this Insterobject
+   * contains all Childs of this Insertobject
    */
   private Map<String, List<AbstractObject>> childs           = new HashMap<String, List<AbstractObject>>();
 
@@ -104,7 +104,7 @@ public class InsertObject extends AbstractObject {
   /**
    * contains the CheckinObject, if the InsertObject contains one
    */
-  private CheckinObject                     CHECKINOBJECT    = null;
+  private CheckinObject                     ceckinobject     = null;
 
   public InsertObject() {
 
@@ -320,7 +320,7 @@ public class InsertObject extends AbstractObject {
     }
   }
 
-  private String UpdateOrInsert(final AbstractObject _Object,final Update _UpIn) {
+  private String UpdateOrInsert(final AbstractObject _Object, final Update _UpIn) {
     try {
       for (Entry element : _Object.getAttributes().entrySet()) {
 
@@ -353,7 +353,7 @@ public class InsertObject extends AbstractObject {
 
       LOG.error("UpdateOrInsert() " + this.toString(), e);
     }
-//TODO warum war da ein this.id?
+    // TODO warum war da ein this.id?
     return null;
 
   }
@@ -416,14 +416,22 @@ public class InsertObject extends AbstractObject {
     return this.uniqueAttributes;
   }
 
+  /**
+   * method to Create a new {@link CheckinObject} and store it
+   * 
+   * @param _Name
+   *          Name of the CheckinObject
+   * @param _URL
+   *          URL to the File of the CheckinObject
+   */
   public void setCheckinObject(String _Name, String _URL) {
-    this.CHECKINOBJECT = new CheckinObject(_Name, _URL);
+    this.ceckinobject = new CheckinObject(_Name, _URL);
 
   }
 
   @Override
   public boolean isCheckinObject() {
-    if (this.CHECKINOBJECT != null) {
+    if (this.ceckinobject != null) {
       return true;
     }
     return false;
@@ -435,8 +443,8 @@ public class InsertObject extends AbstractObject {
     Checkin checkin = new Checkin(new Instance(this.type, this.id));
 
     try {
-      checkin.executeWithoutAccessCheck(this.CHECKINOBJECT.getName(),
-          this.CHECKINOBJECT.getInputStream(), -1);
+      checkin.executeWithoutAccessCheck(this.ceckinobject.getName(),
+          this.ceckinobject.getInputStream(), -1);
     }
     catch (EFapsException e) {
 
@@ -444,7 +452,9 @@ public class InsertObject extends AbstractObject {
     }
   }
 
-  /* (non-Javadoc)
+  /*
+   * (non-Javadoc)
+   * 
    * @see java.lang.Object#toString()
    */
   public String toString() {
@@ -461,32 +471,67 @@ public class InsertObject extends AbstractObject {
     return tmp.toString();
   }
 
+  /**
+   * Class to store the Information, needed to Check in a InsertObject
+   * 
+   * @author jmo
+   * 
+   */
   public class CheckinObject {
     /**
      * Logger for this class
      */
     private Log    LOG  = LogFactory.getLog(CheckinObject.class);
 
-    private String NAME = null;
+    /**
+     * contains the Filename of the CheckinObject
+     */
+    private String name = null;
 
-    private String URL  = null;
+    /**
+     * contains the URL to the File
+     */
+    private String url  = null;
 
-    public CheckinObject(String _Name, String _Url) {
-      this.NAME = _Name.trim();
-      this.URL = _Url.trim();
+    /**
+     * constructor setting the Filename and the URL of the CheckinObject
+     * 
+     * @param _name
+     *          Filename of the CheckinObject
+     * @param _url
+     *          URL to the File
+     */
+    public CheckinObject(String _name, String _url) {
+      this.name = _name.trim();
+      this.url = _url.trim();
     }
 
+    /**
+     * get the Name of the CheckinObject
+     * 
+     * @return Filename of the CheckinObject
+     */
     public String getName() {
-      return this.NAME;
+      return this.name;
     }
 
+    /**
+     * get the URL of the CheckinObject
+     * 
+     * @return URL to the File
+     */
     public String getURL() {
-      return this.URL;
+      return this.url;
     }
 
+    /**
+     * get an Inputstream of the File to check in
+     * 
+     * @return Inputstream of the File
+     */
     public InputStream getInputStream() {
       try {
-        InputStream inputstream = new FileInputStream(this.URL);
+        InputStream inputstream = new FileInputStream(this.url);
         return inputstream;
       }
       catch (FileNotFoundException e) {

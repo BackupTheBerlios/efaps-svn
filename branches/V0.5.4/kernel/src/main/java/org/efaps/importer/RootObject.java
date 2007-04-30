@@ -46,8 +46,6 @@ public class RootObject extends AbstractObject {
 
   final static Map<String, OrderObject> ORDER      = new HashMap<String, OrderObject>();
 
-  
-  
   public void setDateFormat(String _DateFormat) {
     DATEFORMAT = _DateFormat;
   }
@@ -150,7 +148,7 @@ public class RootObject extends AbstractObject {
 
   @Override
   public Set<String> getUniqueAttributes() {
-    // TODO Auto-generated method stub
+
     return null;
   }
 

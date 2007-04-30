@@ -25,6 +25,17 @@ import org.apache.commons.digester.ObjectCreationFactory;
 
 import org.xml.sax.Attributes;
 
+/**
+ * Class to create InsertObjects with the Digester using a Constructor wiht
+ * Parameters.
+ * 
+ * This Constructor is needed, because the Attribute "type" is needed from the
+ * beginning to store the Information about an InsertObject sorted by the Type.
+ * This information can't be changed later.
+ * 
+ * @author jmo
+ * 
+ */
 public class InsertObjectFactory implements ObjectCreationFactory {
 
   public Object createObject(final Attributes _attributes) {
