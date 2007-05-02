@@ -104,7 +104,7 @@ public class InsertObject extends AbstractObject {
   /**
    * contains the CheckinObject, if the InsertObject contains one
    */
-  private CheckinObject                     ceckinobject     = null;
+  private CheckinObject                     ceckInObject     = null;
 
   public InsertObject() {
 
@@ -240,7 +240,7 @@ public class InsertObject extends AbstractObject {
   }
 
   @Override
-  public void insertObject() {
+  public void dbAddChilds() {
 
     String ID = null;
     boolean noInsert = false;
@@ -250,6 +250,7 @@ public class InsertObject extends AbstractObject {
 
         try {
           if (object.getUniqueAttributes().size() > 0) {
+
             SearchQuery query = new SearchQuery();
             query.setQueryTypes(object.getType());
             query.addSelect("ID");
@@ -282,87 +283,90 @@ public class InsertObject extends AbstractObject {
             query.executeWithoutAccessCheck();
 
             if (query.next() && !noInsert) {
-              ID = UpdateOrInsert(object, new Update(
-                  Type.get(object.getType()), query.get("ID").toString()));
+              ID = object.dbUpdateOrInsert(this, query.get("ID").toString());
 
             } else {
               if (noInsert && object.hasChilds() == false) {
                 LOG.error("skipt: " + object.toString());
               } else {
-                ID = UpdateOrInsert(object, new Insert(object.getType()));
 
+                ID = object.dbUpdateOrInsert(this, "");
               }
             }
-
+            query.close();
           } else {
-            ID = UpdateOrInsert(object, new Insert(object.getType()));
+            ID = object.dbUpdateOrInsert(this, "");
 
           }
           object.setID(ID);
 
           if (object.isCheckinObject()) {
-            object.checkObjectin();
+            object.dbCheckObjectIn();
           }
-
-          object.insertObject();
 
         }
 
         catch (EFapsException e) {
 
-          LOG.error("insertObject() " + this.toString(), e);
-        }
-        catch (Exception e) {
+          LOG.error("dbAddChilds() " + this.toString(), e);
+        } catch (Exception e) {
 
-          LOG.error("insertObject() " + this.toString(), e);
+          LOG.error("dbAddChilds() " + this.toString(), e);
         }
+      }
+    }
+
+    for (List<AbstractObject> list : this.childs.values()) {
+      for (AbstractObject object : list) {
+        object.dbAddChilds();
       }
     }
   }
 
-  private String UpdateOrInsert(final AbstractObject _Object, final Update _UpIn) {
-    try {
-      for (Entry element : _Object.getAttributes().entrySet()) {
+  public String dbUpdateOrInsert(final AbstractObject _parent, final String _ID) {
 
+    try {
+      Update UpIn;
+      if (_ID != "") {
+
+        UpIn = new Update(Type.get(this.type), _ID);
+
+      } else {
+
+        UpIn = new Insert(this.type);
+
+      }
+
+      for (Entry element : this.getAttributes().entrySet()) {
         if (element.getValue() instanceof Timestamp) {
 
-          _UpIn
-              .add(element.getKey().toString(), (Timestamp) element.getValue());
+          UpIn.add(element.getKey().toString(), (Timestamp) element.getValue());
 
         } else {
-          _UpIn.add(element.getKey().toString(), element.getValue().toString());
+          UpIn.add(element.getKey().toString(), element.getValue().toString());
         }
       }
-      if (_Object.getParrentAttribute() != null) {
-        _UpIn.add(_Object.getParrentAttribute(), this.id);
+      if (this.getParrentAttribute() != null) {
+        UpIn.add(this.getParrentAttribute(), _parent.getID());
       }
-      for (ForeignObject link : _Object.getLinks()) {
-        _UpIn.add(link.getLinkAttribute(), link.getID());
+      for (ForeignObject link : this.getLinks()) {
+        UpIn.add(link.getLinkAttribute(), link.getID());
       }
-      _UpIn.executeWithoutAccessCheck();
-      String ID = _UpIn.getId();
-      _UpIn.close();
+      UpIn.executeWithoutAccessCheck();
+      String ID = UpIn.getId();
+      UpIn.close();
 
       return ID;
+    } catch (EFapsException e) {
+      LOG.error("dbUpdateOrInsert() " + this.toString(), e);
+    } catch (Exception e) {
+      LOG.error("dbUpdateOrInsert() " + this.toString(), e);
     }
-    catch (EFapsException e) {
 
-      LOG.error("UpdateOrInsert() " + this.toString(), e);
-    }
-    catch (Exception e) {
-
-      LOG.error("UpdateOrInsert() " + this.toString(), e);
-    }
-    // TODO warum war da ein this.id?
     return null;
-
   }
 
-  /**
-   * get the ID of the InsertObject
-   * 
-   * @return the ID of the InsertObject
-   */
+  @Override
   public String getID() {
     return this.id;
   }
@@ -425,28 +429,27 @@ public class InsertObject extends AbstractObject {
    *          URL to the File of the CheckinObject
    */
   public void setCheckinObject(String _Name, String _URL) {
-    this.ceckinobject = new CheckinObject(_Name, _URL);
+    this.ceckInObject = new CheckinObject(_Name, _URL);
 
   }
 
   @Override
   public boolean isCheckinObject() {
-    if (this.ceckinobject != null) {
+    if (this.ceckInObject != null) {
       return true;
     }
     return false;
   }
 
   @Override
-  public void checkObjectin() {
+  public void dbCheckObjectIn() {
 
     Checkin checkin = new Checkin(new Instance(this.type, this.id));
 
     try {
-      checkin.executeWithoutAccessCheck(this.ceckinobject.getName(),
-          this.ceckinobject.getInputStream(), -1);
-    }
-    catch (EFapsException e) {
+      checkin.executeWithoutAccessCheck(this.ceckInObject.getName(),
+          this.ceckInObject.getInputStream(), -1);
+    } catch (EFapsException e) {
 
       LOG.error("checkObjectin() " + this.toString(), e);
     }
@@ -478,10 +481,6 @@ public class InsertObject extends AbstractObject {
    * 
    */
   public class CheckinObject {
-    /**
-     * Logger for this class
-     */
-    private Log    LOG  = LogFactory.getLog(CheckinObject.class);
 
     /**
      * contains the Filename of the CheckinObject
@@ -533,8 +532,7 @@ public class InsertObject extends AbstractObject {
       try {
         InputStream inputstream = new FileInputStream(this.url);
         return inputstream;
-      }
-      catch (FileNotFoundException e) {
+      } catch (FileNotFoundException e) {
 
         LOG.error("getInputStream()", e);
       }

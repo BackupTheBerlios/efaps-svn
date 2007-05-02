@@ -303,7 +303,11 @@ public class Insert extends Update {
     }
     for (int i=0, j=1; i<list.size(); i++, j++)  {
       AttributeTypeInterface attr = (AttributeTypeInterface)list.get(i);
+      if (LOG.isTraceEnabled()) {
+        LOG.trace(attr. toString());
+        }
       attr.update(_context, stmt, j);
+      
     }
     if (_table.getSqlColType()!=null)  {
       stmt.setLong(list.size()+1, getType().getId());

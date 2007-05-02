@@ -72,7 +72,7 @@ public class RootObject extends AbstractObject {
   }
 
   @Override
-  public void insertObject() {
+  public void dbAddChilds() {
 
   }
 
@@ -108,14 +108,12 @@ public class RootObject extends AbstractObject {
         insert.close();
 
         object.setID(ID);
-        object.insertObject();
+        object.dbAddChilds();
 
-      }
-      catch (EFapsException e) {
+      } catch (EFapsException e) {
 
         LOG.error("insertDB()", e);
-      }
-      catch (Exception e) {
+      } catch (Exception e) {
 
         LOG.error("insertDB()", e);
       }
@@ -142,7 +140,7 @@ public class RootObject extends AbstractObject {
   }
 
   @Override
-  public void checkObjectin() {
+  public void dbCheckObjectIn() {
 
   }
 
@@ -162,6 +160,18 @@ public class RootObject extends AbstractObject {
   public boolean hasChilds() {
     // TODO Auto-generated method stub
     return false;
+  }
+
+  @Override
+  public String dbUpdateOrInsert(final AbstractObject _parent, final String _ID) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public String getID() {
+    // TODO Auto-generated method stub
+    return null;
   }
 
 }

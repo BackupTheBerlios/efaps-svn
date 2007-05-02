@@ -43,22 +43,22 @@ public abstract class AbstractObject {
   public abstract Map<String, Object> getAttributes();
 
   /**
+   * get the ID of the Object
+   * 
+   * @return Strng with the ID of the Object
+   */
+  public abstract String getID();
+
+  /**
    * sets the ID of the Object
    * 
    * @param _id
    */
   public abstract void setID(String _id);
 
-  /**
-   * Method that executes the Insert into the Database
-   */
-  public abstract void insertObject();
-
   public abstract String getParrentAttribute();
 
   public abstract boolean isCheckinObject();
-
-  public abstract void checkObjectin();
 
   public abstract Set<String> getUniqueAttributes();
 
@@ -70,4 +70,14 @@ public abstract class AbstractObject {
    * @return true if the Object has Childs, otherwise false
    */
   public abstract boolean hasChilds();
+
+  public abstract void dbCheckObjectIn();
+
+  /**
+   * Method that executes the Insert into the Database
+   */
+  public abstract void dbAddChilds();
+
+  public abstract String dbUpdateOrInsert(final AbstractObject _parent,
+                                          final String _ID);
 }
