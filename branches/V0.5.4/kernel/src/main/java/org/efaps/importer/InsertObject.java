@@ -269,7 +269,7 @@ public class InsertObject extends AbstractObject {
               }
               for (ForeignObject link : object.getLinks()) {
                 if (link.getLinkAttribute().equals(element)) {
-                  String foreignID = link.getID();
+                  String foreignID = link.dbGetID();
                   if (foreignID != null) {
                     query.addWhereExprEqValue(element, foreignID);
 
@@ -350,7 +350,7 @@ public class InsertObject extends AbstractObject {
         UpIn.add(this.getParrentAttribute(), _parent.getID());
       }
       for (ForeignObject link : this.getLinks()) {
-        UpIn.add(link.getLinkAttribute(), link.getID());
+        UpIn.add(link.getLinkAttribute(), link.dbGetID());
       }
       UpIn.executeWithoutAccessCheck();
       String ID = UpIn.getId();

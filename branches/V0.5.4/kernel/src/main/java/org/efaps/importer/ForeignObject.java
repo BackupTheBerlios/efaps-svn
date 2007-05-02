@@ -105,7 +105,7 @@ public class ForeignObject {
    * @return String with the ID of the ForeignObject. Null if not found and no
    *         default is defined.
    */
-  public String getID() {
+  public String dbGetID() {
     SearchQuery query = new SearchQuery();
     String ID = null;
     try {

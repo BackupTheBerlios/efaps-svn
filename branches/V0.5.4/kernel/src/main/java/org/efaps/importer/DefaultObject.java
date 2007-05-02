@@ -23,15 +23,49 @@ package org.efaps.importer;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Thsi Class represents the Possibility to define default Values, for the Case
+ * a Foreign-Object returns a invalid Value. <br>
+ * <br>
+ * Example for the XML-Structure:<br>
+ * &lt;definition&gt;<br>
+ * &lt;default type="Admin_User_Person" name="Creator"&gt;1&lt;/default&gt;<br>
+ * &lt;/definition&gt;
+ * 
+ * @author jmo
+ * 
+ */
 public class DefaultObject {
+  /**
+   * contains the Defaults defined for this Import
+   */
   final static Map<String, String> DEFAULTS = new HashMap<String, String>();
 
+  /**
+   * adds a new Dafult to the DEFAULTS
+   * 
+   * @param _type
+   *          String containing the Type of the Object
+   * @param _name
+   *          String containing the Name of the Attribute
+   * @param _value
+   *          Value to be Set if the Default will be inserte
+   */
   public void addDefault(final String _type, final String _name,
-      final String _value) {
+                         final String _value) {
     DEFAULTS.put(_type + "/" + _name, _value);
 
   }
 
+  /**
+   * get the DefaultValue of the Object
+   * 
+   * @param _type
+   *          String containing the Type of the Object
+   * @param _name
+   *          String containing the Name of the Attribute
+   * @return String containing the DefaultValue
+   */
   public static String getDefault(final String _type, final String _name) {
     return (String) DEFAULTS.get(_type + "/" + _name);
   }

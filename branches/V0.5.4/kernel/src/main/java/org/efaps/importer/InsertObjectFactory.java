@@ -26,7 +26,7 @@ import org.apache.commons.digester.ObjectCreationFactory;
 import org.xml.sax.Attributes;
 
 /**
- * Class to create InsertObjects with the Digester using a Constructor wiht
+ * Class to create InsertObjects with the Digester using a Constructor with
  * Parameters.
  * 
  * This Constructor is needed, because the Attribute "type" is needed from the

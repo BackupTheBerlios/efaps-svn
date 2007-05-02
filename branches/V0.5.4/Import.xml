@@ -50,7 +50,7 @@
     <!-- setzen eines Members, hier mit 4 (Browse-Recht), wŠre auch als link mšglich -->
     <object type= "YDSS_Membership" >
       <parentattribute name= "ShareFromLink" unique="true"/>
-      <attribute name= "AccessSetToLink">7</attribute>
+      <attribute name= "AccessSetToLink">4</attribute>
       <linkattribute name="UserAbstractFromLink" type="Admin_User_Person" unique="true">
         <queryattribute name="Name">Marion.Penders</queryattribute>
       </linkattribute>
@@ -66,18 +66,14 @@
       </linkattribute>
       <attribute name= "Created">2007-01-01T18:23:23Z</attribute>
       
-     
-  
-    
-      <!-- Subscription eines Folders-->
-      <object type= "YDSS_Subscription" >
-        <parentattribute name= "ShareFromLink" />
-        <linkattribute name="UserAbstractFromLink" type="Admin_User_Person">
-          <queryattribute name="Name">Marion.Penders</queryattribute>
-        </linkattribute>
-      </object>
-      
-     
+      <object type= "YDSS_Membership" >
+      <parentattribute name= "ShareFromLink" unique="true"/>
+      <attribute name= "AccessSetToLink">7</attribute>
+      <linkattribute name="UserAbstractFromLink" type="Admin_User_Person" unique="true">
+        <queryattribute name="Name">Marion.Penders</queryattribute>
+      </linkattribute>
+    </object>
+   
       
       <!-- generieren eines Documents -->
       <object type= "YDSS_Document" >

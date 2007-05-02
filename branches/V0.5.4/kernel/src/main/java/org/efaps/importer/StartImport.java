@@ -20,6 +20,9 @@
 
 package org.efaps.importer;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import java.io.File;
 import java.io.IOException;
 
@@ -31,41 +34,86 @@ import org.efaps.db.transaction.VFSStoreFactoryBean;
 import org.efaps.util.EFapsException;
 import org.xml.sax.SAXException;
 
+/**
+ * Class wich contains the main method to launch the import of Data into a efaps
+ * connected Database.<br>
+ * <br>
+ * 
+ * To start the import there must be three parameters:
+ * <li>1. the path to the Bootstrap.xml e.g.
+ * "/Users/xyz/Documents/workspace/bootstrap.xml</li>
+ * <li>2. the Basname as defined in the Webapplication e.g.
+ * file:///Users/xyz/Documents/webapps/ydss/docs/efaps/store/documents</li>
+ * <li>3. the path to the xml-File to be imported e.g.
+ * "/Users/xyz/Documents/workspace/Import.xml"</li>
+ * <br>
+ * 
+ * @author jmo
+ * 
+ */
 public class StartImport extends AbstractTransaction {
+  /**
+   * Logger for this class
+   */
+  private static final Log LOG  = LogFactory.getLog(StartImport.class);
 
-  private RootObject root = null;
+  /**
+   * contains the RootObject wich is the base for all other Objects
+   */
+  private RootObject       root = null;
 
+  /**
+   * Method for starting the import with e.g. a shell-Script
+   * 
+   * @param _args
+   *          Paramters: 1.Bootstrap.xml 2.Basename 3.Import.xml
+   */
   public static void main(String[] _args) {
     if (_args.length == 3) {
       (new StartImport()).execute(_args);
     } else {
-      System.out.println("Usage: Bootstrap.xml Basename.xml Import.xml");
+      if (LOG.isDebugEnabled()) {
+        LOG.debug("main(String[]) - Usage: Bootstrap.xml Basename Import.xml");
+      }
     }
 
   }
 
+  /**
+   * Method that starts the import and is called directly by the main-Method
+   * 
+   * @param _args
+   *          The given Parmeters of the main-Method
+   */
   public void execute(final String... _args) {
 
-    // "/Users/janmoxter/Documents/workspace/ydss/bootstrap.xml"
+    // e.g."/Users/janmoxter/Documents/workspace/ydss/bootstrap.xml"
     setBootstrap(_args[0]);
-    System.out.println(_args[0]);
+    if (LOG.isDebugEnabled()) {
+      LOG.debug("execute(String) - " + _args[0]);
+    }
 
+    // e.g.
     // "file:///Users/janmoxter/Documents/apache-tomcat-5.5.20/webapps/ydss/docs/efaps/store/documents"
     String BaseName = _args[1];
-    System.out.println(_args[1]);
+    if (LOG.isDebugEnabled()) {
+      LOG.debug("execute(String) - " + _args[1]);
+    }
 
+    // e.g.
     // "/Users/janmoxter/Documents/workspace/ydss/kernel/src/main/java/org/efaps/importer/Import.xml"
     String ImportFrom = _args[2];
-    System.out.println(_args[2]);
+    if (LOG.isDebugEnabled()) {
+      LOG.debug("execute(String) - " + _args[2]);
+    }
     loadRunLevel();
 
     try {
       super.login("Administrator", "");
       super.startTransaction();
 
-      //TODO Administrator klein schreiben
-      
-      
+      // TODO Administrator klein schreiben
+
       System.setProperty(javax.naming.Context.INITIAL_CONTEXT_FACTORY,
           "org.efaps.importer.InitialContextFactory");
       VFSStoreFactoryBean bean = new VFSStoreFactoryBean();
@@ -82,18 +130,24 @@ public class StartImport extends AbstractTransaction {
 
       super.commitTransaction();
 
-    }
-    catch (EFapsException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
-    catch (Exception e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+    } catch (EFapsException e) {
+
+      LOG.error("execute(String)", e);
+    } catch (Exception e) {
+
+      LOG.error("execute(String)", e);
     }
 
   }
 
+  /**
+   * Method that uses the {@link org.apache.commons.digester.Digester} to read
+   * the objects from the given xml-File an build the java-Objects in a
+   * parent-child Hirachy.
+   * 
+   * @param _xml
+   *          String representing the Path to the XML-File
+   */
   public void importFromXML(final String _xml) {
     Digester digester = new Digester();
 
@@ -101,6 +155,7 @@ public class StartImport extends AbstractTransaction {
 
     digester.addObjectCreate("import", RootObject.class);
 
+    // Read the Definitions
     digester.addCallMethod("import/definition/date", "setDateFormat", 1);
     digester.addCallParam("import/definition/date", 0, "format");
 
@@ -121,6 +176,7 @@ public class StartImport extends AbstractTransaction {
     digester.addSetNext("import/definition/order", "addOrder",
         "org.efaps.importer.OrderObject");
 
+    // Create the Objects
     digester.addFactoryCreate("*/object", new InsertObjectFactory(), false);
 
     digester.addCallMethod("*/object/attribute", "addAttribute", 3);
@@ -157,18 +213,19 @@ public class StartImport extends AbstractTransaction {
 
     try {
       this.root = (RootObject) digester.parse(new File(_xml));
-    }
-    catch (IOException e) {
+    } catch (IOException e) {
       e.printStackTrace(System.err);
-    }
-    catch (SAXException e) {
+    } catch (SAXException e) {
       e.printStackTrace(System.err);
     }
 
   }
 
+  /**
+   * Method that starts the Insertion of the Objects into the Database
+   */
   public void insertDB() {
-    this.root.insertDB();
+    this.root.dbAddChilds();
   }
 
 }

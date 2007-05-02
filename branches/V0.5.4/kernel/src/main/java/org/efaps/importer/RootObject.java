@@ -33,6 +33,14 @@ import org.apache.commons.logging.LogFactory;
 import org.efaps.db.Insert;
 import org.efaps.util.EFapsException;
 
+/**
+ * This Class represents a simplified an specialized version of an InsertObject.
+ * In this case the Object represents the Root and therefore can't be a child.
+ * The Root means in this case the &lt;import&gt;&lt;/import&gt; of the XML-File.
+ * 
+ * @author jmo
+ * 
+ */
 public class RootObject extends AbstractObject {
   /**
    * Logger for this class
@@ -71,12 +79,6 @@ public class RootObject extends AbstractObject {
     return null;
   }
 
-  @Override
-  public void dbAddChilds() {
-
-  }
-
-  @Override
   public void setID(String _ID) {
 
   }
@@ -85,7 +87,8 @@ public class RootObject extends AbstractObject {
     CHILDS.add(_Object);
   }
 
-  public void insertDB() {
+  @Override
+  public void dbAddChilds() {
     for (AbstractObject object : this.CHILDS) {
       try {
         Insert insert = new Insert(object.getType());
@@ -101,14 +104,13 @@ public class RootObject extends AbstractObject {
           }
         }
         for (ForeignObject link : object.getLinks()) {
-          insert.add(link.getLinkAttribute(), link.getID());
+          insert.add(link.getLinkAttribute(), link.dbGetID());
         }
         insert.executeWithoutAccessCheck();
         String ID = insert.getId();
         insert.close();
 
         object.setID(ID);
-        object.dbAddChilds();
 
       } catch (EFapsException e) {
 
@@ -119,6 +121,11 @@ public class RootObject extends AbstractObject {
       }
 
     }
+
+    for (AbstractObject object : this.CHILDS) {
+      object.dbAddChilds();
+    }
+
   }
 
   @Override
