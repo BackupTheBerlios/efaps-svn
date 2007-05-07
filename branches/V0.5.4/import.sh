@@ -134,7 +134,7 @@ if $cygwin; then
 fi
 
 # BaseName of the eFaps-Store
-FB="file:///Users/janmoxter/Documents/apache-tomcat-5.5.20/webapps/ydss/docs/efaps/store/documents"
+FB="file:///Users/janmoxter/Documents/apache-tomcat-5.5.20/webapps/ydss/docs"
 
 # xml to import
 IXML="/Users/janmoxter/Documents/workspace/ydss/Import.xml"
