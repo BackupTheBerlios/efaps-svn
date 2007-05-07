@@ -25,14 +25,13 @@
 
 
 <import>
-  
+  <!-- Definitionsbereich -->
   <definition>
   	<date format="yyyy-MM-dd'T'HH:mm:ss'Z'"/>
 	<order type="YDSS_DocumentVersion" direction="ascending">
 		<attribute index="1" name="Version" criteria="numerical"/>
 	</order>
 	<default type="Admin_User_Person" name="Creator">1</default>
-	
   </definition>
   
   
@@ -47,14 +46,25 @@
     </linkattribute>
     <attribute name= "Created">2001-01-01T18:23:23Z</attribute>
     
-    <!-- setzen eines Members, hier mit 4 (Browse-Recht), wŠre auch als link mšglich -->
+    <!-- setzen eines Members, hier mit Document Folder Create -->
     <object type= "YDSS_Membership" >
       <parentattribute name= "ShareFromLink" unique="true"/>
-      <attribute name= "AccessSetToLink">4</attribute>
+      <linkattribute name="AccessSetToLink" type="Admin_Access_AccessSet">
+        <queryattribute name="Name">Folder Create</queryattribute>
+      </linkattribute>
       <linkattribute name="UserAbstractFromLink" type="Admin_User_Person" unique="true">
         <queryattribute name="Name">Marion.Penders</queryattribute>
       </linkattribute>
     </object>
+    
+    <!-- generieren einer Subscription auf einen Share  --> 
+    <object type= "YDSS_Subscription" >
+      <parentattribute name= "ShareFromLink" />
+      <linkattribute name="UserAbstractFromLink" type="Admin_User_Person">
+       	<queryattribute name="Name">Jan.Moxter</queryattribute>
+      </linkattribute>
+    </object>
+    
     
     <!-- generieren eines Folders -->
     <object type= "YDSS_Folder" >
@@ -66,14 +76,25 @@
       </linkattribute>
       <attribute name= "Created">2007-01-01T18:23:23Z</attribute>
       
+      
+      <!-- generieren eines Membership auf einen Folder, desen Member schon eingetragen war  -->
       <object type= "YDSS_Membership" >
-      <parentattribute name= "ShareFromLink" unique="true"/>
-      <attribute name= "AccessSetToLink">7</attribute>
-      <linkattribute name="UserAbstractFromLink" type="Admin_User_Person" unique="true">
-        <queryattribute name="Name">Marion.Penders</queryattribute>
-      </linkattribute>
-    </object>
-   
+        <parentattribute name= "ShareFromLink" unique="true"/>
+        <linkattribute name="AccessSetToLink" type="Admin_Access_AccessSet">
+          <queryattribute name="Name">Document Create/Delete</queryattribute>
+        </linkattribute>
+        <linkattribute name="UserAbstractFromLink" type="Admin_User_Person" unique="true">
+          <queryattribute name="Name">Marion.Penders</queryattribute>
+        </linkattribute>
+      </object>
+    
+     <!-- generieren einer Subscription auf einen Folder  --> 
+      <object type= "YDSS_Subscription" >
+        <parentattribute name= "ShareFromLink" />
+        <linkattribute name="UserAbstractFromLink" type="Admin_User_Person">
+       	  <queryattribute name="Name">carmelo.liotta</queryattribute>
+        </linkattribute>
+      </object>
       
       <!-- generieren eines Documents -->
       <object type= "YDSS_Document" >
@@ -85,19 +106,18 @@
         </linkattribute>
         <attribute name= "Created">2007-03-01T20:23:23Z</attribute>
         
-       <!-- setzen eines Members, hier mit 4 (Browse-Recht), fuer ein Dokument -->
+       <!-- setzen eines Members, hier mit Document Read, fuer ein Dokument -->
         <object type= "YDSS_Membership" >
           <parentattribute name= "ShareFromLink" unique="true"/>
-          <attribute name= "AccessSetToLink">4</attribute>
+          <linkattribute name="AccessSetToLink" type="Admin_Access_AccessSet">
+            <queryattribute name="Name">Document Read</queryattribute>
+          </linkattribute>
           <linkattribute name="UserAbstractFromLink" type="Admin_User_Person" unique="true">
             <queryattribute name="Name">carmelo.liotta</queryattribute>
           </linkattribute>
         </object>
         
-
-
-        
-      <!-- generieren einer 2. Version -->
+      <!-- generieren einer Version 2. -->
         <object type= "YDSS_DocumentVersion">
           <parentattribute name= "Document" />
           <attribute name= "FileName" >demo.txt</attribute>
@@ -111,7 +131,7 @@
         </object>
         
         
-        <!-- generieren eines Version -->
+        <!-- generieren eines Version 1. -->
         <object type= "YDSS_DocumentVersion">
           <parentattribute name= "Document" />
           <attribute name= "FileName">demo.txt</attribute>
@@ -124,6 +144,18 @@
           <file name="demo.txt" url="/Users/janmoxter/Documents/demo.txt"/>
         </object>
         
+        <!-- generieren eines Version 3. -->
+        <object type= "YDSS_DocumentVersion">
+          <parentattribute name= "Document" />
+          <attribute name= "FileName">demo.txt</attribute>
+          <attribute name= "Description" >noch ein Test</attribute>
+          <attribute name= "Version">3</attribute>  
+          <linkattribute name="Creator" type="Admin_User_Person">
+            <queryattribute name="Name">Jan.Moxter</queryattribute>
+          </linkattribute>
+          <attribute name= "Created">2006-03-01T18:23:23Z</attribute>
+          <file name="demo.txt" url="/Users/janmoxter/Documents/demo.txt"/>
+        </object>
        
       </object>
     </object>

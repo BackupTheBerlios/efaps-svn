@@ -194,7 +194,7 @@ public class AbstractTransaction {
         initialised = initialised && true;
       }
     }
-    System.out.println("geht doch");  
+    
     return initialised;
   }
 

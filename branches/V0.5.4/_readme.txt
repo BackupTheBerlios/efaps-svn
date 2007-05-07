@@ -8,7 +8,7 @@ Instruction:
 	- # BaseName of the eFaps-Store
 	- # xml to import
 
-4. execute the upper part of the Script "--for importing" of  the SQL.txt, to perpare the Oracle-Server
+4. execute the upper part of the Script "--for importing" of  the SQL.txt, to prepare the Oracle-Server
 
 5. execut Script "import.sh"
 

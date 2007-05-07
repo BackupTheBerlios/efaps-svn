@@ -226,7 +226,7 @@ abstract class AbstractResource implements XAResource {
    */
   public boolean isSameRM(final XAResource _xares)  {
     if (log.isDebugEnabled())  {
-      log.debug("is Same RM " + _xares.toString().equals(this.toString()));
+//      log.debug("is Same RM " + _xares.toString().equals(this.toString()));
     }
     return _xares.toString().equals(this.toString());
   }

@@ -109,11 +109,7 @@ public class StartImport extends AbstractTransaction {
     loadRunLevel();
 
     try {
-      super.login("Administrator", "");
-      super.startTransaction();
-
-      // TODO Administrator klein schreiben
-
+     
       System.setProperty(javax.naming.Context.INITIAL_CONTEXT_FACTORY,
           "org.efaps.importer.InitialContextFactory");
       VFSStoreFactoryBean bean = new VFSStoreFactoryBean();
@@ -126,6 +122,12 @@ public class StartImport extends AbstractTransaction {
       ctx.bind("eFaps/store/documents", bean);
 
       importFromXML(ImportFrom);
+      
+      super.login("Administrator", "");
+      super.startTransaction();
+
+      // TODO Administrator klein schreiben
+      
       insertDB();
 
       super.commitTransaction();
