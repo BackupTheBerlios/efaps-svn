@@ -123,7 +123,7 @@ public class StartImport extends AbstractTransaction {
 
       importFromXML(ImportFrom);
       
-      super.login("Administrator", "");
+      super.login("administrator", "");
       super.startTransaction();
 
       // TODO Administrator klein schreiben
