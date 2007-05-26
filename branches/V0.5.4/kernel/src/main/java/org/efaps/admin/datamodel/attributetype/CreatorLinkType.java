@@ -22,44 +22,131 @@ package org.efaps.admin.datamodel.attributetype;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Locale;
 
+import org.efaps.admin.datamodel.AttributeTypeInterface;
 import org.efaps.db.Context;
-import org.efaps.admin.ui.Field;
+import org.efaps.db.query.CachedResult;
 
 /**
  * The class is the attribute type representation for the creator person of a
  * business object.
  */
-public class CreatorLinkType extends PersonLinkType  {
+public class CreatorLinkType extends AbstractType {
 
-
-  /////////////////////////////////////////////////////////////////////////////
-  // interface to the data base
-
-  /**
-   * The value of the modifier is added via the prepared statement setter
-   * method. So only  a question mark ('?') is added to the statement.
-   * The value is set with method {@link #update}.
-   *
-   * @param _stmt string buffer with the statement
-   * @see #update
-   */
-  public boolean prepareUpdate(StringBuilder _stmt)  {
-    _stmt.append("?");
-    return false;
+  public void update(Context _context, PreparedStatement _stmt, int _index)
+                                                                           throws SQLException {
+    _stmt.setInt(_index, getValue());
   }
 
   /**
-   * The instance method sets the value in the prepared statement to the
-   * id of the current context user.
-   *
-   * @param _context  context for this request
-   * @param _stmt     sql prepared statement where to set the value
-   * @param _index    index in the prepared statement to set the value
-   * @see #prepareUpdate
+   * 
+   * 
+   * @todo test that only one value is given for indexes
    */
-  public void update(Context _context, PreparedStatement _stmt, int _index)  throws SQLException  {
-    _stmt.setLong(_index, _context.getPerson().getId());
+  public Object readValue(Context _context, CachedResult _rs,
+                          ArrayList<Integer> _indexes) {
+    // setValue(_rs.getInt(_index));
+    // setValue(_rs.getInt(_indexes.get(0).intValue()));
+    setValue(_rs.getLong(_indexes.get(0).intValue()).intValue());
+    return _rs.getLong(_indexes.get(0).intValue());
+  }
+
+  // //////////////////////////////////////////////////////////////////////////7
+
+  /**
+   * 
+   * @param _context
+   *          context for this request
+   * @param _value
+   *          new value to set
+   */
+  public void set(final Context _context, final Object _value) {
+    if (_value != null) {
+      if ((_value instanceof String) && (((String) _value).length() > 0)) {
+        setValue(Integer.parseInt((String) _value));
+      } else if (_value instanceof Number) {
+        setValue(((Number) _value).intValue());
+      }
+    }
+  }
+
+  /**
+   * The method returns a string as the viewable value of the attribute type.
+   * Here, the integer value is converted to a localised viewing string.
+   * 
+   * @param _locale
+   *          locale object
+   */
+  public String getViewableString(Locale _locale) {
+    return "" + getValue();
+  }
+
+  // ///////////////////////////////////////////////////////////////////////////
+
+  /**
+   * 
+   * 
+   * @see #getValue
+   * @see #setValue
+   */
+  private int value = 0;
+
+  // ///////////////////////////////////////////////////////////////////////////
+
+  /**
+   * This is the setter method for instance variable {@link #value}.
+   * 
+   * @param _value
+   *          new value for instance variable {@link #value}
+   * @see #value
+   * @see #getValue
+   */
+  public void setValue(int _value) {
+    this.value = _value;
+  }
+
+  /**
+   * This is the getter method for instance variable {@link #value}.
+   * 
+   * @return the value of the instance variable {@link #value}.
+   * @see #value
+   * @see #setValue
+   */
+  public int getValue() {
+    return this.value;
+  }
+
+  // ///////////////////////////////////////////////////////////////////////////
+  // methods of interface Comparable
+
+  /**
+   * Compares this object with the specified object for order. Returns a
+   * negative integer, zero, or a positive integer as this object is less than,
+   * equal to, or greater than the specified object.<br/> The method makes an
+   * real compare if the specified object is also an instance of IntegerType,
+   * otherwise the default implementation from {@link AbstractType#compareTo} is
+   * used.
+   * 
+   * @param _locale
+   *          locale object
+   * @param _object
+   *          the Object to be compared.
+   * @return a negative integer, zero, or a positive integer as this object is
+   *         less than, equal to, or greater than the specified object.
+   */
+  public int compareTo(Locale _locale, AttributeTypeInterface _object) {
+    int ret;
+    if (_object instanceof IntegerType) {
+      ret = getValue() - ((IntegerType) _object).getValue();
+    } else {
+      ret = super.compareTo(_locale, _object);
+    }
+    return ret;
+  }
+
+  public String toString() {
+    return "" + getValue();
   }
 }

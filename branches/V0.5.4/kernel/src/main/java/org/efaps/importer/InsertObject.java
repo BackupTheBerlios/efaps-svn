@@ -383,9 +383,12 @@ public class InsertObject extends AbstractObject {
 
       Attribute attribute = Type.get(this.type).getAttribute(
           element.getKey().toString());
-
+      // TODO das ist nur ein
+      // hack damit CreatedType als DateTimeType behandelt werden kann
       if (attribute.getAttributeType().getClassRepr().getName().equals(
-          "org.efaps.admin.datamodel.attributetype.DateTimeType")) {
+          "org.efaps.admin.datamodel.attributetype.DateTimeType")
+          || attribute.getAttributeType().getClassRepr().getName().equals(
+              "org.efaps.admin.datamodel.attributetype.CreatedType")) {
 
         Date date = new SimpleDateFormat(RootObject.DATEFORMAT).parse(element
             .getValue().toString(), new ParsePosition(0));

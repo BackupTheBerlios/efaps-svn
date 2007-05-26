@@ -8,8 +8,8 @@ Instruction:
 	- # BaseName of the eFaps-Store
 	- # xml to import
 
-4. execute the upper part of the Script "--for importing" of  the SQL.txt, to prepare the Oracle-Server
+4. --
 
 5. execut Script "import.sh"
 
-6. execute lower part of the Script "----Changing Back to Normal" of  the SQL.txt, to bring the Oracle-Server back to normal Status
+6. --
