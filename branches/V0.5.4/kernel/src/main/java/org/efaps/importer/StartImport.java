@@ -106,10 +106,13 @@ public class StartImport extends AbstractTransaction {
     if (LOG.isDebugEnabled()) {
       LOG.debug("execute(String) - " + _args[2]);
     }
+
+    LOG.info("Connecting to Database");
+
     loadRunLevel();
 
     try {
-     
+
       System.setProperty(javax.naming.Context.INITIAL_CONTEXT_FACTORY,
           "org.efaps.importer.InitialContextFactory");
       VFSStoreFactoryBean bean = new VFSStoreFactoryBean();
@@ -121,13 +124,14 @@ public class StartImport extends AbstractTransaction {
       ctx.bind("java:comp/env", ctx);
       ctx.bind("eFaps/store/documents", bean);
 
+      LOG.info("Starting to read the XML-File...");
       importFromXML(ImportFrom);
-      
+
       super.login("administrator", "");
       super.startTransaction();
 
       // TODO Administrator klein schreiben
-      
+      LOG.info("Starting to insert the Objects into the DataBase...");
       insertDB();
 
       super.commitTransaction();
@@ -178,6 +182,19 @@ public class StartImport extends AbstractTransaction {
     digester.addSetNext("import/definition/order", "addOrder",
         "org.efaps.importer.OrderObject");
 
+    digester.addObjectCreate("*/default/linkattribute", ForeignObject.class);
+    digester.addCallMethod("*/default/linkattribute", "setLinkAttribute", 2);
+    digester.addCallParam("*/default/linkattribute", 0, "name");
+    digester.addCallParam("*/default/linkattribute", 1, "type");
+
+    digester.addCallMethod("*/default/linkattribute/queryattribute",
+        "addAttribute", 2);
+    digester.addCallParam("*/default/linkattribute/queryattribute", 0, "name");
+    digester.addCallParam("*/default/linkattribute/queryattribute", 1);
+
+    digester.addSetNext("*/default/linkattribute", "addLink",
+        "org.efaps.importer.ForeignObject");
+
     // Create the Objects
     digester.addFactoryCreate("*/object", new InsertObjectFactory(), false);
 
@@ -194,23 +211,24 @@ public class StartImport extends AbstractTransaction {
     digester.addCallParam("*/parentattribute", 0, "name");
     digester.addCallParam("*/parentattribute", 1, "unique");
 
-    digester.addCallMethod("*/linkattribute", "addUniqueAttribute", 2);
-    digester.addCallParam("*/linkattribute", 0, "unique");
-    digester.addCallParam("*/linkattribute", 1, "name");
+    digester.addCallMethod("*/object/linkattribute", "addUniqueAttribute", 2);
+    digester.addCallParam("*/object/linkattribute", 0, "unique");
+    digester.addCallParam("*/object/linkattribute", 1, "name");
 
     digester.addSetNext("*/object", "addChild",
         "org.efaps.importer.InsertObject");
 
-    digester.addObjectCreate("*/linkattribute", ForeignObject.class);
-    digester.addCallMethod("*/linkattribute", "setLinkAttribute", 2);
-    digester.addCallParam("*/linkattribute", 0, "name");
-    digester.addCallParam("*/linkattribute", 1, "type");
+    digester.addObjectCreate("*/object/linkattribute", ForeignObject.class);
+    digester.addCallMethod("*/object/linkattribute", "setLinkAttribute", 2);
+    digester.addCallParam("*/object/linkattribute", 0, "name");
+    digester.addCallParam("*/object/linkattribute", 1, "type");
 
-    digester.addCallMethod("*/queryattribute", "addAttribute", 2);
-    digester.addCallParam("*/queryattribute", 0, "name");
-    digester.addCallParam("*/queryattribute", 1);
+    digester.addCallMethod("*/object/linkattribute/queryattribute",
+        "addAttribute", 2);
+    digester.addCallParam("*/object/linkattribute/queryattribute", 0, "name");
+    digester.addCallParam("*/object/linkattribute/queryattribute", 1);
 
-    digester.addSetNext("*/linkattribute", "addLink",
+    digester.addSetNext("*/object/linkattribute", "addLink",
         "org.efaps.importer.ForeignObject");
 
     try {

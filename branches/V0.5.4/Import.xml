@@ -31,7 +31,11 @@
 	<order type="YDSS_DocumentVersion" direction="ascending">
 		<attribute index="1" name="Version" criteria="numerical"/>
 	</order>
-	<default type="Admin_User_Person" name="Creator">1</default>
+	<default type="Admin_User_Person" name="Creator">
+	  <linkattribute name="UserAbstractFromLink" type="Admin_User_Person">
+       <queryattribute name="Name">Jan.Moxter</queryattribute>
+      </linkattribute>
+    </default>
   </definition>
   
   

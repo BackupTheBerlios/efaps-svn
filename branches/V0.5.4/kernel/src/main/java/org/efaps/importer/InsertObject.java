@@ -117,6 +117,7 @@ public class InsertObject extends AbstractObject {
    *          Type of the InsertObject
    */
   public InsertObject(final String _type) {
+    LOG.info("Creating new " + _type);
     setType(_type);
   }
 
@@ -247,7 +248,9 @@ public class InsertObject extends AbstractObject {
 
     for (List<AbstractObject> list : this.childs.values()) {
       for (AbstractObject object : list) {
-
+        if (LOG.isInfoEnabled()) {
+          LOG.info("adding Child:" + object.getType());
+        }
         try {
           if (object.getUniqueAttributes().size() > 0) {
 

@@ -33,13 +33,23 @@ import java.util.Map;
  * &lt;/definition&gt;
  * 
  * @author jmo
- * 
+ * @version $Id$
  */
 public class DefaultObject {
   /**
    * contains the Defaults defined for this Import
    */
-  final static Map<String, String> DEFAULTS = new HashMap<String, String>();
+  final static Map<String, DefaultObject> DEFAULTS = new HashMap<String, DefaultObject>();
+
+  /**
+   * contains the {@link ForeignObjects} of this InsertObject
+   */
+  private ForeignObject                   link;
+
+  /**
+   * contains the Value of the Default
+   */
+  private String                          value    = null;
 
   /**
    * adds a new Dafult to the DEFAULTS
@@ -53,7 +63,8 @@ public class DefaultObject {
    */
   public void addDefault(final String _type, final String _name,
                          final String _value) {
-    DEFAULTS.put(_type + "/" + _name, _value);
+    this.value = _value;
+    DEFAULTS.put(_type + "/" + _name, this);
 
   }
 
@@ -67,7 +78,25 @@ public class DefaultObject {
    * @return String containing the DefaultValue
    */
   public static String getDefault(final String _type, final String _name) {
-    return (String) DEFAULTS.get(_type + "/" + _name);
+    DefaultObject def = DEFAULTS.get(_type + "/" + _name);
+    String ret = def.value;
+    if (ret.equals("")) {
+      ret = def.link.dbGetID();
+      def.value = ret;
+    }
+
+    return ret;
+  }
+
+  /**
+   * Adds a ForeignObject to this DefaultObject
+   * 
+   * @param _Object
+   *          ForeignObject to add
+   */
+  public void addLink(ForeignObject _Object) {
+    this.link = (_Object);
+
   }
 
 }
