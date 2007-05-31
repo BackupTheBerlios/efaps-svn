@@ -251,6 +251,10 @@ public class InsertObject extends AbstractObject {
         if (LOG.isInfoEnabled()) {
           LOG.info("adding Child:" + object.getType());
         }
+        if (LOG.isDebugEnabled()) {
+          LOG.debug("this: " + this.toString());
+          LOG.debug("Cild: " + object.toString());
+        }
         try {
           if (object.getUniqueAttributes().size() > 0) {
 
@@ -326,8 +330,21 @@ public class InsertObject extends AbstractObject {
     }
   }
 
+  /**
+   * Method to Create the Update or Insert of the Datebase
+   * 
+   * @param _parent
+   *          Parent-Object of this Object
+   * @param _ID
+   *          Id of the Object to be updated, if "" is given a Insert will be
+   *          made
+   * @return String with the ID of the new or updated Object, null if the
+   *         creation of the new object was skipped, because of a foreign Object
+   *         was not found
+   */
   public String dbUpdateOrInsert(final AbstractObject _parent, final String _ID) {
-
+    Boolean noInsert = false;
+    String ID = null;
     try {
       Update UpIn;
       if (_ID != "") {
@@ -353,12 +370,22 @@ public class InsertObject extends AbstractObject {
         UpIn.add(this.getParrentAttribute(), _parent.getID());
       }
       for (ForeignObject link : this.getLinks()) {
-        UpIn.add(link.getLinkAttribute(), link.dbGetID());
-      }
-      UpIn.executeWithoutAccessCheck();
-      String ID = UpIn.getId();
-      UpIn.close();
 
+        String foreignID = link.dbGetID();
+        if (foreignID != null) {
+          UpIn.add(link.getLinkAttribute(), foreignID);
+        } else {
+          noInsert = true;
+          LOG.error("skipt: " + this.toString());
+        }
+
+      }
+      if (!noInsert) {
+        UpIn.executeWithoutAccessCheck();
+
+        ID = UpIn.getId();
+        UpIn.close();
+      }
       return ID;
     } catch (EFapsException e) {
       LOG.error("dbUpdateOrInsert() " + this.toString(), e);
