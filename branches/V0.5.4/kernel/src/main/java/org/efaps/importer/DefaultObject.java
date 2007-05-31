@@ -75,10 +75,13 @@ public class DefaultObject {
    *          String containing the Type of the Object
    * @param _name
    *          String containing the Name of the Attribute
-   * @return String containing the DefaultValue
+   * @return String containing the DefaultValue, null if not defined
    */
   public static String getDefault(final String _type, final String _name) {
     DefaultObject def = DEFAULTS.get(_type + "/" + _name);
+    if (def == null) {
+      return null;
+    }
     String ret = def.value;
     if (ret.equals("")) {
       ret = def.link.dbGetID();
