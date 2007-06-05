@@ -248,6 +248,8 @@ public class InsertObject extends AbstractObject {
 
     for (List<AbstractObject> list : this.childs.values()) {
       for (AbstractObject object : list) {
+        noInsert = false;
+        
         if (LOG.isInfoEnabled()) {
           LOG.info("adding Child:" + object.getType());
         }
