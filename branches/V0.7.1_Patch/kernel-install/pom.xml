@@ -43,7 +43,12 @@
   * Project itself
   ************************************************************************+ -->
   <build>
-
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+             </resource>
+         </resources>
     <plugins>
       <!--
         plugin used to create the index.txt of all xml files
