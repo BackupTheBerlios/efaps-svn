@@ -53,7 +53,7 @@ import org.efaps.util.EFapsException;
 public class NodeUI implements NamesInterface {
 
   public Return getTableUI(final Parameter _parameter) throws EFapsException {
-    final Return ret = new Return();
+     final Return ret = new Return();
     final Instance instance = _parameter.getInstance();
     Node node = null;
     if ("eArchive_Repository".equals(instance.getType().getName())) {
@@ -166,12 +166,16 @@ public class NodeUI implements NamesInterface {
     final String msg = _parameter.getParameterValue("commitMessage");
     final Instance instance = _parameter.getInstance();
     final Node parentNode;
+    final Repository repository;
     if ("eArchive_Repository".equals(instance.getType().getName())) {
-      parentNode = Node.getRootNodeFromDB(new Repository(instance));
+      repository = new Repository(instance);
+      parentNode = Node.getRootNodeFromDB(repository);
     } else {
       parentNode = Node.getNodeFromDB(instance.getId(), instance.getKey());
+      repository = parentNode.getRepository();
     }
-    final Node newDir = Node.createNewNode(name, Node.TYPE_NODEDIRECTORY);
+    final Node newDir = Node.createNewNode(repository, name,
+                                           Node.TYPE_NODEDIRECTORY);
     newDir.connect2Parent(parentNode, msg);
     return new Return();
   }
@@ -182,12 +186,16 @@ public class NodeUI implements NamesInterface {
     final String msg = _parameter.getParameterValue("commitMessage");
     final Instance instance = _parameter.getInstance();
     final Node node;
+    final Repository repository;
     if ("eArchive_Repository".equals(instance.getType().getName())) {
+      repository = new Repository(instance);
       node = Node.getRootNodeFromDB(new Repository(instance));
     } else {
       node = Node.getNodeFromDB(instance.getId(), instance.getKey());
+      repository = node.getRepository();
     }
-    final Node newFile = Node.createNewNode(name, Node.TYPE_NODEFILE);
+    final Node newFile = Node.createNewNode(repository, name,
+                                            Node.TYPE_NODEFILE);
     newFile.connect2Parent(node, msg);
     final Instance fileInstance = Instance.get(Type.get(TYPE_FILE),
                                                newFile.getFileId());

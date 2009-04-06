@@ -113,6 +113,18 @@ public class Node implements NamesInterface{
 
   private final List<Node> children = new ArrayList<Node>();
 
+  private boolean root;
+
+  /**
+   * Setter method for instance variable {@link #root}.
+   *
+   * @param root value for instance variable {@link #root}
+   */
+  public void setRoot(final boolean root) {
+    this.root = root;
+  }
+
+
   public Node() {
     this.id = null;
     this.historyId = null;
@@ -232,7 +244,8 @@ public class Node implements NamesInterface{
   }
 
 
-  public static Node createNewNode(final String _name, final String _type)
+  public static Node createNewNode(final Repository _repository,
+                                   final String _name, final String _type)
       throws EFapsException {
 
     Long fileIdTmp = null;
@@ -245,13 +258,13 @@ public class Node implements NamesInterface{
     final Long typeId = Type.get(_type).getId();
 
     cmd.append("insert into ").append(TABLE_NODE)
-      .append("(id, typeid, historyid, copyid, revision, name");
+      .append("(id, typeid, historyid, copyid, revision, name, repositoryid");
 
     if (fileIdTmp != null) {
       cmd.append(",").append(TABLE_NODE_C_FILEID);
     }
     cmd.append(")")
-      .append(" values (?,?,?,?,?,?").append(fileIdTmp != null ? ",?)" : ")");
+      .append(" values (?,?,?,?,?,?,?").append(fileIdTmp != null ? ",?)" : ")");
 
     Long id = null;
     Long histId = null;
@@ -274,8 +287,9 @@ public class Node implements NamesInterface{
         stmt.setInt(4, 0);
         stmt.setInt(5, 0);
         stmt.setString(6, _name);
+        stmt.setLong(7, _repository.getId());
         if (fileIdTmp != null) {
-          stmt.setLong(7, fileIdTmp);
+          stmt.setLong(8, fileIdTmp);
         }
         final int rows = stmt.executeUpdate();
         if (rows == 0) {
@@ -413,6 +427,7 @@ public class Node implements NamesInterface{
                                resultset.getLong(4), resultset.getLong(5),
                                resultset.getString(6), resultset.getLong(7),
                                null);
+          root.setRoot(true);
           ret.add(root);
           current = root;
         }
@@ -504,8 +519,9 @@ public class Node implements NamesInterface{
       .append(TABLE_NODE_C_COPYID).append(",")
       .append(TABLE_NODE_T_C_REVISION).append(",")
       .append(TABLE_NODE_C_NAME).append(",")
-      .append(TABLE_REVISION_T_C_REPOSITORYID).append(",")
-      .append(TABLE_NODE_C_FILEID)
+      .append(TABLE_NODE_T_C_REPOSITORYID).append(",")
+      .append(TABLE_NODE_C_FILEID).append(",")
+      .append(TABLE_REVISION_T_C_REPOSITORYID)
       .append(" from ").append(TABLE_NODE)
       .append(" left join ").append(TABLE_REVISION).append(" on ")
         .append(TABLE_REVISION).append(".").append(TABLE_REVISION_C_NODEID)
@@ -531,6 +547,7 @@ public class Node implements NamesInterface{
                         resultset.getLong(5), resultset.getString(6),
                         resultset.getLong(7), resultset.getLong(8));
          ret.setIdPath(_idPath);
+         ret.setRoot(resultset.getLong(9) > 0);
        }
        resultset.close();
      } finally {
@@ -549,15 +566,30 @@ public class Node implements NamesInterface{
   }
 
 
-  public static Node getRootNodeFromDB(final Repository _repository) throws EFapsException {
-
+  public static Node getRootNodeFromDB(final Repository _repository)
+      throws EFapsException {
     final StringBuilder cmd = new StringBuilder();
-    cmd.append("  SELECT t_eanode.id,t_eanode.typeid, t_eanode.historyid,  copyid ,t_earevision.revision,t_eanode.name, repositoryid from ")
-      .append("t_earevision")
-      .append(" join t_earepository on t_earevision.repositoryid = t_earepository.id and t_earevision.revision = t_earepository.lastrevision")
-      .append(" join t_eanode on t_eanode.id = t_earevision.nodeid")
-      .append(" where repositoryid = ?");
-    final ConnectionResource con = Context.getThreadContext().getConnectionResource();
+    cmd.append("select ")
+      .append(TABLE_NODE_T_C_ID).append(",")
+      .append(TABLE_NODE_T_C_TYPEID).append(",")
+      .append(TABLE_NODE_C_HISTORYID).append(",")
+      .append(TABLE_NODE_C_COPYID).append(",")
+      .append(TABLE_REVISION_T_C_REVISION).append(",")
+      .append(TABLE_NODE_T_C_NAME).append(",")
+      .append(TABLE_NODE_T_C_REPOSITORYID)
+      .append(" from ").append(TABLE_REVISION)
+      .append(" join ").append(TABLE_REPOSITORY).append(" on ")
+        .append(TABLE_REVISION_T_C_REPOSITORYID).append(" = ")
+        .append(TABLE_REPOSITORY_T_C_ID).append(" and ")
+        .append(TABLE_REVISION_T_C_REVISION).append(" = ")
+        .append(TABLE_REPOSITORY_T_C_LASTREVISION)
+      .append(" join ").append(TABLE_NODE).append(" on ")
+        .append(TABLE_NODE_T_C_ID).append(" = ")
+        .append(TABLE_REVISION_T_C_NODEID)
+      .append(" where ").append(TABLE_REVISION_T_C_REPOSITORYID).append(" = ?");
+
+    final ConnectionResource con
+                          = Context.getThreadContext().getConnectionResource();
     Node ret = null;
     try {
 
@@ -572,9 +604,10 @@ public class Node implements NamesInterface{
          final Long historyIdTmp = resultset.getLong(3);
          final Long copyIdTmp = resultset.getLong(4);
          ret = new Node(resultset.getLong(1), Type.get(resultset.getLong(2)),
-             historyIdTmp, copyIdTmp , resultset.getLong(5),
-             resultset.getString(6), resultset.getLong(7), null);
-         ret.setIdPath(historyIdTmp + "." + copyIdTmp);
+                        historyIdTmp, copyIdTmp , resultset.getLong(5),
+                        resultset.getString(6), resultset.getLong(7), null);
+         ret.setIdPath(historyIdTmp + SEPERATOR_IDS + copyIdTmp);
+         ret.setRoot(true);
        }
        resultset.close();
      } finally {
@@ -622,13 +655,11 @@ public class Node implements NamesInterface{
       final List<Node> childrenTmp = node.getChildNodes(list, null);
       childrenTmp.add(current);
       Node2Node.connect(reviseNode, childrenTmp);
-      if (reviseNode.isRoot()) {
-        Revision.getNewRevision(new Repository(reviseNode.getRepositoryId()),
-                                               reviseNode, _commitMsg);
-      } else {
-        current = reviseNode;
-      }
+      current = reviseNode;
     }
+    Revision.getNewRevision(new Repository(current.getRepositoryId()),
+                            current, _commitMsg);
+
     return ret;
   }
   /**
@@ -715,12 +746,13 @@ public class Node implements NamesInterface{
     final StringBuilder cmd = new StringBuilder();
 
     cmd.append("insert into ").append(TABLE_NODE)
-      .append("(id, typeid, historyid, copyid, revision, name");
+      .append("(id, typeid, historyid, copyid, revision, name, repositoryid");
     if (this.fileId != null) {
       cmd.append(",").append(TABLE_NODE_C_FILEID);
     }
     cmd.append(")")
-      .append(" values (?,?,?,?,?,?").append(this.fileId == null ? ")" : ",?)");
+      .append(" values (?,?,?,?,?,?,?")
+      .append(this.fileId == null ? ")" : ",?)");
 
     Long idTmp = null;
 
@@ -742,8 +774,9 @@ public class Node implements NamesInterface{
         stmt.setLong(4, this.copyId);
         stmt.setInt(5, 0);
         stmt.setString(6, this.name);
+        stmt.setLong(7, this.repositoryId);
         if (this.fileId != null) {
-          stmt.setLong(7, this.fileId);
+          stmt.setLong(8, this.fileId);
         }
         final int rows = stmt.executeUpdate();
         if (rows == 0) {
@@ -779,7 +812,7 @@ public class Node implements NamesInterface{
 
 
   public boolean isRoot() {
-    return this.repositoryId != null && this.repositoryId > 0;
+    return this.root;
   }
 
 
@@ -852,7 +885,7 @@ public class Node implements NamesInterface{
       .append(TABLE_NODE_C_COPYID).append(",")
       .append(TABLE_REVISION_T_C_REVISION).append(",")
       .append(TABLE_NODE_C_NAME).append(",")
-      .append(TABLE_REVISION_C_REPOSITORYID)
+      .append(TABLE_NODE_T_C_REPOSITORYID)
       .append(" from ").append(TABLE_NODE)
       .append(" join ").append(TABLE_REVISION).append(" on ")
         .append(TABLE_NODE_T_C_ID).append(" = ")
@@ -933,5 +966,14 @@ public class Node implements NamesInterface{
          con.abort();
        }
      }
+  }
+
+
+  /**
+   * @return
+   */
+  public Repository getRepository() {
+    // TODO Auto-generated method stub
+    return null;
   }
 }
